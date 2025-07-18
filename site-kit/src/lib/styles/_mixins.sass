@@ -1,0 +1,15 @@
+@use './design-system_variables' as *
+
+// Text Mixins
+@mixin text-sm
+  font-weight: $font-weight-normal
+  font-size: $text-sm
+  line-height: $line-height-normal
+  @media (min-width: $breakpoint-sm)
+    font-size: $text-base
+  @media (min-width: $breakpoint-md)
+    font-size: $text-lg
+  @media (min-width: $breakpoint-lg)
+    font-size: $text-xl
+  @media (min-width: $breakpoint-xl)
+    font-size: $text-2xl 

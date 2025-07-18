@@ -1,0 +1,82 @@
+{
+	"name": "@econic/ui-kit",
+	"version": "0.0.1",
+	"sideEffects": false,
+	"description": "Components for use in *.econic.ai websites",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"check": "svelte-kit sync && svelte-check",
+		"package": "svelte-kit sync",
+		"lint": "prettier --check .",
+		"format": "prettier --write ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/econic-ai/ui-kit.git"
+	},
+	"author": "Jordan Rancie",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/econic-ai/econic.ai/issues"
+	},
+	"homepage": "https://github.com/econic-ai/ui-kit/tree/main/packages/ui-kit#readme",
+	"dependencies": {
+		"@lezer/common": "^1.0.4",
+		"@shikijs/twoslash": "^1.22.0",
+		"esm-env": "^1.0.0",
+		"json5": "^2.2.3",
+		"shiki": "^1.22.0",
+		"autoprefixer": "^10.4.18",
+		"postcss": "^8.4.35",
+		"sass": "^1.72.0",
+		"@econic/site-kit": "git+https://github.com/econic-ai/ui-libs.git#main:site-kit"		
+	},
+	"devDependencies": {
+		"@sveltejs/kit": "^2.12.1",
+		"@econic/site-kit": "git+https://github.com/econic-ai/ui-libs.git#main:site-kit",
+		"@types/node": "^20.12.11",
+		"marked": "^14.1.2",
+		"prettier": "^3.3.2",
+		"prettier-plugin-svelte": "^3.3.2",
+		"svelte": "5.14.0",
+		"svelte-check": "^4.1.1",
+		"typescript": "^5.5.4",
+		"vite": "^5.4.3"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"peerDependencies": {
+		"svelte": "^4.0.0 || ^5.0.0-next.1"
+	},
+	"types": "./dist/types/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/types/index.d.ts",
+			"default": "./src/lib/index.ts",
+			"svelte": "./src/lib/index.ts"
+		},
+		"./components": {
+			"types": "./dist/types/components/index.d.ts",
+			"default": "./src/lib/components/index.ts",
+			"svelte": "./src/lib/components/index.ts"
+		},
+		"./stores": {
+			"types": "./dist/types/stores/index.d.ts",
+			"default": "./src/lib/stores/index.ts"
+		},
+		"./types": {
+			"types": "./dist/types/types/index.d.ts",
+			"default": "./src/lib/types/index.ts"
+		},
+		"./actions": {
+			"types": "./dist/types/types/index.d.ts",
+			"default": "./src/lib/actions/index.ts"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	]
+}
