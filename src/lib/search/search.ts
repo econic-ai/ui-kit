@@ -1,4 +1,4 @@
-import '@econic/site-kit/polyfills';
+import '@econic/ui-kit/polyfills';
 import flexsearch, { type Index as FlexSearchIndex } from 'flexsearch';
 import type { Block, BlockGroup } from './types';
 

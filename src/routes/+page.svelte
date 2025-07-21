@@ -3,6 +3,6 @@
 </script>
 
 <div>
-    Hello @econic/site-kit
+    Hello @econic/ui-kit
 </div>
 
