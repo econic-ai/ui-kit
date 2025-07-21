@@ -29,18 +29,15 @@ const theme = createCssVariablesTheme({
 // Hash the contents of this file and its dependencies so that we get a new cache in case we have changed
 // how the markdown is rendered (whose logic live here). This is to avoid serving stale code snippets.
 const hash = createHash('sha256');
-hash.update(fs.readFileSync('./pnpm-lock.yaml', 'utf-8'));
-// CAREFUL: update this URL in case you ever move this file or start the dev/build process from another directory
-const original_file = '/src/lib/markdown/renderer.ts';
-if (!fs.existsSync(original_file)) {
-	throw new Error(
-		'Update the path to the markdown renderer code. Current value: ' +
-			original_file +
-			' | Current cwd: ' +
-			process.cwd()
-	);
-}
-hash_graph(hash, original_file);
+// For packaged library, use package.json for cache invalidation
+const currentFilePath = new URL(import.meta.url).pathname;
+// Determine if we're in source mode (development) or dist mode (production)
+const isSourceMode = currentFilePath.includes('/src/lib/');
+const packageRoot = path.resolve(path.dirname(currentFilePath), isSourceMode ? '../../../' : '../../');
+const packageJsonPath = path.join(packageRoot, 'package.json');
+
+hash.update(fs.readFileSync(packageJsonPath, 'utf-8'));
+// Skip dependency graph hashing for packaged library - package version provides cache invalidation
 const digest = hash.digest().toString('base64').replace(/\//g, '-');
 
 /**
