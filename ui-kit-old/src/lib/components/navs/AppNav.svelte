@@ -3,7 +3,7 @@
     import AppNavProfile from "./AppNavProfile.svelte"
     import type { Snippet } from "svelte";
     import { authStore, userRole } from '@econic/ui-kit/stores';
-    import { ThemeToggle } from '@econic/site-kit/components';
+    import { ThemeToggle } from '@econic/ui-kit/components';
     import { onMount } from 'svelte';
     let { 
         authenticated,
