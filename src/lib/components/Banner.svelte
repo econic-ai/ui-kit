@@ -6,7 +6,8 @@
 	import { browser } from '$app/environment';
 	import { Persisted } from '../state';
 
-	let { banner }: { banner: BannerData } = $props();
+	const props = $props<{ banner: BannerData }>();
+	const banner = props.banner;
 
 	const persisted = new Persisted<string>('sv:hidden-banners', '{}');
 	const hidden = $derived(JSON.parse(persisted.current));
