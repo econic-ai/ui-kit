@@ -13,14 +13,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/econic-ai/ui-libs.git"
+		"url": "git+https://github.com/econic-ai/ui-kit.git"
 	},
 	"author": "Jordan Rancie",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/econic-ai/ui-libs/issues"
+		"url": "https://github.com/econic-ai/ui-kit/issues"
 	},
-	"homepage": "https://github.com/econic-ai/ui-libs/tree/main/site-kit#readme",
+	"homepage": "https://github.com/econic-ai/ui-kit/tree/main#readme",
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.9.0",
 		"@codemirror/commands": "^6.2.5",

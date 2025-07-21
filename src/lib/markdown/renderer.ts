@@ -31,7 +31,7 @@ const theme = createCssVariablesTheme({
 const hash = createHash('sha256');
 hash.update(fs.readFileSync('./pnpm-lock.yaml', 'utf-8'));
 // CAREFUL: update this URL in case you ever move this file or start the dev/build process from another directory
-const original_file = './packages/site-kit/src/lib/markdown/renderer.ts';
+const original_file = '/src/lib/markdown/renderer.ts';
 if (!fs.existsSync(original_file)) {
 	throw new Error(
 		'Update the path to the markdown renderer code. Current value: ' +
