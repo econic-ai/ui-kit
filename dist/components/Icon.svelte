@@ -3,9 +3,6 @@
 	let {
 		name,
 		size = 15
-	}: {
-		name: string;
-		size?: string | number;
 	} = $props();
 
 	let mounted = $state(false);

@@ -1,7 +1,6 @@
-type $$ComponentProps = {
-    name: string;
-    size?: string | number;
-};
-declare const Icon: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Icon: import("svelte").Component<{
+    name: any;
+    size?: number;
+}, {}, "">;
 type Icon = ReturnType<typeof Icon>;
 export default Icon;
