@@ -1,8 +1,7 @@
 <script lang="ts">
-	let {
-		checked = $bindable(),
-		onchange
-	}: { checked: boolean; onchange?: (value: boolean) => void } = $props();
+
+  let { checked = $bindable(false), onchange } = $props();
+
 </script>
 
 <input type="checkbox" bind:checked onchange={(e) => onchange?.(e.currentTarget.checked)} />

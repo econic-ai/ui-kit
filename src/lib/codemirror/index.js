@@ -318,6 +318,7 @@ export function completion_for_javascript(context, selected, files) {
 /**
  * @param {() => string} selected
  * @param {() => string[]} files
+ * @returns {import('@codemirror/state').Extension[]}
  */
 export function autocomplete_for_svelte(selected, files) {
 	return [

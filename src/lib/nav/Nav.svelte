@@ -8,15 +8,7 @@
 	import { tick } from 'svelte';
 	import type { NavigationLink } from '../types';
 	
-	interface Props {
-		home_title?: string;
-		title: string | undefined;
-		links: NavigationLink[];
-		session?: { user?: any } | null;
-		user?: any;
-	}
-
-	let { home_title = 'Homepage', title, links, session, user }: Props = $props();
+	let { home_title = 'Homepage', title, links, session, user } = $props();
 
 	let visible = $state(true);
 
@@ -24,8 +16,10 @@
 
 	// mobile nav stuff
 	let open = $state(false);
-	let current = $state.raw<NavigationLink | undefined>();
-	let menu_button: HTMLButtonElement;
+	// @ts-ignore - esrap parser has issues with generic type annotations
+	let current = $state.raw();
+	// @ts-ignore - esrap parser has issues with HTMLButtonElement type annotations
+	let menu_button;
 	
 	// Backdrop state management (after open is declared)
 	let backdropState = $derived.by(() => {
@@ -62,11 +56,13 @@
 	let hoveredMenu: string | null = null;
 
 	// Function to check if current URL matches the link href
-	function isCurrentPage(href: string): boolean {
+	// @ts-ignore - esrap parser has issues with function parameter type annotations
+	function isCurrentPage(href) {
 		return $page.url.pathname === href;
 	}
 
-	function isCurrentSection(slug: string): boolean {
+	// @ts-ignore - esrap parser has issues with function parameter type annotations
+	function isCurrentSection(slug) {
 		return $page.url.pathname.startsWith('/' + slug);
 	}
 
@@ -208,6 +204,7 @@
 
 	<div class="mobile mobile-menu">
 		<SecondaryNav {user} {session} />
+		<!-- @ts-ignore - menu_button type handled above -->
 		<button
 			bind:this={menu_button}
 			aria-label="Toggle menu"

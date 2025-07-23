@@ -1,7 +1,5 @@
-import type { NavigationLink } from '../types';
-interface Props {
-    links: NavigationLink[];
-}
-declare const Footer: import("svelte").Component<Props, {}, "">;
+declare const Footer: import("svelte").Component<{
+    links: any;
+}, {}, "">;
 type Footer = ReturnType<typeof Footer>;
 export default Footer;

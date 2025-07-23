@@ -2,9 +2,8 @@
 	import Dropdown from './Dropdown.svelte';
 	import HoverMenu from './HoverMenu.svelte';
 	import Icon from './Icon.svelte';
-	import type { Snippet } from 'svelte';
 
-	let { children }: { children: Snippet } = $props();
+	let { children } = $props();
 </script>
 
 <Dropdown align="right">

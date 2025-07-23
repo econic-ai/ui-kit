@@ -4,13 +4,15 @@
 	import { code_preference } from '../state/code_preference';
 	import { fix_position } from '../actions/utils';
 
-	let { children }: { children: Snippet } = $props();
+	let { children } = $props();
 
-	let container: HTMLElement;
+	// @ts-ignore - esrap parser has issues with HTMLElement type annotations
+	let container;
 
 	afterNavigate(update);
 
 	function update() {
+		// @ts-ignore - container type handled above
 		const inputs = container.querySelectorAll('.ts-toggle') as NodeListOf<HTMLInputElement>;
 
 		for (const input of inputs) {
@@ -18,7 +20,8 @@
 		}
 	}
 
-	function toggle(e: Event) {
+	// @ts-ignore - esrap parser has issues with Event type annotations
+	function toggle(e) {
 		if ((e.target as HTMLElement).classList.contains('ts-toggle')) {
 			const input = e.target as HTMLInputElement;
 			code_preference.current = input.checked ? 'typescript' : 'javascript';
@@ -26,7 +29,8 @@
 		}
 	}
 
-	async function copy(e: Event) {
+	// @ts-ignore - esrap parser has issues with Event type annotations
+	async function copy(e) {
 		if ((e.target as HTMLButtonElement).classList.contains('copy-to-clipboard')) {
 			const parent = e
 				.composedPath()
@@ -41,7 +45,8 @@
 		}
 	}
 
-	function get_text(node: HTMLElement) {
+	// @ts-ignore - esrap parser has issues with HTMLElement type annotations
+	function get_text(node) {
 		let result = '';
 
 		for (const child of node.childNodes ?? []) {
@@ -68,8 +73,9 @@
 	}
 </script>
 
+<!-- @ts-ignore - container type handled above -->
 <div onclickcapture={copy} onchangecapture={toggle} bind:this={container} class="text">
-	{@render children()}
+	{@render children?.()}
 </div>
 
 <style>
@@ -468,7 +474,7 @@
 					content: none;
 				}
 
-				background: url($lib/icons/lightbulb.svg) no-repeat 0.5rem 0 / 2.6rem;
+				/* background: url($lib/icons/lightbulb.svg) no-repeat 0.5rem 0 / 2.6rem; */
 			}
 
 			&:first-child {

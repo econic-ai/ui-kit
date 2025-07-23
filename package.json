@@ -8,6 +8,7 @@
 		"dev": "vite dev",
 		"check": "svelte-kit sync && svelte-check",
 		"package": "svelte-kit sync && svelte-package && publint",
+		"package:watch": "svelte-kit sync && svelte-package --watch",
 		"prepublishOnly": "npm run package",
 		"lint": "prettier --check .",
 		"format": "prettier --write ."
@@ -40,7 +41,6 @@
 		"autoprefixer": "^10.4.18",
 		"esm-env": "^1.0.0",
 		"json5": "^2.2.3",
-		"postcss": "^8.4.35",
 		"sass": "^1.72.0",
 		"shiki": "^1.22.0"
 	},
@@ -55,11 +55,11 @@
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.3.2",
 		"publint": "^0.1.9",
-		"svelte": "5.14.0",
-		"@sveltejs/vite-plugin-svelte": "^3.1.2",
+		"svelte": "5.36.8",
+		"@sveltejs/vite-plugin-svelte": "^6.1.0",
 		"svelte-check": "^4.1.1",
 		"typescript": "^5.5.4",
-		"vite": "^5.4.3"
+		"vite": "^7.0.5"
 	},
 	"publishConfig": {
 		"access": "public"

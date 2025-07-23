@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
-	let { href, children }: { href: string; children?: Snippet } = $props();
+	let { href, children } = $props();
 </script>
 
 <a {href}>

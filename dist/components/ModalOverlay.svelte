@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 
-	let { onclose }: { onclose?: () => void } = $props();
+	let { onclose } = $props();
 </script>
 
 <div

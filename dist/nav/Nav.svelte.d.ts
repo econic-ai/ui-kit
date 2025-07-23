@@ -1,13 +1,9 @@
-import type { NavigationLink } from '../types';
-interface Props {
+declare const Nav: import("svelte").Component<{
     home_title?: string;
-    title: string | undefined;
-    links: NavigationLink[];
-    session?: {
-        user?: any;
-    } | null;
-    user?: any;
-}
-declare const Nav: import("svelte").Component<Props, {}, "">;
+    title: any;
+    links: any;
+    session: any;
+    user: any;
+}, {}, "">;
 type Nav = ReturnType<typeof Nav>;
 export default Nav;

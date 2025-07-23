@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
-	let { children }: { children: Snippet } = $props();
+	let { children } = $props();
 </script>
 
 <div class="hover-menu">

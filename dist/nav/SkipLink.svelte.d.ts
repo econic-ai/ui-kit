@@ -1,8 +1,6 @@
-import type { Snippet } from 'svelte';
-type $$ComponentProps = {
-    href: string;
-    children?: Snippet;
-};
-declare const SkipLink: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const SkipLink: import("svelte").Component<{
+    href: any;
+    children: any;
+}, {}, "">;
 type SkipLink = ReturnType<typeof SkipLink>;
 export default SkipLink;

@@ -1,12 +1,6 @@
 <script lang="ts">
-	import type { NavigationLink } from '../types';
-
-	interface Props {
-		links: NavigationLink[];
-	}
-
 	const currentYear = new Date().getFullYear();
-	let { links }: Props = $props();
+	let { links } = $props();
 
 	// Create a combined array that includes the legal section
 	const footerLinks = $derived([
@@ -221,7 +215,7 @@
 		align-items: center;
 		justify-content: center;		
 	}
-
+/* 
 	.social-icons a {
 		color: var(--sk-fg-3);
 		font-size: 24px;
@@ -237,7 +231,7 @@
 	.social-icons a:hover {
 		color: var(--sk-fg-2);
 		opacity: 1;
-	}
+	} */
 
 	.copyright {
 		color: var(--sk-fg-3);
@@ -245,7 +239,7 @@
 		opacity: 0.8;
 	}
 
-	.footer-columns h3 {
+	/* .footer-columns h3 {
 		color: #d9d9d9;
 		font-family: Inter, sans-serif;
 		font-size: 0.5rem;
@@ -263,7 +257,7 @@
 		line-height: normal;
 		text-transform: capitalize;
  
-	}
+	} */
 
 	@media (max-width: 900px) {
 		.footer-grid {

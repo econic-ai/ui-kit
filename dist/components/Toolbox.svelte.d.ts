@@ -1,7 +1,5 @@
-import type { Snippet } from 'svelte';
-type $$ComponentProps = {
-    children: Snippet;
-};
-declare const Toolbox: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Toolbox: import("svelte").Component<{
+    children: any;
+}, {}, "">;
 type Toolbox = ReturnType<typeof Toolbox>;
 export default Toolbox;

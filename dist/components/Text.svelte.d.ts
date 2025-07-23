@@ -1,7 +1,5 @@
-import type { Snippet } from 'svelte';
-type $$ComponentProps = {
-    children: Snippet;
-};
-declare const Text: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Text: import("svelte").Component<{
+    children: any;
+}, {}, "">;
 type Text = ReturnType<typeof Text>;
 export default Text;

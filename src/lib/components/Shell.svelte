@@ -9,22 +9,11 @@ The main shell of the application. It provides a slot for the top navigation, th
 	import PreloadingIndicator from '../nav/PreloadingIndicator.svelte';
 	import SkipLink from '../nav/SkipLink.svelte';
 	import Icons from './Icons.svelte';
-	import type { Snippet } from 'svelte';
 	import ModalOverlay from './ModalOverlay.svelte';
 
-	let {
-		nav_visible = true,
-		top_nav,
-		children,
-		banner,
-		footer
-	}: {
-		nav_visible?: boolean;
-		top_nav?: Snippet;
-		children?: Snippet;
-		banner?: Snippet;
-		footer?: Snippet;
-	} = $props();
+	let { nav_visible = true, top_nav, children, banner, footer } = $props();
+
+
 </script>
 
 <Icons />

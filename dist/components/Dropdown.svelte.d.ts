@@ -1,9 +1,7 @@
-import type { Snippet } from 'svelte';
-type $$ComponentProps = {
-    children: Snippet;
-    dropdown: Snippet;
-    align?: 'left' | 'right';
-};
-declare const Dropdown: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const Dropdown: import("svelte").Component<{
+    children: any;
+    dropdown: any;
+    align?: string;
+}, {}, "">;
 type Dropdown = ReturnType<typeof Dropdown>;
 export default Dropdown;

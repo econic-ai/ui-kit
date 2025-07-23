@@ -1,7 +1,5 @@
-import type { Snippet } from 'svelte';
-type $$ComponentProps = {
-    children: Snippet;
-};
-declare const HoverMenu: import("svelte").Component<$$ComponentProps, {}, "">;
+declare const HoverMenu: import("svelte").Component<{
+    children: any;
+}, {}, "">;
 type HoverMenu = ReturnType<typeof HoverMenu>;
 export default HoverMenu;

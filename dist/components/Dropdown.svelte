@@ -5,7 +5,7 @@
 		children,
 		dropdown,
 		align = 'left'
-	}: { children: Snippet; dropdown: Snippet; align?: 'left' | 'right' } = $props();
+	} = $props();
 </script>
 
 <div class="dropdown">

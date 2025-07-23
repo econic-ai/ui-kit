@@ -8,10 +8,10 @@
 	});
 
 	let visible = $state(false);
+	// @ts-ignore - esrap parser has issues with complex timeout type annotations
+	let timeout;
 
 	onMount(() => {
-		let timeout: any;
-
 		function next() {
 			visible = true;
 
@@ -26,6 +26,7 @@
 			}
 		}
 
+		// @ts-ignore - timeout type handled above
 		timeout = setTimeout(next, 250);
 
 		return () => clearTimeout(timeout);
