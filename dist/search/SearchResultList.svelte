@@ -85,7 +85,9 @@
 			padding: calc(0.5 * var(--padding)) var(--padding);
 			font: var(--sk-font-ui-medium);
 			z-index: 2;
-			user-select: none;
+			-webkit-user-select: none;
+			   -moz-user-select: none;
+			        user-select: none;
 
 			&:focus-visible {
 				outline-offset: -3px;

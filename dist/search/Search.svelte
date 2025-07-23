@@ -62,7 +62,8 @@
 		border: none;
 		font-family: inherit;
 		font-size: 1em;
-		appearance: none;
+		-moz-appearance: none;
+		     appearance: none;
 		-webkit-appearance: none;
 		width: 100%;
 		height: 3.4rem;
@@ -74,6 +75,12 @@
 
 	input:focus + .shortcut {
 		display: none;
+	}
+
+	input::-moz-placeholder {
+		text-transform: lowercase;
+		color: var(--sk-fg-4);
+		opacity: 0;
 	}
 
 	input::placeholder {
@@ -103,6 +110,10 @@
 	@media (min-width: 960px) {
 		.search-container {
 			width: 19rem;
+		}
+
+		input::-moz-placeholder {
+			opacity: 1;
 		}
 
 		input::placeholder {

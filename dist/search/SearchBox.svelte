@@ -340,6 +340,11 @@ It appears when the user clicks on the `Search` component or presses the corresp
 			border-bottom: 1px solid var(--sk-border);
 			background: inherit;
 
+			&::-moz-placeholder {
+				color: var(--sk-fg-4);
+				opacity: 0.5;
+			}
+
 			&::placeholder {
 				color: var(--sk-fg-4);
 				opacity: 0.5;

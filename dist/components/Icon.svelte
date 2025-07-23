@@ -32,7 +32,6 @@
 		vertical-align: middle;
 		-o-object-fit: contain;
 		object-fit: contain;
-		-webkit-transform-origin: center center;
 		transform-origin: center center;
 		stroke: currentColor;
 		stroke-width: 2;

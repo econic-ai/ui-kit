@@ -15,7 +15,8 @@
 		top: -2px;
 		border-radius: 0.5em;
 		-webkit-appearance: none;
-		appearance: none;
+		-moz-appearance: none;
+		     appearance: none;
 		outline: none;
 		border: transparent;
 		margin: 0 0.6em 0 0;

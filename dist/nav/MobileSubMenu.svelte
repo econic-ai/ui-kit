@@ -97,6 +97,7 @@
 	}
 
 	.nav-inner {
+		min-height: -moz-min-content;
 		min-height: min-content;
 	}
 
@@ -182,7 +183,9 @@
 		border-bottom: none;
 		padding: 0.2rem;
 		color: var(--sk-fg-2);
-		user-select: none;
+		-webkit-user-select: none;
+		   -moz-user-select: none;
+		        user-select: none;
 		text-wrap: balance;
 
 		&[aria-current='page'] {

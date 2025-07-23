@@ -258,17 +258,20 @@
 		/* Dark mode backdrop effects */
 		:root.dark &.default {
 			background: rgba(17, 17, 17, 0.8);
-			backdrop-filter: blur(15px);
+			-webkit-backdrop-filter: blur(15px);
+			        backdrop-filter: blur(15px);
 		}
 
 		:root.dark &.mobile-open {
 			background: rgba(17, 17, 17, 0.6);
-			backdrop-filter: blur(15px);
+			-webkit-backdrop-filter: blur(15px);
+			        backdrop-filter: blur(15px);
 		}
 
 		:root.dark &.mega-menu-active {
 			background: rgba(17, 17, 17, 0.1);
-			backdrop-filter: blur(15px);
+			-webkit-backdrop-filter: blur(15px);
+			        backdrop-filter: blur(15px);
 		}
 
 		/* Bottom border for desktop */
@@ -313,7 +316,9 @@
 		padding: 0;
 		background: transparent; /* Now transparent - backdrop handles background */
 		font-family: var(--sk-font-family-body);
-		user-select: none;
+		-webkit-user-select: none;
+		   -moz-user-select: none;
+		        user-select: none;
 		isolation: isolate;
 		font-family: var(--sk-font-family-ui);
 	}
@@ -585,9 +590,12 @@
 	}
 
 	.mega-menu-grid {
-		columns: auto;
-		column-width: 250px;
-		column-gap: 0rem;
+		-moz-columns: auto;
+		     columns: auto;
+		-moz-column-width: 250px;
+		     column-width: 250px;
+		-moz-column-gap: 0rem;
+		     column-gap: 0rem;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 0 2rem;
@@ -605,7 +613,8 @@
 		height: 4vw;
 		max-width: 80px;
 		max-height: 80px;
-		object-fit: contain;
+		-o-object-fit: contain;
+		   object-fit: contain;
 		margin-bottom: 2rem;
 	}
 
@@ -614,7 +623,8 @@
 		flex-direction: column;
 		width: 100%;
 		align-self: start;
-		break-inside: avoid;
+		-moz-column-break-inside: avoid;
+		     break-inside: avoid;
 		margin-bottom: 2rem;
 	}
 
@@ -627,7 +637,9 @@
 	}
 
 	.mega-column a {
+		transition: color 0.3s ease, -webkit-text-decoration 0.3s ease;
 		transition: color 0.3s ease, text-decoration 0.3s ease;
+		transition: color 0.3s ease, text-decoration 0.3s ease, -webkit-text-decoration 0.3s ease;
 	}
 
 	.mega-column a:hover {

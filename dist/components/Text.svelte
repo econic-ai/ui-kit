@@ -198,7 +198,9 @@
 				}
 
 				.ts-toggle {
-					appearance: none;
+					-webkit-appearance: none;
+					   -moz-appearance: none;
+					        appearance: none;
 					display: flex;
 					align-items: center;
 					height: calc(var(--height) - 1rem);
@@ -570,7 +572,9 @@
 				height: 3rem;
 				color: var(--sk-fg-3);
 				font: var(--sk-font-body-small);
-				user-select: none;
+				-webkit-user-select: none;
+				   -moz-user-select: none;
+				        user-select: none;
 
 				&::-webkit-details-marker {
 					display: none;

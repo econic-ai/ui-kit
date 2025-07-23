@@ -6,6 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"package:watch": "svelte-kit sync && svelte-package --watch",
@@ -121,16 +122,14 @@
 			"types": "./dist/server/content/index.d.ts",
 			"default": "./dist/server/content/index.js"
 		},
-		"./styles/base.css": "./dist/styles/base.css",
-		"./styles/code.css": "./dist/styles/code.css",
-		"./styles/fonts.css": "./dist/styles/fonts.css",
-		"./styles/text.css": "./dist/styles/text.css",
-		"./styles/tokens.css": "./dist/styles/tokens.css",
-		"./styles/_css_variables.sass": "./dist/styles/_css_variables.sass",
-		"./styles/index.sass": "./dist/styles/index.sass",
-		"./styles/design-system_variables.sass": "./dist/styles/design-system_variables.sass"
+		"./styles/*.sass": "./dist/styles/*.sass",
+		"./styles/*.scss": "./dist/styles/*.scss",
+		"./styles/*.css": "./dist/styles/*.css"
 	},
 	"files": [
-		"dist"
-	]
+		"dist",
+		"!dist/**/*.test.*",
+		"!dist/**/*.spec.*"
+	],
+	"svelte": "./dist/index.js"
 }

@@ -99,7 +99,9 @@
 		padding: 0.2rem;
 		padding-left: 2rem;
 		color: inherit;
-		user-select: none;
+		-webkit-user-select: none;
+		   -moz-user-select: none;
+		        user-select: none;
 		text-wrap: balance;
 	}
 
@@ -162,7 +164,8 @@
 
 	@media (min-width: 832px) {
 		.sidebar {
-			columns: 1;
+			-moz-columns: 1;
+			     columns: 1;
 			padding-left: 3.2rem;
 			padding-right: 2rem;
 			padding-top: var(--sk-page-padding-top);
