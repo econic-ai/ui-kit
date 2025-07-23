@@ -1,5 +1,5 @@
 import { init, search, lookup } from './search';
-addEventListener('message', async (event) => {
+export default addEventListener('message', async (event) => {
     const { type, payload } = event.data;
     if (type === 'init') {
         const res = await fetch(`${payload.origin}/content.json`);
