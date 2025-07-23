@@ -1,2 +1,2 @@
-declare const _default: void;
+declare const _default: null;
 export default _default;

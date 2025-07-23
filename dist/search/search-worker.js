@@ -1,5 +1,5 @@
 import { init, search, lookup } from './search';
-export default addEventListener('message', async (event) => {
+addEventListener('message', async (event) => {
     const { type, payload } = event.data;
     if (type === 'init') {
         const res = await fetch(`${payload.origin}/content.json`);
@@ -17,3 +17,5 @@ export default addEventListener('message', async (event) => {
         postMessage({ type: 'recents', payload: results });
     }
 });
+// Export default for Vite 6 compatibility
+export default null;
