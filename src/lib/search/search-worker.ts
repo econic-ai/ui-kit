@@ -25,6 +25,3 @@ addEventListener('message', async (event) => {
 		postMessage({ type: 'recents', payload: results });
 	}
 });
-
-// Export default for Vite 6 compatibility
-export default null;
