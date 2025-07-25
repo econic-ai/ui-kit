@@ -1,3 +1,0 @@
-# @econic/ui-kit
-
-This is a collection of UI components used in the econic web app...
