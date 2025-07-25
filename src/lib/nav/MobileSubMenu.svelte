@@ -45,6 +45,7 @@
 						<li>
 							{#if item.sections && item.sections.length > 0}
 								<!-- This is a section with sub-items (like Documentation or Research) -->
+								 <ul>
 								{#each item.sections as section}
 									<li class="section-group">
 										{#if section.sections && section.sections.length > 0}
@@ -73,6 +74,7 @@
 										{/if}
 									</li>
 								{/each}
+							</ul>
 							{:else if item.path}
 								<!-- Simple direct link -->
 								<a href={item.path} aria-current={item.path === currentPathname ? 'page' : undefined}>
@@ -128,10 +130,10 @@
 		color: var(--sk-fg-1);
 		margin: 0;
 
-		a {
+		/* a {
 			color: inherit;
 			text-decoration: none;
-		}
+		} */
 	}
 
 	.section-title {
@@ -155,16 +157,16 @@
 		font-size: var(--sk-font-ui-small);
 		text-transform: uppercase;
 
-		a {
-			color: var(--sk-fg-1);
+		/* a {
+		color: var(--sk-fg-1);
 			text-decoration: none;
 			font-weight: 400;
 			text-transform: none;
 			font-size: 1rem;
-		}
+		} */
 	}
 
-	h4 {
+	/* h4 {
 		display: block;
 		padding-bottom: 0.6rem;
 		font: var(--sk-font-ui-medium);
@@ -172,7 +174,7 @@
 		font-size: 0.9em;
 		color: var(--sk-fg-4);
 		font-weight: 300;
-	}
+	} */
 
 	a {
 		display: block;

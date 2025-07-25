@@ -25,3 +25,5 @@ addEventListener('message', async (event) => {
 		postMessage({ type: 'recents', payload: results });
 	}
 });
+
+export default {}; // This is required for TypeScript/Vite to treat this as a module

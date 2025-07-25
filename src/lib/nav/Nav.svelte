@@ -19,7 +19,7 @@
 	// @ts-ignore - esrap parser has issues with generic type annotations
 	let current = $state.raw();
 	// @ts-ignore - esrap parser has issues with HTMLButtonElement type annotations
-	let menu_button;
+	let menu_button: HTMLButtonElement;
 	
 	// Backdrop state management (after open is declared)
 	let backdropState = $derived.by(() => {
@@ -53,7 +53,7 @@
 	// Mega Menu Logic
 	//+++++++++++++++++++++++++++++++++++++++++++++
 
-	let hoveredMenu: string | null = null;
+	let hoveredMenu = $state.raw();
 
 	// Function to check if current URL matches the link href
 	// @ts-ignore - esrap parser has issues with function parameter type annotations
@@ -76,7 +76,7 @@
 			open = false;
 			// we only manage focus when Esc is hit
 			// otherwise, the navigation will reset focus
-			tick().then(() => menu_button.focus());
+			tick().then(() => menu_button?.focus());
 		}
 	}}
 />
@@ -379,29 +379,29 @@
 				background-color: var(--sk-fg-accent);
 			}
 
-			&[aria-current='page']::after {
+			/* &[aria-current='page']::after {
 				opacity: 1;
 				background-color: var(--sk-fg-accent);
-			}
+			} */
 
 			&:not(.secondary) {
 				padding: 1.25rem;
 			}
 
-			&.secondary {
+			/* &.secondary {
 				box-shadow: none;
 				line-height: 1;
 				padding: 2rem;
 
 				&[aria-current='page'] {
 					color: var(--sk-fg-accent);
-					/* box-shadow: inset 0 -1px 0 0 var(--sk-fg-accent); */
+					box-shadow: inset 0 -1px 0 0 var(--sk-fg-accent);
 				}
 
 				&::after {
 					background-color: transparent;
 				}
-			}
+			} */
 		}
 	}
 
@@ -600,14 +600,14 @@
 		margin-bottom: 1rem;
 	}
 
-	.section-icon-wrapper .icon {
+	/* .section-icon-wrapper .icon {
 		width: 4vw;
 		height: 4vw;
 		max-width: 80px;
 		max-height: 80px;
 		object-fit: contain;
 		margin-bottom: 2rem;
-	}
+	} */
 
 	.mega-column {
 		display: flex;
@@ -618,13 +618,13 @@
 		margin-bottom: 2rem;
 	}
 
-	.mega-column h3 {
+	/* .mega-column h3 {
 		font-family: Inter;
 		font-style: normal;
 		font-weight: 600;
 		font-size: 1.6rem;
 		line-height: 2rem;
-	}
+	} */
 
 	.mega-column a {
 		transition: color 0.3s ease, text-decoration 0.3s ease;
@@ -716,9 +716,9 @@
 		height: 64px;
 		margin-bottom: 8px;
 
-		.menu-item-icon {
+		/* .menu-item-icon {
 			font-size: 18px;
-		}
+		} */
 	}
 
 	.menu-item-icon {
@@ -727,25 +727,25 @@
 		transition: color 0.3s ease;
 	}
 
-	.menu-sub-item:hover .subIcon-box, .section-title:hover .subIcon-box {
+	.menu-sub-item:hover .subIcon-box {
 		background-color: var(--sk-bg-2);
 		/* background-color: var(--sk-fg-2) !important; */
 		transition: background-color 0.3s ease;
 	}
 
-	.menu-sub-item:hover .menu-item-icon, .section-title:hover .menu-item-icon {
+	.menu-sub-item:hover .menu-item-icon {
 		color: var(--sk-fg-2);
 
 	}
 
 	/* Selected state - inverts colors and overrides hover */
-	.menu-sub-item.selected .subIcon-box, .section-title.selected .subIcon-box {
+	.menu-sub-item.selected .subIcon-box {
 		background-color: var(--sk-fg-2) !important;
 		border-color: var(--sk-fg-1) !important;
 		font-weight: 800 !important;
 	}
 
-	.menu-sub-item.selected .menu-item-icon, .section-title.selected .menu-item-icon {
+	.menu-sub-item.selected .menu-item-icon {
 		color: var(--sk-bg-1) !important;
 	}
 

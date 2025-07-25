@@ -355,13 +355,13 @@
 			display: flex;
 			flex-direction: column;
 		}
-
+/* 
 		hr {
 			margin: 1rem 0;
 			height: 1px;
 			background: var(--sk-border);
 			border: none;
-		}
+		} */
 	}
 
 	/* New navigation styles */

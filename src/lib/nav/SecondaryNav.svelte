@@ -53,8 +53,8 @@
 
 		<!-- Auth Button -->
 		{#if isLoggedIn}
-			<a href="/ui/" class="auth-button __link" data-sveltekit-reload>
-				<span>Main Website</span>
+			<a href="/" class="auth-button __link" data-sveltekit-reload>
+				<span>Homepage</span>
 			</a>
 			<!-- Avatar profile link for future authenticated nav -->
 			<a href="/app/profile" class="avatar-link" aria-label="Profile">
@@ -74,11 +74,11 @@
 				<i class="fa-solid {theme.current === 'light' ? 'fa-moon' : 'fa-sun'}" aria-hidden="true"></i>
 			</button>
 			
-			<a href="/register" class="auth-button __link">
+			<a href="/ui/app/dev" class="auth-button __link">
 				<span>Register</span>
 			</a>
 			
-			<a href="/login" class="auth-button __link">
+			<a href="/ui/app/dev" class="auth-button __link">
 				<span>Sign in</span>
 			</a>
 			
@@ -190,10 +190,10 @@
 		overflow: hidden;
 
 		/* Future: For when we add actual images */
-		img {
+		/* img {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
-		}
+		} */
 	}
 </style> 
