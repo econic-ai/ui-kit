@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/(authed)/playground/[id]/embed/+page.svelte";
