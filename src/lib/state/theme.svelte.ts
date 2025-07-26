@@ -1,10 +1,13 @@
 import { MediaQuery } from 'svelte/reactivity';
 import { Persisted } from './Persisted.svelte';
+import { browser } from '$app/environment';
 
 class Theme {
 	#preference = new Persisted<'system' | 'light' | 'dark'>('sv:theme', 'system');
-	#query = new MediaQuery('prefers-color-scheme: dark');
-	#system = $derived<'dark' | 'light'>(this.#query.current ? 'dark' : 'light');
+	#query = browser ? new MediaQuery('prefers-color-scheme: dark') : null;
+	#system = $derived<'dark' | 'light'>(
+		browser && this.#query ? (this.#query.current ? 'dark' : 'light') : 'light'
+	);
 
 	get current() {
 		return this.#preference.current === 'system' ? this.#system : this.#preference.current;

@@ -8,7 +8,7 @@
 	import { tick } from 'svelte';
 	import type { NavigationLink } from '../types';
 	
-	let { home_title = 'Homepage', title, links, session, user } = $props();
+	let { home_title = 'Homepage', title, links, session, user, appMountPoint = '', isLoggedIn = false } = $props();
 
 	let visible = $state(true);
 
@@ -199,11 +199,11 @@
 	</div>
 
 	<div class="desktop desktop-secondary-nav">
-		<SecondaryNav {user} {session} />
+		<SecondaryNav {user} {session} appMountPoint={appMountPoint} isLoggedIn={isLoggedIn} />
 	</div>
 
 	<div class="mobile mobile-menu">
-		<SecondaryNav {user} {session} />
+		<SecondaryNav {user} {session} appMountPoint={appMountPoint} />
 		<!-- @ts-ignore - menu_button type handled above -->
 		<button
 			bind:this={menu_button}

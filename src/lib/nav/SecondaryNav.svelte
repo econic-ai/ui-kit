@@ -4,15 +4,10 @@
 	import { theme } from '../state';
 	import { page } from '$app/state';
 
-	interface Props {
-		user?: any;
-		session?: { user?: any } | null;
-	}
-
-	let { user, session }: Props = $props();
+	let { user, session, appMountPoint = '', isLoggedIn = false } = $props();
 
 	// Determine if user is logged in
-	let isLoggedIn = $derived(page.url.pathname.includes('ui'));
+	// let isLoggedIn = $derived(page.url.pathname.includes('ui'));
     // let isLoggedIn = true
 
 	function toggleTheme() {
@@ -74,11 +69,11 @@
 				<i class="fa-solid {theme.current === 'light' ? 'fa-moon' : 'fa-sun'}" aria-hidden="true"></i>
 			</button>
 			
-			<a href="/ui/app/dev" class="auth-button __link">
+			<a href="{appMountPoint}/app/dev" class="auth-button __link">
 				<span>Register</span>
 			</a>
 			
-			<a href="/ui/app/dev" class="auth-button __link">
+			<a href="{appMountPoint}/app/dev" class="auth-button __link">
 				<span>Sign in</span>
 			</a>
 			

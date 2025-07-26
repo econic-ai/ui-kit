@@ -14,7 +14,7 @@ export default defineConfig({
 		preprocessorOptions: {
 			sass: {
 				// Make SASS files findable by @use and @import
-				includePaths: ['src/lib/styles']
+				additionalData: '@use "src/lib/styles/index.sass" as *;'
 			}
 		}
 	}
