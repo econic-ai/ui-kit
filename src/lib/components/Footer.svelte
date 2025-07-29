@@ -25,24 +25,22 @@
 			<!-- <img src="../branding/econic_logo.svg" alt="Econic Logo" width="150" /> -->
 		</a>
 
-
-    <div class="footer-social-icons">
-      <a href="/" class="footer-social-icon">
-        <img src="/logos/footer/github-icon.svg" alt="GitHub" width="24" height="24" />
-      </a>
-      <a href="/" class="footer-social-icon">
-        <img src="/logos/footer/instagram-icon.svg" alt="Instagram" width="24" height="24" />
-      </a>
-      <a href="/" class="footer-social-icon">
-        <img src="/logos/footer/youtube-icon.svg" alt="YouTube" width="24" height="24" />
-      </a>
-    </div>
-
-
+		<div class="footer-social-icons">
+			<a href="https://discord.gg/YpKq92XWz2" class="footer-social-icon discord">
+				<!-- <img src="../icons/footer/discord-icon.svg" alt="Discord" width="24" height="24" /> -->
+			</a>		
+			<a href="/" class="footer-social-icon github">
+				<!-- <img src="../icons/footer/github-icon.svg" alt="GitHub" width="24" height="24" /> -->
+			</a>
+			<a href="/" class="footer-social-icon instagram">
+				<!-- <img src="../icons/footer/instagram-icon.svg" alt="Instagram" width="24" height="24" /> -->
+			</a>
+			<a href="/" class="footer-social-icon youtube">
+				<!-- <img src="../icons/footer/youtube-icon.svg" alt="YouTube" width="24" height="24" /> -->
+			</a>
+		</div>
 
 	</div>
-
-	
 
 	<footer class="footer">
 		<div class="footer-grid">
@@ -81,7 +79,7 @@
     	padding-bottom:var(--sk-space-16);
 		/* margin: auto; */
 		/* max-width: 1440px; */
-    background: url('/logos/footer/Footer-background.png') center center/cover no-repeat;
+   		background: url('../logos/footer/Footer-background.png') center center/cover no-repeat;
 
 
 		/* @media (min-width: 670px) {
@@ -133,10 +131,14 @@
 
 
 
+
 	.logo-link {
 		display: inline-block;
 		/* width: 150px; */
-		background: url(../branding/econic_logo.svg) no-repeat 0 50% / calc(100% - var(--padding-right));
+		background-image: url(../branding/econic_logo.svg);
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		background-size: contain;
 
 	}
 
@@ -206,14 +208,49 @@
 		display: flex;
 		/* gap: var(--sk-space-6); */
 		/* margin: var(--sk-space-4) 0; */
+		align-items: center;
+		justify-content: center;		
 	}
 
 	.footer-social-icon {
-		width: 42px;
-		height: 42px;
+		width: 32px;
+		height: 32px;
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;		
+		justify-content: center;
+		margin: 1rem;	
+
+		&.discord {
+			background-image: url(../icons/footer/discord-icon.svg);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			/* width: 24px; */
+			background-size: contain;
+		}
+
+		&.github {
+			background-image: url(../icons/footer/github-icon.svg);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			width: 26px;
+			background-size: contain;
+		}
+
+		&.instagram {
+			background-image: url(../icons/footer/instagram-icon.svg);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			background-size: contain;
+			width: 28px;
+		}
+
+		&.youtube {
+			background-image: url(../icons/footer/youtube-icon.svg);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+			background-size: contain;
+			width: 36px;
+		}		
 	}
 /* 
 	.social-icons a {
