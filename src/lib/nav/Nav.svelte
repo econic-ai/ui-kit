@@ -8,7 +8,7 @@
 	import { tick } from 'svelte';
 	import type { NavigationLink } from '../types';
 	
-	let { home_title = 'Homepage', title, links, session, user, appMountPoint = '', isLoggedIn = false } = $props();
+	let { home_title = 'Homepage', title, links, session, user, appMountPoint = '', isLoggedIn = false, in_app = false } = $props();
 
 	let visible = $state(true);
 
@@ -94,7 +94,7 @@
 	style:z-index={$overlay_open && (search.active || $on_this_page_open) ? 80 : null}
 	aria-label="Primary"
 >
-	<a class="home-link" href="/" title={home_title} aria-label="Svelte"></a>
+	<a class="home-link {in_app ? 'in_app' : ''}" href="/" title={home_title} aria-label="Svelte"></a>
 
 	{#if title}
 		<div class="current-section mobile">
@@ -421,9 +421,14 @@
 			auto;
 		padding: 0 var(--padding-right) 0 calc(var(--sk-page-padding-side) + 0rem);
 
-		:root.dark & {
+		/* :root.dark & {
 			background-image: url(../branding/econic_logo.svg);
-		}
+		} */
+
+
+		/* &.in_app {
+			background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+		} */
 	}
 
 	.mobile-menu {
@@ -466,13 +471,22 @@
 		.home-link {
 			margin-left: 1.5rem;
 			width: 10.2rem;
-			background: url(../branding/econic_logo.svg) no-repeat 0 50% /
-				calc(100% - var(--padding-right)) auto;
-			padding: 0 var(--padding-right) 0 calc(var(--sk-page-padding-side) + 0rem);
+			/* background: url(../branding/econic_logo.svg) no-repeat 0 50% /
+				calc(100% - var(--padding-right)) auto; */
+			background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+			width: 3.5rem;
 
+			padding: 0 var(--padding-right) 0 calc(var(--sk-page-padding-side) + 0rem);
+			/* width: 3.5rem; */
+/* 
 			:root.dark & {
 				background-image: url(../branding/econic_logo.svg);
-			}
+			} */
+
+			/* &.in_app {
+				background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+				width: 3.5rem;
+			} */
 		}
 	}
 
@@ -482,6 +496,8 @@
 			margin-left: 20px; */
 			margin: 0 12px 0 2rem;
 			width: 115px;
+			background: url(../branding/econic_logo.svg) no-repeat 0 50% /
+				calc(100% - var(--padding-right)) auto;			
 		}
 
 		nav {
