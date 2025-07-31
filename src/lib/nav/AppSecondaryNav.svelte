@@ -4,7 +4,7 @@
 	import { theme } from '../state';
 	import { page } from '$app/state';
 
-	let { user = { name: 'Jordan Rancie', email: 'jordan@datakey.ai' }, session, appMountPoint = '', isLoggedIn = false } = $props();
+	let { user, session, appMountPoint = '', webMountPoint = '', isLoggedIn = false } = $props();
 
 	// Dropdown state
 	let showDropdown = $state(false);
@@ -101,12 +101,15 @@
 			>
 				<button class="avatar-link" aria-label="Profile">
 					<div class="avatar">
-						<!-- Future: Replace with actual user image -->
-						<i class="fa-solid fa-user" aria-hidden="true"></i>
+						{#if user?.picture}
+							<img src={user.picture} alt="Profile" class="avatar-image" />
+						{:else}
+							<i class="fa-solid fa-user" aria-hidden="true"></i>
+						{/if}
 					</div>
 				</button>
 				
-				<AppNavDropDown visible={showDropdown} {user} />
+				<AppNavDropDown visible={showDropdown} {user} {appMountPoint} {webMountPoint} />
 			</div>
 	
 		{:else}
@@ -131,7 +134,7 @@
 			</button>
 
 			
-			<a href="{appMountPoint}/dev" class="auth-button nav-button inverted">
+			<a href="{appMountPoint}/login" class="auth-button nav-button inverted">
 				<span>Register | Sign in</span>
 			</a>			
 
@@ -256,18 +259,18 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background-color: var(--sk-fg-3);
+		background-color: var(--sk-bg-3);
 		color: var(--sk-fg-3);
 		font-size: 16px;
 		transition: all 0.2s ease;
 		overflow: hidden;
 		margin-left: 0.4rem;
+		border: 2px solid var(--sk-bg-4);
+	}
 
-		/* Future: For when we add actual images */
-		/* img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		} */
+	.avatar-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 </style> 

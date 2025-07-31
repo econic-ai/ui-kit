@@ -8,7 +8,7 @@
 	import { tick } from 'svelte';
 	import type { NavigationLink } from '../types';
 	
-	let { home_title = 'Homepage', title, links, session, user, appMountPoint = '', webMountPoint = '', isLoggedIn = false, in_app = false } = $props();
+	let { links, session, user, appMountPoint = '', webMountPoint = '', isLoggedIn = false } = $props();
 
 	let visible = $state(true);
 
@@ -94,13 +94,9 @@
 	style:z-index={$overlay_open && (search.active || $on_this_page_open) ? 80 : null}
 	aria-label="Primary"
 >
-	<a class="home-link {in_app ? 'in_app' : ''}" href="{webMountPoint}" title={home_title} aria-label="Svelte"></a>
+	<a class="home-link" href="{webMountPoint}" aria-label="Econic"></a>
 
-	{#if title}
-		<div class="current-section mobile">
-			{title}
-		</div>
-	{/if}
+
 	<div class="desktop">
 		<div
 			onmouseenter={() => (showMegaMenu = true)}
