@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { theme } from '../state';
 	import { search } from '../state/search.svelte';
+	import { PUBLIC_AUTH0_LOGOUT_URL } from '$env/static/public';
 	
-	let { visible = false, user = { name: 'Jordan Rancie', email: 'jordan@econic.ai' } } = $props();
+	let { user, session, visible = false, appMountPoint = '', webMountPoint = ''} = $props();
 
 	function toggleTheme() {
 		theme.current = theme.current === 'light' ? 'dark' : 'light';
@@ -29,11 +30,18 @@
 		role="menu"
 		aria-label="App navigation menu"
 	>
-		<!-- Profile Section - just name and email -->
+		<!-- Profile Section - picture, name and email -->
 		<div class="profile-section">
+			<div class="profile-avatar">
+				{#if user?.picture}
+					<img src={user.picture} alt="Profile" class="profile-picture" />
+				{:else}
+					<i class="fa-solid fa-user" aria-hidden="true"></i>
+				{/if}
+			</div>
 			<div class="profile-info">
-				<div class="profile-name">{user.name}</div>
-				<div class="profile-email">{user.email}</div>
+				<div class="profile-name">{user?.name || 'Unknown User'}</div>
+				<div class="profile-email">{user?.email || 'Unknown Email'}</div>
 			</div>
 		</div>
 
@@ -90,25 +98,49 @@
 					</div>
 				</div>
 			</button>
-			
-			<button class="menu-item" aria-label="Account Settings">
-				<span class="menu-item-text">Account Settings</span>
+
+			<a href="{appMountPoint}/dashboard" class="menu-item" aria-label="Dashboard">
+				<span class="menu-item-text">Dashboard</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-cog" aria-hidden="true"></i>
 				</div>
-			</button>
+			</a>			
+
+			<a href="{appMountPoint}/admin" class="menu-item" aria-label="Admin">
+				<span class="menu-item-text">Admin</span>
+				<div class="menu-item-icon">
+					<i class="fa-solid fa-cog" aria-hidden="true"></i>
+				</div>
+			</a>
 			
-			<a href="/" class="menu-item menu-link" aria-label="Home page">
+		</div>
+		<div class="divider"></div>
+		<div class="menu-section">
+
+			<a href="{webMountPoint}/" class="menu-item menu-link" aria-label="Home page">
 				<span class="menu-item-text">Home page</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-home" aria-hidden="true"></i>
 				</div>
 			</a>
 			
-			<a href="/docs/technology" class="menu-item menu-link" aria-label="Documentation">
+			<a href="{webMountPoint}/docs/technology" class="menu-item menu-link" aria-label="Documentation">
 				<span class="menu-item-text">Documentation</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-book" aria-hidden="true"></i>
+				</div>
+			</a>
+		</div>
+
+		<!-- Divider -->
+		<div class="divider"></div>
+
+		<!-- Logout Section -->
+		<div class="menu-section">
+			<a href="{appMountPoint}/api/auth/logout?returnTo={encodeURIComponent(PUBLIC_AUTH0_LOGOUT_URL)}" class="menu-item menu-link logout-item" aria-label="Logout">
+				<span class="menu-item-text">Logout</span>
+				<div class="menu-item-icon">
+					<i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i>
 				</div>
 			</a>
 		</div>
@@ -136,10 +168,36 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
+		gap: 1rem;
+	}
+
+	.profile-avatar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background-color: var(--sk-bg-3);
+		flex-shrink: 0;
+		overflow: hidden;
+		border: 2px solid var(--sk-bg-4);
+	}
+
+	.profile-picture {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.profile-avatar i {
+		font-size: 1.5rem;
+		color: var(--sk-fg-3);
 	}
 
 	.profile-info {
 		text-align: left;
+		flex: 1;
 	}
 
 	.profile-name {
@@ -371,5 +429,23 @@
 
 	:root:not(.dark) .toggle-slider {
 		background-color: #888;
+	}
+
+	/* Logout item styling */
+	.logout-item {
+		color: #e74c3c !important;
+	}
+
+	.logout-item:hover {
+		background-color: rgba(231, 76, 60, 0.1) !important;
+	}
+
+	.logout-item .menu-item-icon {
+		background-color: rgba(231, 76, 60, 0.1);
+		color: #e74c3c;
+	}
+
+	.logout-item:hover .menu-item-icon {
+		background-color: rgba(231, 76, 60, 0.2);
 	}
 </style> 
