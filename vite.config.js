@@ -11,11 +11,11 @@ export default defineConfig({
 	},
 	
 	css: {
-		preprocessorOptions: {
-			sass: {
-				// Make SASS files findable by @use and @import
-				additionalData: '@use "src/lib/styles/index.sass" as *;'
-			}
-		}
+		// preprocessorOptions: {
+		// 	sass: {
+		// 		// Make SASS files findable by @use and @import
+		// 		additionalData: '@use "src/lib/styles/index.sass" as *;'
+		// 	}
+		// }
 	}
 });
