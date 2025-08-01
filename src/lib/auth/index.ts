@@ -5,7 +5,6 @@ import {
     AUTH0_SCOPE
 } from '$env/static/private';
 import { 
-    PUBLIC_DOMAIN_BASE_URL,
     PUBLIC_AUTH0_CLIENT_ID, 
     PUBLIC_AUTH0_DOMAIN,
     PUBLIC_AUTH0_LOGOUT_URL,
@@ -172,7 +171,7 @@ export async function verifySessionToken(token: string): Promise<any> {
 export function generateLogoutUrl(returnTo?: string): string {
     const params = new URLSearchParams({
         client_id: PUBLIC_AUTH0_CLIENT_ID,
-        returnTo: returnTo || `${PUBLIC_DOMAIN_BASE_URL}${PUBLIC_AUTH0_LOGOUT_URL}`
+        returnTo: returnTo || PUBLIC_AUTH0_LOGOUT_URL
     });
     
     return `https://${PUBLIC_AUTH0_DOMAIN}/v2/logout?${params.toString()}`;
