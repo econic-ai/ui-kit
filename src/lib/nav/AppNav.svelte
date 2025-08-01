@@ -129,7 +129,7 @@
 
 		<div
 			class="mega-menu"
-			class:visible={showMegaMenu}
+			class:visible={false}
 			onmouseenter={() => (showMegaMenu = true)}
 			onmouseleave={() => (showMegaMenu = false)}
 			role="navigation"
