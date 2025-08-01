@@ -79,8 +79,7 @@
     	padding-bottom:var(--sk-space-16);
 		/* margin: auto; */
 		/* max-width: 1440px; */
-   		background: url('../logos/footer/Footer-background.png') center center/cover no-repeat;
-
+   		background: url('../icons/footer/Footer-background.png') center center/cover no-repeat;
 
 		/* @media (min-width: 670px) {
 			padding-bottom: var(--sk-space-16);
