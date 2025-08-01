@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { overlay_open, on_this_page_open } from '../stores';
 	import { search } from '../state/search.svelte';
-	import { Icon, ThemeToggle } from '../components';
+	import { Icon } from '../components';
 	import { page } from '$app/stores';
 	import MobileMenu from './MobileMenu.svelte';
 	import AppSecondaryNav from './AppSecondaryNav.svelte';
 	import { tick } from 'svelte';
-	import type { NavigationLink } from '../types';
 	
-	let { home_title = 'Homepage', title, links, session, user, appMountPoint = '', webMountPoint = '', isLoggedIn = false, in_app = false } = $props();
+	let { home_title = 'Homepage', title, links, user, appMountPoint = '', webMountPoint = '' } = $props();
 
 	let visible = $state(true);
 
@@ -94,7 +93,7 @@
 	style:z-index={$overlay_open && (search.active || $on_this_page_open) ? 80 : null}
 	aria-label="Primary"
 >
-	<a class="home-link {in_app ? 'in_app' : ''}" href="{webMountPoint}" title={home_title} aria-label="Svelte"></a>
+	<a class="home-link" href="{webMountPoint}" title={home_title} aria-label="Svelte"></a>
 
 	{#if title}
 		<div class="current-section mobile">
@@ -199,22 +198,22 @@
 	</div>
 
 	<div class="desktop desktop-secondary-nav">
-		<AppSecondaryNav {user} {session} appMountPoint={appMountPoint} webMountPoint={webMountPoint} {isLoggedIn} />
+		<AppSecondaryNav {user} {appMountPoint} {webMountPoint} />
 	</div>
 
 	<div class="mobile mobile-menu">
-		<AppSecondaryNav {user} {session} appMountPoint={appMountPoint} webMountPoint={webMountPoint} {isLoggedIn} />
+		<AppSecondaryNav {user} {appMountPoint} {webMountPoint} />
 		<!-- @ts-ignore - menu_button type handled above -->
 		<button
-			bind:this={menu_button}
-			aria-label="Toggle menu"
-			aria-expanded={open}
-			class="menu-toggle raised icon"
-			class:open
-			onclick={() => {
-				open = !open;
-			}}
-		>
+				bind:this={menu_button}
+				aria-label="Toggle menu"
+				aria-expanded={open}
+				class="menu-toggle raised icon"
+				class:open
+				onclick={() => {
+					open = !open;
+				}}
+			>
 			<Icon name={open ? 'close' : 'menu'} size={16} />
 		</button>
 	</div>

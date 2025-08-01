@@ -3,7 +3,7 @@
 	import { search } from '../state/search.svelte';
 	import { PUBLIC_AUTH0_LOGOUT_URL } from '$env/static/public';
 	
-	let { user, session, visible = false, appMountPoint = '', webMountPoint = ''} = $props();
+	let { user, visible = false, appMountPoint = '', webMountPoint = ''} = $props();
 
 	function toggleTheme() {
 		theme.current = theme.current === 'light' ? 'dark' : 'light';
@@ -137,7 +137,7 @@
 
 		<!-- Logout Section -->
 		<div class="menu-section">
-			<a href="{appMountPoint}/api/auth/logout?returnTo={encodeURIComponent(PUBLIC_AUTH0_LOGOUT_URL)}" class="menu-item menu-link logout-item" aria-label="Logout">
+			<a href="{appMountPoint}/api/auth/logout?returnTo={encodeURIComponent(PUBLIC_AUTH0_LOGOUT_URL)}" class="menu-item menu-link logout-item" aria-label="Logout" data-sveltekit-reload>
 				<span class="menu-item-text">Logout</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i>

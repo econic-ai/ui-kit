@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { Icon, ThemeToggle, AppNavDropDown } from '../components';
+	import { AppNavDropDown } from '../components';
 	import { search } from '../state/search.svelte';
 	import { theme } from '../state';
-	import { page } from '$app/state';
 
-	let { user, session, appMountPoint = '', webMountPoint = '', isLoggedIn = false } = $props();
+	let { user, appMountPoint = '', webMountPoint = '' } = $props();
 
 	// Dropdown state
 	let showDropdown = $state(false);
 	let dropdownTimeout: NodeJS.Timeout | null = null;
+
+	// isLoggedIn is now derived if the user is present
+	let isLoggedIn = $derived(user !== null);
 
 	// Determine if user is logged in
 	// let isLoggedIn = $derived(page.url.pathname.includes('ui'));
