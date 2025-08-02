@@ -156,7 +156,7 @@
 							<div class="mega-column {hoveredMenu === link.slug ? 'active' : ''}">
 								<!-- Section icon at the top -->
 								
-								<a class="section-title __text_md" href={'/' + link.slug} class:selected={isCurrentSection(link.slug)}>
+								<a class="section-title __text_md" href={'/' + link.slug} class:selected={isCurrentSection(link.slug)} onclick={() => (showMegaMenu = false)}>
 									<!-- <div class="section-icon-wrapper">
 										<img
 											src="/logos/logo_mg.png"
@@ -185,6 +185,7 @@
 											href={item.path || '#'}
 											class:active={hoveredMenu === link.slug}
 											class:selected={isCurrentPage(item.path || '')}
+											onclick={() => (showMegaMenu = false)}
 										>
 											<div class="subIcon-box">
 												<i
