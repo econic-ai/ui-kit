@@ -132,7 +132,7 @@
 
 		<div
 			class="mega-menu"
-			class:visible={true}
+			class:visible={showMegaMenu}
 			onmouseenter={() => (showMegaMenu = true)}
 			onmouseleave={() => (showMegaMenu = false)}
 			role="navigation"
@@ -738,7 +738,7 @@
 	}
 
 	.menu-item-icon {
-		font-size: 14px;
+		font-size: 16px;
 		color: var(--sk-fg-3);
 		transition: color 0.3s ease;
 	}
