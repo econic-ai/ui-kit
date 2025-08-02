@@ -176,7 +176,7 @@
 
 		&:hover {
 			color: var(--sk-fg-1);
-			background-color: var(--sk-bg-3);
+			background-color: var(--sk-bg-4);
 		}
 
 		&:focus {
@@ -219,7 +219,7 @@
 
 		&:hover {
 			/* color: var(--sk-bg-2); */
-			background-color: var(--sk-bg-3);
+			background-color: var(--sk-bg-4);
 			transition: all 0.3s ease;
 		}
 

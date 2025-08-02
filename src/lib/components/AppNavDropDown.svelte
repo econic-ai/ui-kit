@@ -156,7 +156,7 @@
 		background-color: var(--sk-bg-0, #1a1a1a);
 		border-radius: 12px;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-		z-index: 1000;
+		z-index: 1001;
 		border: 1px solid var(--sk-bg-4, #333);
 		overflow: hidden;
 		color: var(--sk-fg-1, #ffffff);

@@ -132,7 +132,7 @@
 
 		<div
 			class="mega-menu"
-			class:visible={showMegaMenu}
+			class:visible={true}
 			onmouseenter={() => (showMegaMenu = true)}
 			onmouseleave={() => (showMegaMenu = false)}
 			role="navigation"
@@ -257,17 +257,17 @@
 		/* Dark mode backdrop effects */
 		:root.dark &.default {
 			background: rgba(17, 17, 17, 0.8);
-			backdrop-filter: blur(15px);
+			backdrop-filter: blur(20px);
 		}
 
 		:root.dark &.mobile-open {
 			background: rgba(17, 17, 17, 0.6);
-			backdrop-filter: blur(15px);
+			backdrop-filter: blur(20px);
 		}
 
 		:root.dark &.mega-menu-active {
 			background: rgba(17, 17, 17, 0.1);
-			backdrop-filter: blur(15px);
+			backdrop-filter: blur(20px);
 		}
 
 		/* Bottom border for desktop */
@@ -573,11 +573,11 @@
 		top: var(--sk-nav-height); /* Ensure it drops just below nav */
 		left: 0;
 		width: 100vw; /* Take up full screen */
-		padding: 1rem;
+		padding: 2rem;
 		border-top: 1px solid #ccc;
 		border-bottom: 1px solid #ccc;
 		z-index: 1001;
-		padding-bottom: 3rem;
+		padding-bottom: 5rem;
 		
 		/* Background handled by backdrop element, but mega menu needs its own background */
 		background-color: rgba(255, 255, 255, 0.6); /* semi-transparent white for light mode */
@@ -643,6 +643,7 @@
 
 	.mega-column a {
 		transition: color 0.3s ease, text-decoration 0.3s ease;
+		color: var(--sk-fg-3);
 	}
 
 	.mega-column a:hover {
@@ -657,13 +658,13 @@
 	}
 
 	.menu-item-title {
-		font-weight: 400;
+		font-weight: 600;
 		font-size: 14px;
 		
 	}
 
 	.menu-item-description {
-		color: var(--sk-fg-3);
+		/* color: var(--sk-fg-3); */
 		font-family: Inter;
 		font-style: normal;
 		font-weight: 300;
@@ -774,20 +775,27 @@
 	}
 
 	.section-title {
-		font-weight: 500;
+		font-weight: 600;
 		/* font-size: 2rem; */
 		transition: color 0.3s ease;
-		padding: 2.5rem 1rem;
+		padding: 3rem 1rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.2rem;
+		gap: 0.5rem;
 		border-radius: 12px;
 		text-decoration: none;
+		color: var(--sk-fg-3)!important;
 
 		&:hover {
-			color: var(--sk-fg-accent, #0070f3)!important;
+			color: var(--sk-fg-1, #0070f3)!important;
 			/* background-color: var(--sk-bg-2); */
 			transition: all 0.3s ease;
+
+			.section-subtitle {
+				color: var(--sk-fg-1, #0070f3)!important;
+				transition: all 0.3s ease;
+
+			}
 		}
 	}
 
@@ -797,17 +805,19 @@
 		margin: 0 0 0.5rem 0;
 		font-weight: 400;
 		line-height: 1.4;
+		transition: all 0.3s ease;
+
 	}
 
 	:root.dark .mega-menu {
-		background-color: hsla(var(--sk-bg-hue), 8%, 10%, 0.85); /* darker for dark mode */
+		background-color: hsla(var(--sk-bg-hue), 5%, 7%, 0.9); /* darker for dark mode */
 		color: white;
 		border-color: #333;
 	}
 
-	:root.dark .mega-column a {
+	/* :root.dark .mega-column a {
 		color: var(--sk-fg-1);
-	}
+	} */
 
 	/* :root.dark .mega-column a:hover {
 		color: var(--sk-fg-accent, #00ffd5);
