@@ -64,6 +64,9 @@
 		"./actions": {
 			"default": "./src/lib/actions/index.ts"
 		},
+		"./assistant": {
+			"default": "./src/lib/assistant/index.ts"
+		},
 		"./auth": {
 			"default": "./src/lib/auth/index.ts"
 		},
