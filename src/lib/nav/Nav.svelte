@@ -103,6 +103,10 @@
 	<div class="desktop">
 		<div
 			onmouseenter={() => (showMegaMenu = true)}
+			onmouseleave={() => {
+				showMegaMenu = false;
+				hoveredMenu = null;
+			}}
 			role="navigation"
 			style="position: relative"
 			class="nav-links-center"
@@ -115,14 +119,21 @@
 							hoveredMenu = link.slug;
 							showMegaMenu = true;
 						}}
+						onmouseleave={() => {
+							hoveredMenu = null;
+						}}
 						onfocus={() => {
 							hoveredMenu = link.slug;
 							showMegaMenu = true;
+						}}
+						onblur={() => {
+							hoveredMenu = null;
 						}}
 						onclick={() => {
 							showMegaMenu = false;
 						}}
 						class:active={hoveredMenu === link.slug}
+						class:current={isCurrentSection(link.slug)}
 					>
 						{link.title}
 					</a>
@@ -771,6 +782,10 @@
 	} */
 
 	.links a.active {
+		color: var(--sk-fg-accent, #0070f3);
+	}
+
+	.links a.current {
 		color: var(--sk-fg-accent, #0070f3);
 	}
 
