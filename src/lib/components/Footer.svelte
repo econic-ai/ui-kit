@@ -121,7 +121,7 @@
 	.footer-grid {
 		display: flex;
 		flex-wrap: nowrap;
-		gap: 0;
+		gap: 2rem;
 		width: 100%;
 		justify-content: space-between;
 		/* max-width: var(--sk-page-content-width); */
@@ -164,7 +164,8 @@
 		min-width: 120px;
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: 1rem;
+		padding-bottom: 3rem;
 	}
 
 	.footer-section h3 {
@@ -189,7 +190,7 @@
 		font-size: var(--sk-text-base);
 		transition: color 0.2s ease;
 		opacity: 0.8;
-    gap: 24px;
+    	gap: 0.5rem;
 	}
 
 	.footer-section a:hover {
@@ -200,7 +201,7 @@
   .footer-section-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.5rem;
   }
 
 	.footer-social-icons {

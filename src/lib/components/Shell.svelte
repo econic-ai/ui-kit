@@ -55,9 +55,9 @@ The main shell of the application. It provides a slot for the top navigation, th
 
 	@media (max-width: 832px) {
 		main {
-			top: 0;
+			top: 0!important;
 			height: 100vh;
-			/* padding-bottom: var(--sk-nav-height); */
+			padding-bottom: var(--sk-nav-height);
 		}
 	}
 </style>

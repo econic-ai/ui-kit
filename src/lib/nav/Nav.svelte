@@ -162,9 +162,9 @@
 										></i>
 									</div> -->
 									{link.title}
-									<!-- {#if link.subtitle}
+									{#if link.subtitle}
 										<p class="section-subtitle">{link.subtitle}</p>
-									{/if} -->
+									{/if}
 								</a>
 								
 								<div class="menu-sub-items">
@@ -577,7 +577,7 @@
 		border-top: 1px solid #ccc;
 		border-bottom: 1px solid #ccc;
 		z-index: 1001;
-		padding-bottom: 4rem;
+		padding-bottom: 3rem;
 		
 		/* Background handled by backdrop element, but mega menu needs its own background */
 		background-color: rgba(255, 255, 255, 0.6); /* semi-transparent white for light mode */
@@ -777,17 +777,17 @@
 		font-weight: 500;
 		/* font-size: 2rem; */
 		transition: color 0.3s ease;
-		padding: 1rem;
+		padding: 2.5rem 1rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0rem;
+		gap: 0.2rem;
 		border-radius: 12px;
 		text-decoration: none;
 
 		&:hover {
-			/* color: var(--sk-fg-accent, #0070f3); */
+			color: var(--sk-fg-accent, #0070f3)!important;
 			/* background-color: var(--sk-bg-2); */
-			transition: background-color 0.3s ease;
+			transition: all 0.3s ease;
 		}
 	}
 
