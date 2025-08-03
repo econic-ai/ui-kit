@@ -25,6 +25,7 @@
 	},
 	"homepage": "https://github.com/econic-ai/ui-kit/tree/main#readme",
 	"dependencies": {
+		"@sveltejs/adapter-auto": "^6.0.1",
 		"@fontsource/inter": "^5.1.1",
 		"@shikijs/twoslash": "^1.22.0",		
 		"esm-env": "^1.0.0",
@@ -34,7 +35,6 @@
 		"shiki": "^1.22.0"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.12.1",
 		"@sveltejs/package": "^2.3.7",
 		"@types/node": "^20.12.11",
