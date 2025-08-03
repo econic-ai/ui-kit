@@ -8,7 +8,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check",
-		"package": "svelte-kit sync && svelte-package && publint",
+		"package": "svelte-kit sync && svelte-package",
 		"package:watch": "svelte-kit sync && svelte-package --watch",
 		"prepublishOnly": "npm run package",
 		"lint": "prettier --check .",
@@ -35,6 +35,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^6.0.1",
+		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.12.1",
 		"@sveltejs/package": "^2.3.7",
 		"@types/node": "^20.12.11",
