@@ -4,6 +4,19 @@
 	import { quintOut } from 'svelte/easing';
 	import Icon from '../branding/econic_logo_letter.svg?raw';
 
+	// Props
+	let { targetElementId = '', targetElement = null } = $props<{
+		targetElementId?: string;
+		targetElement?: HTMLElement | null;
+	}>();
+
+	// Create reactive derived values
+	const isOpen = $derived(assistant.isOpen);
+	const persistedPosition = $derived(assistant.position);
+	const persistedSize = $derived(assistant.size);
+	const dockConfig = $derived(assistant.dockConfig);
+	const fullscreenConfig = $derived(assistant.fullscreenConfig);
+
 	function handleButtonClick() {
 		assistant.toggle();
 	}
@@ -11,21 +24,262 @@
 	function handleClose() {
 		assistant.close();
 	}
+
+	function handlePin() {
+		// If going into docked mode, exit fullscreen first
+		if (!dockConfig.isDocked && fullscreenConfig.isFullscreen) {
+			assistant.setFullscreen(false);
+		}
+		assistant.toggleDocked();
+	}
+
+	function handleFullscreen() {
+		// If going into fullscreen mode, exit docked first
+		if (!fullscreenConfig.isFullscreen && dockConfig.isDocked) {
+			assistant.setDocked(false);
+		}
+		assistant.toggleFullscreen();
+	}
+
+	// Calculate initial position (bottom-right corner)
+	const calculateInitialPosition = () => {
+		if (typeof window !== 'undefined') {
+			// Position the box at bottom-right with 12rem (192px) margin
+			const margin = 192; // 12rem in pixels
+			return {
+				x: window.innerWidth - 500 - margin, // 500 is default width
+				y: window.innerHeight - 800 - margin // 800 is default height
+			};
+		}
+		return { x: 0, y: 0 };
+	};
+
+	// Check if we need initial position (no persisted position)
+	const needsInitialPosition = persistedPosition.x === 0 && persistedPosition.y === 0;
+	const initialPos = needsInitialPosition ? calculateInitialPosition() : persistedPosition;
+
+	// Dragging state with $state
+	let isDragging = $state(false);
+	let dragStartX = $state(0);
+	let dragStartY = $state(0);
+	// Initialize position to bottom-right corner or persisted position
+	let currentX = $state(initialPos.x);
+	let currentY = $state(initialPos.y);
+
+	// Resizing state with $state
+	let isResizing = $state(false);
+	let resizeStartX = $state(0);
+	let resizeStartY = $state(0);
+	let resizeStartWidth = $state(500);
+	let resizeStartHeight = $state(800);
+	let resizeStartPosX = $state(0);
+	let resizeStartPosY = $state(0);
+	let currentWidth = $state(persistedSize.width);
+	let currentHeight = $state(persistedSize.height);
+
+	// Divider dragging state
+	let isDraggingDivider = $state(false);
+	let dividerStartX = $state(0);
+	let dividerStartWidth = $state(25);
+
+	// Assistant box element reference
+	let assistantBox: HTMLDivElement;
+
+	// Get the target element
+	const getTargetElement = () => {
+		if (targetElement) return targetElement;
+		if (targetElementId) return document.getElementById(targetElementId);
+		return null;
+	};
+
+	// Update target element width when docked
+	$effect(() => {
+		const element = getTargetElement();
+		if (element) {
+			if (isOpen && dockConfig.isDocked) {
+				// Set the target element to take remaining width
+				element.style.width = `${100 - dockConfig.dockedWidth}vw`;
+				element.style.paddingRight = ''; // Explicitly clear any leftover padding
+				// Only apply transition when not actively dragging
+				element.style.transition = isDraggingDivider ? 'none' : 'width 0.3s ease';
+			} else {
+				// Reset target element when not docked or closed
+				element.style.width = '';
+				element.style.paddingRight = ''; // Ensure padding is cleared
+				element.style.transition = '';
+			}
+		}
+	});
+
+	// Initialize position and size when opening
+	$effect(() => {
+		if (isOpen && !isDragging && !isResizing && !dockConfig.isDocked) {
+			// If this is the first time (initial position was calculated), save it
+			if (needsInitialPosition && currentX === initialPos.x && currentY === initialPos.y) {
+				assistant.setPosition(currentX, currentY);
+			}
+			
+			// Sync with persisted values if they've changed
+			if (currentX !== persistedPosition.x || currentY !== persistedPosition.y) {
+				currentX = persistedPosition.x;
+				currentY = persistedPosition.y;
+			}
+			
+			if (currentWidth !== persistedSize.width || currentHeight !== persistedSize.height) {
+				currentWidth = persistedSize.width;
+				currentHeight = persistedSize.height;
+			}
+		}
+	});
+
+	function handleDragStart(e: MouseEvent) {
+		if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable dragging when docked or fullscreen
+		isDragging = true;
+		dragStartX = e.clientX - currentX;
+		dragStartY = e.clientY - currentY;
+		document.addEventListener('mousemove', handleDragMove);
+		document.addEventListener('mouseup', handleDragEnd);
+		e.preventDefault();
+	}
+
+	function handleDragMove(e: MouseEvent) {
+		if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+		currentX = e.clientX - dragStartX;
+		currentY = e.clientY - dragStartY;
+	}
+
+	function handleDragEnd() {
+		isDragging = false;
+		document.removeEventListener('mousemove', handleDragMove);
+		document.removeEventListener('mouseup', handleDragEnd);
+		// Persist the new position
+		assistant.setPosition(currentX, currentY);
+	}
+
+	function handleResizeStart(e: MouseEvent) {
+		if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable corner resize when docked or fullscreen
+		isResizing = true;
+		resizeStartX = e.clientX;
+		resizeStartY = e.clientY;
+		resizeStartWidth = currentWidth;
+		resizeStartHeight = currentHeight;
+		resizeStartPosX = currentX;
+		resizeStartPosY = currentY;
+		document.addEventListener('mousemove', handleResizeMove);
+		document.addEventListener('mouseup', handleResizeEnd);
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	function handleResizeMove(e: MouseEvent) {
+		if (!isResizing || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+		// Resize from top-left, so we need to invert the delta
+		const deltaX = resizeStartX - e.clientX;
+		const deltaY = resizeStartY - e.clientY;
+		
+		const newWidth = Math.max(300, resizeStartWidth + deltaX);
+		const newHeight = Math.max(400, resizeStartHeight + deltaY);
+		
+		currentWidth = newWidth;
+		currentHeight = newHeight;
+		
+		// To keep bottom-right corner fixed, we need to move the box
+		// by the same amount we're resizing
+		currentX = resizeStartPosX - deltaX;
+		currentY = resizeStartPosY - deltaY;
+	}
+
+	function handleResizeEnd() {
+		isResizing = false;
+		document.removeEventListener('mousemove', handleResizeMove);
+		document.removeEventListener('mouseup', handleResizeEnd);
+		// Persist the new size and adjusted position
+		assistant.setSize(currentWidth, currentHeight);
+		assistant.setPosition(currentX, currentY);
+	}
+
+	// Divider drag handlers
+	function handleDividerDragStart(e: MouseEvent) {
+		isDraggingDivider = true;
+		dividerStartX = e.clientX;
+		dividerStartWidth = dockConfig.dockedWidth;
+		document.addEventListener('mousemove', handleDividerDragMove);
+		document.addEventListener('mouseup', handleDividerDragEnd);
+		e.preventDefault();
+	}
+
+	function handleDividerDragMove(e: MouseEvent) {
+		if (!isDraggingDivider) return;
+		
+		// Calculate new width based on mouse movement
+		const deltaX = dividerStartX - e.clientX;
+		const deltaPercent = (deltaX / window.innerWidth) * 100;
+		const newWidth = Math.min(Math.max(15, dividerStartWidth + deltaPercent), 50);
+		
+		// Update assistant width
+		assistant.setDockedWidth(newWidth);
+	}
+
+	function handleDividerDragEnd() {
+		isDraggingDivider = false;
+		document.removeEventListener('mousemove', handleDividerDragMove);
+		document.removeEventListener('mouseup', handleDividerDragEnd);
+	}
+
+	// Calculate docked height based on target element
+	const dockedHeight = $derived(() => {
+		if (!dockConfig.isDocked) return '100vh';
+		const element = getTargetElement();
+		if (element) {
+			const rect = element.getBoundingClientRect();
+			return `${rect.height}px`;
+		}
+		return '100vh';
+	});
+
+	// Calculate fullscreen height based on target element
+	const fullscreenHeight = $derived(() => {
+		const element = getTargetElement();
+		if (element) {
+			const rect = element.getBoundingClientRect();
+			return `${rect.height}px`;
+		}
+		return '100vh';
+	});
+
+	// Reset position when closing
+	// $effect(() => {
+	// 	if (!isOpen && (persistedPosition.x !== 0 || persistedPosition.y !== 0)) {
+	// 		assistant.resetPosition();
+	// 	}
+	// });
 </script>
 
 <!-- Floating Action Button -->
-<button
-	class="floating-button"
-	onclick={handleButtonClick}
-	aria-label="Open AI Assistant"
->
-	{@html Icon}
-</button>
+{#if !isOpen}
+	<button
+		class="floating-button"
+		onclick={handleButtonClick}
+		aria-label="Open AI Assistant"
+	>
+		{@html Icon}
+	</button>
+{/if}
 
 <!-- Assistant Box -->
-{#if assistant.isOpen}
+{#if isOpen}
 	<div
+		bind:this={assistantBox}
 		class="assistant-box"
+		class:dragging={isDragging}
+		class:resizing={isResizing}
+		class:docked={dockConfig.isDocked}
+		class:fullscreen={fullscreenConfig.isFullscreen}
+		style="{fullscreenConfig.isFullscreen 
+			? `width: 100vw; height: ${fullscreenHeight()}; transform: none;` 
+			: dockConfig.isDocked 
+				? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; transform: none;` 
+				: `transform: translate(${currentX}px, ${currentY}px); width: ${currentWidth}px; height: ${currentHeight}px;`}"
 		transition:fly={{ 
 			duration: 300, 
 			y: 100, 
@@ -35,16 +289,66 @@
 		role="dialog"
 		aria-label="AI Assistant"
 	>
-		<div class="assistant-header">
-			<button
-				class="close-button"
-				onclick={handleClose}
-				aria-label="Close AI Assistant"
+		<!-- Divider for docked mode -->
+		{#if dockConfig.isDocked && !fullscreenConfig.isFullscreen}
+			<div 
+				class="divider"
+				class:dragging={isDraggingDivider}
+				onmousedown={handleDividerDragStart}
+				role="separator"
+				aria-label="Resize docked assistant"
 			>
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-				</svg>
-			</button>
+				<div class="divider-handle"></div>
+			</div>
+		{/if}
+
+		<!-- Resize Handle -->
+		{#if !dockConfig.isDocked && !fullscreenConfig.isFullscreen}
+			<div 
+				class="resize-handle"
+				onmousedown={handleResizeStart}
+				role="separator"
+				aria-label="Resize assistant window"
+			>
+				<!-- <svg width="30" height="30" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+					<path d="M0 0 L20 0 L0 20 Z" />
+				</svg> -->
+			</div>
+		{/if}
+
+		<div 
+			class="assistant-header"
+			onmousedown={fullscreenConfig.isFullscreen ? undefined : handleDragStart}
+		>
+			<div class="header-controls">
+
+				<button
+					class="icon-button maximize-button"
+					class:active={fullscreenConfig.isFullscreen}
+					onclick={handleFullscreen}
+					aria-label="{fullscreenConfig.isFullscreen ? 'Exit fullscreen' : 'Fullscreen'} assistant"
+					title="{fullscreenConfig.isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}"
+				>
+					<i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+				</button>
+				<button
+					class="icon-button pin-button"
+					class:active={dockConfig.isDocked}
+					onclick={handlePin}
+					aria-label="{dockConfig.isDocked ? 'Unpin' : 'Pin'} assistant"
+					title="{dockConfig.isDocked ? 'Unpin window' : 'Pin window'}"
+				>
+					<i class="fa-solid fa-thumbtack"></i>
+				</button>				
+				<button
+					class="icon-button minimize-button"
+					onclick={handleClose}
+					aria-label="Minimize assistant"
+					title="Minimize"
+				>
+					<i class="fa-solid fa-minus"></i>
+				</button>
+			</div>
 		</div>
 		<div class="assistant-content">
 			<!-- Content will be added in future steps -->
@@ -86,13 +390,13 @@
 
 	.assistant-box {
 		position: fixed;
-		bottom: 12rem;
-		right: 12rem;
+		/* bottom: 12rem;
+		right: 12rem; */
 		width: 500px;
-		max-width: calc(100vw - 4rem);
+		max-width: 100vw;
 		height: 800px;
-		max-height: calc(100vh - 10rem);
-		border-radius: 1rem;
+		max-height: 100vh;
+		border-radius: 3.5rem;
 		overflow: hidden;
 		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 		z-index: 9999;
@@ -109,6 +413,55 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
+	.assistant-box.dragging {
+		cursor: grabbing;
+		user-select: none;
+	}
+
+	.assistant-box.resizing {
+		user-select: none;
+	}
+
+	.assistant-box.docked {
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		width: 25vw;
+		height: 100vh;
+		border-radius: 0;
+		transform: none !important;
+		box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+		border-left: 1px solid rgba(255, 255, 255, 0.1);
+		cursor: default;
+	}
+
+	:global(.light) .assistant-box.docked {
+		box-shadow: -4px 0 12px rgba(0, 0, 0, 0.05);
+		border-left: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.assistant-box.docked .assistant-header {
+		cursor: default;
+		border-radius: 0;
+	}
+
+	.assistant-box.fullscreen {
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 100vh; /* override the height from the target element */
+		width: 100vw !important;
+		border-radius: 0;
+		transform: none !important;
+		box-shadow: none;
+		z-index: 10000; /* Highest z-index for fullscreen */
+	}
+
+	.assistant-box.fullscreen .assistant-header {
+		cursor: default;
+	}
+
 	/* Light theme styles */
 	:global(.light) .assistant-box {
 		background: linear-gradient(135deg, 
@@ -123,44 +476,184 @@
 		background: rgba(0, 0, 0, 0.3);
 	}
 
+	.resize-handle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 5rem;
+		height: 5rem;
+		cursor: nw-resize;
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-start;
+		color: rgba(255, 255, 255, 0.3);
+		z-index: 1;
+		padding: 0;
+		border-radius: 2.5rem 0 0 0;
+		overflow: hidden;
+		transition: color 0.2s ease;
+	}
+
+	.resize-handle svg {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	:global(.light) .resize-handle {
+		color: rgba(0, 0, 0, 0.3);
+	}
+
+	.resize-handle:hover {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	:global(.light) .resize-handle:hover {
+		color: rgba(0, 0, 0, 0.5);
+	}
+
 	.assistant-header {
-		padding: 1rem;
+		padding: 2rem;
 		display: flex;
 		justify-content: flex-end;
+		align-items: center;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		cursor: grab;
+		user-select: none;
+	}
+
+	.assistant-header:active {
+		cursor: grabbing;
 	}
 
 	:global(.light) .assistant-header {
 		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	}
 
-	.close-button {
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 50%;
+	.header-controls {
+		display: flex;
+		gap: 0rem;
+		align-items: center;
+	}
+
+	.icon-button {
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 0.625rem;
 		border: none;
-		background: rgba(255, 255, 255, 0.1);
-		color: rgba(255, 255, 255, 0.8);
+		background: transparent;
+		color: rgba(255, 255, 255, 0.7);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		font-size: 1.5rem;
+		position: relative;
+		outline: none;
 	}
 
-	:global(.light) .close-button {
-		background: rgba(0, 0, 0, 0.05);
+	:global(.light) .icon-button {
 		color: rgba(0, 0, 0, 0.6);
 	}
 
-	.close-button:hover {
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
+	.icon-button:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.9);
 	}
 
-	:global(.light) .close-button:hover {
+	:global(.light) .icon-button:hover {
+		background: rgba(0, 0, 0, 0.08);
+		color: rgba(0, 0, 0, 0.8);
+	}
+
+	.icon-button:active {
+		transform: scale(0.95);
+	}
+
+	.icon-button.active {
+		background: rgba(255, 255, 255, 0.15);
+		color: var(--sk-fg-accent);
+	}
+
+	:global(.light) .icon-button.active {
 		background: rgba(0, 0, 0, 0.1);
-		color: black;
+		color: var(--sk-fg-accent);
+	}
+
+	/* Rotate pin icon when docked */
+	.pin-button.active i {
+		transform: rotate(45deg);
+		transition: transform 0.2s ease;
+	}
+
+	/* Remove old styles */
+	.drag-indicator {
+		display: none;
+	}
+
+	.close-button {
+		display: none;
+	}
+
+	/* Divider styles */
+	.divider {
+		position: absolute;
+		left: -4px;
+		top: 0;
+		bottom: 0;
+		width: 8px;
+		cursor: ew-resize;
+		z-index: 10;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background 0.2s ease;
+	}
+
+	.divider:hover {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	:global(.light) .divider:hover {
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	.divider.dragging {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.light) .divider.dragging {
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	.divider-handle {
+		width: 2px;
+		height: 48px;
+		background: rgba(255, 255, 255, 0.3);
+		border-radius: 1px;
+		transition: all 0.2s ease;
+	}
+
+	:global(.light) .divider-handle {
+		background: rgba(0, 0, 0, 0.3);
+	}
+
+	.divider:hover .divider-handle,
+	.divider.dragging .divider-handle {
+		height: 64px;
+		background: rgba(255, 255, 255, 0.5);
+	}
+
+	:global(.light) .divider:hover .divider-handle,
+	:global(.light) .divider.dragging .divider-handle {
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	/* Disable body selection while dragging */
+	:global(body:has(.divider.dragging)) {
+		user-select: none;
+		cursor: ew-resize;
 	}
 
 	.assistant-content {
@@ -169,7 +662,7 @@
 		overflow-y: auto;
 	}
 
-	/* Mobile responsiveness */
+	/* Mobile responsiveness - disable drag/resize on mobile */
 	@media (max-width: 640px) {
 		.floating-button {
 			bottom: 1rem;
@@ -184,14 +677,23 @@
 		}
 
 		.assistant-box {
-			bottom: 0;
-			right: 0;
+			bottom: 0 !important;
+			right: 0 !important;
 			left: 0;
-			width: 100%;
+			width: 100% !important;
 			max-width: 100%;
-			height: 80vh;
+			height: 80vh !important;
 			max-height: 100vh;
 			border-radius: 1rem 1rem 0 0;
+			transform: none !important;
+		}
+
+		.resize-handle {
+			display: none;
+		}
+
+		.assistant-header {
+			cursor: default;
 		}
 	}
 </style> 
