@@ -37,6 +37,11 @@
     @media (min-width: $breakpoint-lg)
         padding: $space-4 0        
 
+.sk-section-none
+    position: relative
+    width: 100%
+    padding: 0
+
 .sk-container
     position: relative
     margin: 0 auto
@@ -95,6 +100,15 @@
     margin: var(--sk-space-4) 0
 
 //Elements
+.__title_xl
+    font-size: $text-7xl
+    font-weight: $font-weight-bold
+    line-height: $line-height-tight-xs
+    @media (min-width: 420px)
+        font-size: $text-9xl
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-10xl
+
 .__title_lg
     font-size: $text-5xl
     font-weight: $font-weight-bold
