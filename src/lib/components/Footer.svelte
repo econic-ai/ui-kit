@@ -16,55 +16,58 @@
 	]);
 </script>
 
-<div class="footer-container top-border">
-	<!-- <div class="sk-container"> -->
+<div class="sk-footer">
 
-	<div class="footer-logo-container">
-		<a href="/" class="logo-link">
-			<img src="/logos/footer/econic-logo.svg" alt="Econic Logo" width="160" />
-			<!-- <img src="../branding/econic_logo.svg" alt="Econic Logo" width="150" /> -->
-		</a>
+	<div class="footer-container top-border">
+		<!-- <div class="sk-container"> -->
 
-		<div class="footer-social-icons">
-			<a href="https://discord.gg/YpKq92XWz2" class="footer-social-icon discord">
-				<!-- <img src="../icons/footer/discord-icon.svg" alt="Discord" width="24" height="24" /> -->
-			</a>		
-			<a href="/" class="footer-social-icon github">
-				<!-- <img src="../icons/footer/github-icon.svg" alt="GitHub" width="24" height="24" /> -->
+		<div class="footer-logo-container">
+			<a href="/" class="logo-link">
+				<img src="/logos/footer/econic-logo.svg" alt="Econic Logo" width="160" />
+				<!-- <img src="../branding/econic_logo.svg" alt="Econic Logo" width="150" /> -->
 			</a>
-			<a href="/" class="footer-social-icon instagram">
-				<!-- <img src="../icons/footer/instagram-icon.svg" alt="Instagram" width="24" height="24" /> -->
-			</a>
-			<a href="/" class="footer-social-icon youtube">
-				<!-- <img src="../icons/footer/youtube-icon.svg" alt="YouTube" width="24" height="24" /> -->
-			</a>
-		</div>
 
-	</div>
-
-	<footer class="footer">
-		<div class="footer-grid">
-			{#each footerLinks as link}
-				{#if link.sections && link.sections.length > 0}
-					<div class="footer-section">
-						<h3>{link.title.toUpperCase()}</h3>
-						<ul class="footer-section-list">
-							{#each link.sections as section}
-								<li><a href={section.path || '#'}>{section.title}</a></li>
-							{/each}
-						</ul>
-					</div>
-				{/if}
-			{/each}
-		</div>
-		<div class="footer-bottom">
-			<div class="copyright">
-				© {currentYear} Econic. All rights reserved.
+			<div class="footer-social-icons">
+				<a href="https://discord.gg/YpKq92XWz2" class="footer-social-icon discord">
+					<!-- <img src="../icons/footer/discord-icon.svg" alt="Discord" width="24" height="24" /> -->
+				</a>		
+				<a href="/" class="footer-social-icon github">
+					<!-- <img src="../icons/footer/github-icon.svg" alt="GitHub" width="24" height="24" /> -->
+				</a>
+				<a href="/" class="footer-social-icon instagram">
+					<!-- <img src="../icons/footer/instagram-icon.svg" alt="Instagram" width="24" height="24" /> -->
+				</a>
+				<a href="/" class="footer-social-icon youtube">
+					<!-- <img src="../icons/footer/youtube-icon.svg" alt="YouTube" width="24" height="24" /> -->
+				</a>
 			</div>
-			<!-- <p>© {currentYear} Econic. All rights reserved.</p> -->
+
 		</div>
-	</footer>
-	<!-- </div> -->
+
+		<footer class="footer">
+			<div class="footer-grid">
+				{#each footerLinks as link}
+					{#if link.sections && link.sections.length > 0}
+						<div class="footer-section">
+							<h3>{link.title.toUpperCase()}</h3>
+							<ul class="footer-section-list">
+								{#each link.sections as section}
+									<li><a href={section.path || '#'}>{section.title}</a></li>
+								{/each}
+							</ul>
+						</div>
+					{/if}
+				{/each}
+			</div>
+			<div class="footer-bottom">
+				<div class="copyright">
+					© {currentYear} Econic. All rights reserved.
+				</div>
+				<!-- <p>© {currentYear} Econic. All rights reserved.</p> -->
+			</div>
+		</footer>
+		<!-- </div> -->
+	</div>
 </div>
 
 <style>

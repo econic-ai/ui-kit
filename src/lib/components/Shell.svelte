@@ -11,7 +11,7 @@ The main shell of the application. It provides a slot for the top navigation, th
 	import Icons from './Icons.svelte';
 	import ModalOverlay from './ModalOverlay.svelte';
 
-	let { nav_visible = true, top_nav, children, banner, footer } = $props();
+	let { nav_visible = true, top_nav, children, footer } = $props();
 
 
 </script>
@@ -23,21 +23,23 @@ The main shell of the application. It provides a slot for the top navigation, th
 {/if}
 
 {#if nav_visible}
-	<SkipLink href="#main" />
+	<SkipLink href="#main" >
+		Skip to main content
+	</SkipLink>
 
 	{@render top_nav?.()}
 {/if}
 
 {#if $overlay_open}
-	<ModalOverlay />
+	<ModalOverlay onclose={() => {}} />
 {/if}
 
 <main id="main" style="top:{nav_visible ? 'var(--sk-nav-height)' : '0'}">
-	{@render children?.()}
-	{@render footer?.()}
+	<div class="sk-page">
+		{@render children?.()}
+		{@render footer?.()}
+	</div>
 </main>
-
-{@render banner?.()}
 
 <style>
 	main {
