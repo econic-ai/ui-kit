@@ -12,6 +12,9 @@
 
 	// Create reactive derived values
     const isOpen = $derived(assistant.isOpen);
+    const isMinimized = $derived(assistant.minimized);
+    const mode = $derived(assistant.mode);
+    const navSelected = $derived(assistant.navSelected);
     const persistedOffsets = $derived(assistant.offsets);
     const persistedSize = $derived(assistant.size);
 	const dockConfig = $derived(assistant.dockConfig);
@@ -46,11 +49,16 @@
 
 	// Dragging state with $state
 	let isDragging = $state(false);
-	let dragStartX = $state(0);
-	let dragStartY = $state(0);
+    let dragStartX = $state(0);
+    let dragStartY = $state(0);
+    let dragBoxWidth = $state(0);
+    let dragBoxHeight = $state(0);
     // Position stored as offsets from right and bottom
     let currentRight = $state(initialOffsets.right);
     let currentBottom = $state(initialOffsets.bottom);
+
+    // UI state derived from store
+    const floatingOpen = $derived(isOpen && mode === 'floating');
 
 	// Resizing state with $state
 	let isResizing = $state(false);
@@ -95,11 +103,11 @@
 		}
 	});
 
-    function clampToViewport() {
+	function clampToViewport() {
         if (!isOpen || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
 
-		const minWidth = 300;
-		const minHeight = 400;
+		const minWidth = floatingOpen ? 300 : 0;
+		const minHeight = floatingOpen ? 400 : 0;
 
 		// 1) Compute max size permitted by current offsets (to keep top/left >= 0)
 		const maxWidthByOffsets = Math.max(0, window.innerWidth - currentRight);
@@ -109,13 +117,13 @@
 		let nextWidth = Math.min(currentWidth, maxWidthByOffsets);
 		let nextHeight = Math.min(currentHeight, maxHeightByOffsets);
 
-		// 3) Enforce minimums; if the viewport cannot accommodate min width/height at current offsets,
+		// 3) Enforce minimums (only when fully open floating); if the viewport cannot accommodate min width/height at current offsets,
 		//    reduce the offsets so the assistant still fits while anchored bottom-right
-		if (nextWidth < minWidth) {
+		if (minWidth > 0 && nextWidth < minWidth) {
 			nextWidth = Math.min(minWidth, window.innerWidth); // never exceed viewport width
 			currentRight = Math.max(0, window.innerWidth - nextWidth);
 		}
-		if (nextHeight < minHeight) {
+		if (minHeight > 0 && nextHeight < minHeight) {
 			nextHeight = Math.min(minHeight, window.innerHeight); // never exceed viewport height
 			currentBottom = Math.max(0, window.innerHeight - nextHeight);
 		}
@@ -129,9 +137,22 @@
 		currentRight = Math.min(currentRight, maxRight);
 		currentBottom = Math.min(currentBottom, maxBottom);
 		// Persist clamped values so localStorage reflects the latest
-		assistant.setSize(currentWidth, currentHeight);
+		if (floatingOpen) assistant.setSize(currentWidth, currentHeight);
 		assistant.setOffsets(currentRight, currentBottom);
     }
+
+    function handleToggleMinimize() {
+        // if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+        // Minimizing should close the assistant (enter closed state)
+        assistant.close();
+        assistant.setMinimized(false);
+		assistant.setDocked(false)
+        console.debug('[Assistant] minimize -> closed');
+    }
+
+    $effect(() => {
+        console.debug('[Assistant] state', { isOpen, isMinimized, docked: dockConfig.isDocked, fullscreen: fullscreenConfig.isFullscreen });
+    });
 
     // Initialize offsets and size when opening
     $effect(() => {
@@ -152,9 +173,18 @@
     function handleDragStart(e: MouseEvent) {
         if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable dragging when docked or fullscreen
         isDragging = true;
+        // determine the actual rendered box size for drag calculations
+        const effectiveWidth = floatingOpen
+            ? currentWidth
+            : (!isOpen ? 50 : (isMinimized ? 200 : currentWidth));
+        const effectiveHeight = floatingOpen
+            ? currentHeight
+            : (!isOpen ? 50 : (isMinimized ? 100 : currentHeight));
+        dragBoxWidth = effectiveWidth;
+        dragBoxHeight = effectiveHeight;
         // compute current left/top from right/bottom offsets
-        const currentLeft = window.innerWidth - currentRight - currentWidth;
-        const currentTop = window.innerHeight - currentBottom - currentHeight;
+        const currentLeft = window.innerWidth - currentRight - effectiveWidth;
+        const currentTop = window.innerHeight - currentBottom - effectiveHeight;
         dragStartX = e.clientX - currentLeft;
         dragStartY = e.clientY - currentTop;
         document.addEventListener('mousemove', handleDragMove);
@@ -166,8 +196,8 @@
         if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
         const newLeft = e.clientX - dragStartX;
         const newTop = e.clientY - dragStartY;
-        currentRight = Math.max(0, window.innerWidth - newLeft - currentWidth);
-        currentBottom = Math.max(0, window.innerHeight - newTop - currentHeight);
+        currentRight = Math.max(0, window.innerWidth - newLeft - dragBoxWidth);
+        currentBottom = Math.max(0, window.innerHeight - newTop - dragBoxHeight);
     }
 
     function handleDragEnd() {
@@ -260,50 +290,90 @@
 		return '100vh';
 	});
 
-	// Reset position when closing
-	// $effect(() => {
-	// 	if (!isOpen && (persistedPosition.x !== 0 || persistedPosition.y !== 0)) {
-	// 		assistant.resetPosition();
-	// 	}
-	// });
+	// UI event helpers to avoid inline multi-statement handlers
+	function handleGlobalKeydown(e: KeyboardEvent) {
+		if ((e.metaKey || e.ctrlKey) && (e.key === 'o' || e.key === 'O')) {
+			e.preventDefault();
+			assistant.openToDefault();
+			console.debug('[Assistant] openToDefault via Cmd/Ctrl+O (global)');
+		}
+	}
+
+	function handleContainerClick() {
+		if (isDragging) return;
+		if (!isOpen) {
+			assistant.open();
+			assistant.setMinimized(true);
+			console.debug('[Assistant] box click: opening to open-minimized');
+			return;
+		}
+		if (isMinimized) {
+			assistant.setMinimized(false);
+			console.debug('[Assistant] box click: restoring from minimized');
+		}
+	}
+
+	function handleMaximizeButtonClick(e: MouseEvent) {
+		e.stopPropagation();
+		handleFullscreen();
+	}
+
+	function handlePinButtonClick(e: MouseEvent) {
+		e.stopPropagation();
+		handlePin();
+	}
+
+	function handleMinimizeButtonClick(e: MouseEvent) {
+		e.stopPropagation();
+		handleToggleMinimize();
+	}
+
 </script>
 
-<svelte:window on:resize={clampToViewport} />
+<svelte:window onkeydown={handleGlobalKeydown} on:resize={clampToViewport} />
 
-<!-- Floating Action Button -->
-{#if !isOpen}
-	<button
-		class="floating-button"
-		onclick={handleButtonClick}
-		aria-label="Open AI Assistant"
-	>
-		{@html Icon}
-	</button>
-{/if}
+<!-- Single Assistant Box handles all states (closed/hover/min/open/docked/fullscreen) -->
 
 <!-- Assistant Box -->
-{#if isOpen}
-	<div
-		bind:this={assistantBox}
-		class="assistant-box"
-		class:dragging={isDragging}
-		class:resizing={isResizing}
-		class:docked={dockConfig.isDocked}
-		class:fullscreen={fullscreenConfig.isFullscreen}
-        style="{fullscreenConfig.isFullscreen 
-            ? `width: 100vw; height: ${fullscreenHeight()}; transform: none;` 
-            : dockConfig.isDocked 
-                ? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; right: 0; bottom: 0; transform: none;` 
-                : `right: ${currentRight}px; bottom: ${currentBottom}px; width: ${currentWidth}px; height: ${currentHeight}px; transform: none;`}"
-		transition:fly={{ 
-			duration: 300, 
-			y: 100, 
-			opacity: 0, 
-			easing: quintOut 
-		}}
-		role="dialog"
-		aria-label="AI Assistant"
-	>
+<div
+    bind:this={assistantBox}
+    class="assistant-box"
+    class:closed={!isOpen}
+    class:minimized={isOpen && !dockConfig.isDocked && !fullscreenConfig.isFullscreen && isMinimized}
+    class:dragging={isDragging}
+    class:resizing={isResizing}
+    class:docked={dockConfig.isDocked}
+    class:fullscreen={fullscreenConfig.isFullscreen}
+    style="{fullscreenConfig.isFullscreen 
+        ? `width: 100vw; height: ${fullscreenHeight()}; right: 0; bottom: 0; transform: none;` 
+        : dockConfig.isDocked 
+            ? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; right: 0; bottom: 0; transform: none;` 
+            : floatingOpen 
+                ? `right: ${currentRight}px; bottom: ${currentBottom}px; width: ${currentWidth}px; height: ${currentHeight}px; transform: none;`
+                : isMinimized && isOpen
+                    ? `right: ${currentRight}px; bottom: ${currentBottom}px; width: ${currentWidth}px; transform: none;`
+                    : `right: ${currentRight}px; bottom: ${currentBottom}px; transform: none;`}"
+    transition:fly={{ 
+        duration: 300, 
+        y: 100, 
+        opacity: 0, 
+        easing: quintOut 
+    }}
+    role="dialog"
+    aria-label="AI Assistant"
+    tabindex="0"
+    onkeydown={handleGlobalKeydown}
+    onmousedown={!floatingOpen ? handleDragStart : undefined}
+    onclick={handleContainerClick}
+>
+        <!-- Left Handle (drag) -->
+        <div class="handle-left" 
+            onmousedown={(e) => { e.stopPropagation(); handleDragStart(e); }} 
+            onclick={(e) => e.stopPropagation()}
+            aria-label="Drag Omnibar">
+            <i class="fa-solid fa-grip"></i>
+        </div>
+
 		<!-- Divider for docked mode -->
 		{#if dockConfig.isDocked && !fullscreenConfig.isFullscreen}
 			<div 
@@ -318,7 +388,7 @@
 		{/if}
 
 		<!-- Resize Handle -->
-		{#if !dockConfig.isDocked && !fullscreenConfig.isFullscreen}
+        {#if floatingOpen}
 			<div 
 				class="resize-handle"
 				onmousedown={handleResizeStart}
@@ -330,108 +400,253 @@
 				</svg> -->
 			</div>
 		{/if}
-
-		<div 
-			class="assistant-header"
-			onmousedown={fullscreenConfig.isFullscreen ? undefined : handleDragStart}
-		>
-			<div class="header-controls">
-
-				<button
-					class="icon-button maximize-button"
-					class:active={fullscreenConfig.isFullscreen}
-					onclick={handleFullscreen}
-					aria-label="{fullscreenConfig.isFullscreen ? 'Exit fullscreen' : 'Fullscreen'} assistant"
-					title="{fullscreenConfig.isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}"
-				>
-					<i class="fa-solid fa-up-right-and-down-left-from-center"></i>
-				</button>
-				<button
-					class="icon-button pin-button"
-					class:active={dockConfig.isDocked}
-					onclick={handlePin}
-					aria-label="{dockConfig.isDocked ? 'Unpin' : 'Pin'} assistant"
-					title="{dockConfig.isDocked ? 'Unpin window' : 'Pin window'}"
-				>
-					<i class="fa-solid fa-thumbtack"></i>
-				</button>				
-				<button
-					class="icon-button minimize-button"
-					onclick={handleClose}
-					aria-label="Minimize assistant"
-					title="Minimize"
-				>
-					<i class="fa-solid fa-minus"></i>
-				</button>
-			</div>
-		</div>
-		<div class="assistant-content">
+        <div class="assistant-content" hidden={!floatingOpen && !dockConfig.isDocked && !fullscreenConfig.isFullscreen}>
 			<!-- Content will be added in future steps -->
 		</div>
-	</div>
-{/if}
+
+                 <!-- Title Row -->
+		 <div class="bar-wrapper">
+			<div class="bar" class:open={isOpen}>
+				<div class="bar-align top">
+					<div class="title-row">
+						<span class="title">Omnibar</span>
+						<span class="shortcut-pill">⌘O</span>
+						{#if isOpen}
+							<input 
+								type="text" 
+								class="omnibar-input"
+								placeholder="Type to search..."
+								onclick={(e) => e.stopPropagation()}
+								onmousedown={(e) => e.stopPropagation()}
+							/>
+						{/if}
+					</div>
+				</div>
+
+				<!-- Bottom-right controls (absolute) -->
+				<div class="bar-align bottom"
+					class:closed={!isOpen}
+					class:hover={!isOpen}
+					>
+					<div class="controls-bottom-right">
+
+						<div class="chat-icons">
+							<button aria-label="Add"><i class="fa-light fa-plus"></i></button>
+							<button aria-label="Image"><i class="fa-light fa-camera"></i></button>
+							<button aria-label="Voice"><i class="fa-light fa-microphone-lines"></i></button>
+						</div>
+						
+						<div class="controls-divider" aria-hidden="true"></div>
+
+						<div class="nav-icons">
+							<button class:active={navSelected==='home'} onclick={() => assistant.setNavSelected('home')} aria-label="Home"><i class="fa-solid fa-house"></i></button>
+							<button class:active={navSelected==='people'} onclick={() => assistant.setNavSelected('people')} aria-label="People"><i class="fa-solid fa-user-group"></i></button>
+							<button class:active={navSelected==='search'} onclick={() => assistant.setNavSelected('search')} aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+							<button class:active={navSelected==='calls'} onclick={() => assistant.setNavSelected('calls')} aria-label="Calls"><i class="fa-solid fa-phone"></i></button>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <!-- Top-right actions (absolute) -->
+        <div class="top-right-actions">
+            <button onclick={(e) => { e.stopPropagation(); assistant.close(); assistant.setMinimized(false); }} aria-label="Close"><i class="fa-solid fa-ellipsis"></i></button>
+            <button onclick={(e) => { e.stopPropagation(); assistant.toggleFullscreen(); }} aria-label="Fullscreen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+            <button onclick={(e) => { e.stopPropagation(); assistant.toggleDocked(); }} aria-label="Dock"><i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+        </div>
+
+    </div>
 
 <style>
-	.floating-button {
-		position: fixed;
-		bottom: 4rem;
-		right: 4rem;
-		width: 8rem;
-		height: 8rem;
-		border-radius: 50%;
-		border: none;
-		background: var(--sk-bg-0);
-		color: var(--bg-1);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-		transition: all 0.2s ease;
-		z-index: 9998;
-	}
 
-	.floating-button:hover {
-		transform: scale(1.05);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 1);
-		background: var(--sk-bg-1);
-	}
+.assistant-box {
+	position: fixed;
+	/* bottom: 12rem;
+	right: 12rem; */
+	/* width: 500px; */
+	max-width: 100vw;
+	/* height: 800px; */
+	max-height: 100vh;
+	border-radius: 42px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	
+	/* Dark theme gradient - subtle dark to darker */
+	/* background: linear-gradient(135deg, 
+		rgba(0, 0, 0, 0.45) 0%, 
+		rgba(0, 0, 0, 0.95) 100%
+	); */
+	background: var(--sk-bg-2);
 
-	.floating-button :global(svg) {
-		width: 2.5rem;
-		height: 2.5rem;
-		fill: currentColor;
-	}
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	/* border: 1px solid rgba(255, 255, 255, 0.1); */
+	
+	/* Add transition for all properties */
+	transition: width 200ms ease, height 200ms ease, border-radius 200ms ease;
+}
 
-	.assistant-box {
-		position: fixed;
-		/* bottom: 12rem;
-		right: 12rem; */
-		width: 500px;
-		max-width: 100vw;
-		height: 800px;
-		max-height: 100vh;
-		border-radius: 3.5rem;
-		overflow: hidden;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-		z-index: 9999;
+.assistant-box.closed {
+    /* height: 50px; */
+    /* border-radius: 999px; */
+    transition: width 2s ease, height 2s ease;
+}
+
+/* .assistant-box.closed:hover {
+    width: 100px;
+} */
+
+.assistant-box.minimized {
+    height: 150px;
+    transition: width 1s ease, height 1s ease;
+}
+
+	.bar-align {
 		display: flex;
 		flex-direction: column;
-		
-		/* Dark theme gradient - subtle dark to darker */
-		background: linear-gradient(135deg, 
-			rgba(0, 0, 0, 0.45) 0%, 
-			rgba(0, 0, 0, 0.95) 100%
-		);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-	}
 
-	.assistant-box.dragging {
+		&.top {
+			justify-content: flex-start;
+			align-items: flex-start;
+		}
+
+		&.bottom {
+			justify-content: flex-end;
+			align-items: flex-end!important;
+			overflow: hidden;
+			transition: width 1s ease, opacity 1s ease;
+			width: 100%;
+			opacity: 1;
+
+			&.closed {
+				opacity: 0;
+				width: 0;
+			}
+			
+			.bar.open & {
+				align-items: flex-start;
+			}
+		}
+	}
+    .assistant-box.dragging {
 		cursor: grabbing;
 		user-select: none;
 	}
+    /* Omnibar content */
+	.bar-wrapper { height: 100%; overflow: hidden; max-height: 150px; }
+    .bar { 
+		justify-content: space-between; 
+		height: 100%; 
+		position: relative; 
+		display: flex; 
+		align-items: center; 
+		padding: 2rem 2rem 2rem 3rem; 
+		transition: padding-right 200ms ease;
+		
+		&.open {
+			flex-direction: column;
+			align-items: stretch;
+			justify-content: space-between;
+		}
+	}
+    .title-row { 
+		display: flex; 
+		align-items: center; 
+		gap: 0.75rem; 
+		height: 50px;
+		width: 100%;
+	}
+    .title { font-weight: 500; letter-spacing: 0.5px; opacity: 0.9; font-size: 1.8rem; flex-shrink: 0; }
+    .shortcut-pill { font-weight: 500; opacity: 1; background: var(--sk-bg-1); padding: 1.2rem 1.2rem; border-radius: 0.5rem; font-size: 1.25rem; flex-shrink: 0; }
+	
+	.omnibar-input {
+		flex: 1;
+		background: var(--sk-bg-1);
+		border: none;
+		outline: none;
+		padding: 0.75rem 1rem;
+		border-radius: 0.5rem;
+		font-size: 1.25rem;
+		color: var(--sk-fg-1);
+		min-width: 0;
+		height: 40px;
+		
+		&::placeholder {
+			color: var(--sk-fg-3);
+			opacity: 0.7;
+		}
+		
+		&:focus {
+			background: var(--sk-bg-1);
+		}
+	}
+
+    .controls-bottom-right {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 2.5rem;
+		padding-right: 0px;
+		opacity: 1;
+		transition: opacity 200ms ease, transform 200ms ease;
+		/* margin-left: -30rem; */
+	}
+    .nav-icons { display: inline-flex;}
+    .nav-icons button { 
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		background: transparent;
+		border: 0;
+		margin: 0;
+		padding: 0;
+		border-radius: 5px;
+		transition: background 200ms ease;
+
+		i {
+			font-size: 1.75rem;
+		}
+	}
+    .nav-icons button.active, .nav-icons button:hover { background: var(--sk-bg-4); }
+    .controls-divider { width: 1px; height: 22px; background: var(--sk-fg-4); opacity: 0.5; margin: 0 0.75rem; }
+    .chat-icons { display: inline-flex; }
+    .chat-icons button { 
+		display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 0; background: transparent; color: var(--sk-fg-3);
+		transition: color 200ms ease;
+
+		i {
+			font-size: 1.5rem;
+		}
+	}
+    .chat-icons button:hover { color: var(--sk-fg-1); }
+
+    /* Hover/minimized reveal */
+    /* .assistant-box.closed .bar { padding-right: 0.75rem; } */
+    /* .assistant-box.closed:hover .bar { padding-right: 12rem; } */
+    
+    /* Show bottom bar on hover when closed */
+    .assistant-box.closed:hover .bar-align.bottom {
+        opacity: 1;
+        width: 100%;
+    }
+    
+    .assistant-box.closed:hover .controls-bottom-right { 
+		opacity: 1;
+		transform: translateY(0);
+
+	}
+    .assistant-box.minimized .controls-bottom-right { opacity: 1; transform: translateY(0); }
+
+    /* Absolute adornments */
+    .handle-left { position: absolute; left: 0; top: 50%; transform: translate(-50%, -50%); background: var(--sk-bg-4); width: 25px; height: 32px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; cursor: grab; }
+    .top-right-actions { position: absolute; right: 0; top: 0; transform: translate(0%, -50%); display: inline-flex; gap: 0; border-radius: 8px; background: var(--sk-bg-4); }
+    .top-right-actions button { width: 25px; height: 25px; border: 0; display: inline-flex; align-items: center; justify-content: center; }
 
 	.assistant-box.resizing {
 		user-select: none;
@@ -673,23 +888,13 @@
 
 	.assistant-content {
 		flex: 1;
-		padding: 1.5rem;
+		/* padding: 1.5rem; */
 		overflow-y: auto;
 	}
 
 	/* Mobile responsiveness - disable drag/resize on mobile */
 	@media (max-width: 640px) {
-		.floating-button {
-			bottom: 1rem;
-			right: 1rem;
-			width: 4rem;
-			height: 4rem;
-		}
 
-		.floating-button :global(svg) {
-			width: 2rem;
-			height: 2rem;
-		}
 
 		.assistant-box {
 			bottom: 0 !important;

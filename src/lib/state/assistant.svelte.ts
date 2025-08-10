@@ -19,21 +19,30 @@ interface FullscreenConfig {
 	isFullscreen: boolean;
 }
 
+type AssistantMode = 'minimized' | 'floating' | 'docked' | 'fullscreen';
+type AssistantDefaultOpen = 'minimized' | 'floating' | 'docked' | 'fullscreen';
+
 class AssistantState {
-	#isOpen = new Persisted<'true' | 'false'>('sv:assistant-open', 'false');
+    #isOpen = new Persisted<'true' | 'false'>('sv:assistant-open', 'false');
     #position = new Persisted<string>('sv:assistant-position', JSON.stringify({ right: 192, bottom: 192 }));
-	#size = new Persisted<string>('sv:assistant-size', JSON.stringify({ width: 500, height: 800 }));
-	#dockConfig = new Persisted<string>('sv:assistant-dock', JSON.stringify({ isDocked: false, dockedWidth: 25 }));
-	#fullscreenConfig = new Persisted<string>('sv:assistant-fullscreen', JSON.stringify({ isFullscreen: false }));
+    #size = new Persisted<string>('sv:assistant-size', JSON.stringify({ width: 500, height: 800 }));
+    #dockWidth = new Persisted<string>('sv:assistant-dock', '25');
+    #navSelected = new Persisted<string>('sv:assistant-nav-selected', '');
+    #lastOpen = new Persisted<string>('sv:assistant-last-open', 'minimized');
+    #mode = new Persisted<string>('sv:assistant-mode', 'minimized');
 
 	// Make isOpen reactive with $derived
 	isOpen = $derived(this.#isOpen.current === 'true');
+    minimized = $derived((this.#mode.current as AssistantMode) === 'minimized');
 
     // Offsets and size as reactive derived values
     offsets = $derived(JSON.parse(this.#position.current) as AssistantOffsets);
 	size = $derived(JSON.parse(this.#size.current) as AssistantSize);
-	dockConfig = $derived(JSON.parse(this.#dockConfig.current) as DockConfig);
-	fullscreenConfig = $derived(JSON.parse(this.#fullscreenConfig.current) as FullscreenConfig);
+    dockConfig = $derived({ isDocked: (this.#mode.current as AssistantMode) === 'docked', dockedWidth: Number(this.#dockWidth.current) || 25 } satisfies DockConfig);
+    fullscreenConfig = $derived({ isFullscreen: (this.#mode.current as AssistantMode) === 'fullscreen' } satisfies FullscreenConfig);
+    lastOpenState = $derived(this.#lastOpen.current as AssistantDefaultOpen);
+    mode = $derived(this.#mode.current as AssistantMode);
+    navSelected = $derived(this.#navSelected.current);
 
 	toggle() {
 		this.#isOpen.current = this.#isOpen.current === 'true' ? 'false' : 'true';
@@ -41,11 +50,15 @@ class AssistantState {
 
 	open() {
 		this.#isOpen.current = 'true';
+        this.#updateLastOpenStateFromCurrent();
 	}
 
 	close() {
 		this.#isOpen.current = 'false';
 	}
+
+    toggleMinimized() { this.setMode((this.#mode.current as AssistantMode) !== 'minimized' ? 'minimized' : 'floating'); }
+    setMinimized(v: boolean) { this.setMode(v ? 'minimized' : 'floating'); }
 
     setOffsets(right: number, bottom: number) {
         this.#position.current = JSON.stringify({ right, bottom });
@@ -63,30 +76,37 @@ class AssistantState {
 		this.#size.current = JSON.stringify({ width: 500, height: 800 });
 	}
 
-	toggleDocked() {
-		const current = JSON.parse(this.#dockConfig.current) as DockConfig;
-		this.#dockConfig.current = JSON.stringify({ ...current, isDocked: !current.isDocked });
-	}
+    toggleDocked() { this.setMode((this.#mode.current as AssistantMode) !== 'docked' ? 'docked' : 'floating'); }
 
-	setDocked(isDocked: boolean) {
-		const current = JSON.parse(this.#dockConfig.current) as DockConfig;
-		this.#dockConfig.current = JSON.stringify({ ...current, isDocked });
-	}
+    setDocked(isDocked: boolean) { this.setMode(isDocked ? 'docked' : 'floating'); }
 
-	setDockedWidth(width: number) {
-		const current = JSON.parse(this.#dockConfig.current) as DockConfig;
-		this.#dockConfig.current = JSON.stringify({ ...current, dockedWidth: width });
-	}
+    setDockedWidth(width: number) { this.#dockWidth.current = String(width); }
 
-	toggleFullscreen() {
-		const current = JSON.parse(this.#fullscreenConfig.current) as FullscreenConfig;
-		this.#fullscreenConfig.current = JSON.stringify({ ...current, isFullscreen: !current.isFullscreen });
-	}
+    toggleFullscreen() { this.setMode((this.#mode.current as AssistantMode) !== 'fullscreen' ? 'fullscreen' : 'floating'); }
 
-	setFullscreen(isFullscreen: boolean) {
-		const current = JSON.parse(this.#fullscreenConfig.current) as FullscreenConfig;
-		this.#fullscreenConfig.current = JSON.stringify({ ...current, isFullscreen });
-	}
+    setFullscreen(isFullscreen: boolean) { this.setMode(isFullscreen ? 'fullscreen' : 'floating'); }
+
+    setNavSelected(key: string) { this.#navSelected.current = key; }
+
+    openToDefault() {
+        this.#isOpen.current = 'true';
+        const def = (this.#lastOpen.current as AssistantDefaultOpen) || 'minimized';
+        this.setMode(def as AssistantMode);
+        this.#lastOpen.current = def;
+    }
+
+    #updateLastOpenStateFromCurrent() {
+        const state = this.#mode.current as AssistantDefaultOpen;
+        this.#lastOpen.current = state;
+    }
+
+    setMode(next: AssistantMode) {
+        // persist canonical mode
+        this.#mode.current = next;
+
+        // legacy flags removed; derive at runtime only
+        if (this.#isOpen.current === 'true') this.#updateLastOpenStateFromCurrent();
+    }
 }
 
 export const assistant = new AssistantState(); 
