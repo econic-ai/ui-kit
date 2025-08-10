@@ -3,6 +3,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import Icon from '../branding/econic_logo_letter.svg?raw';
+	import MessageScaffolding from './MessageScaffolding.svelte';
 
 	// Props
 	let { targetElementId = '', targetElement = null } = $props<{
@@ -400,22 +401,23 @@
 				</svg> -->
 			</div>
 		{/if}
-        <div class="assistant-content" hidden={!floatingOpen && !dockConfig.isDocked && !fullscreenConfig.isFullscreen}>
-			<!-- Content will be added in future steps -->
+        <div class="assistant-content">
+			{#if isOpen && !isMinimized}
+				<MessageScaffolding />
+			{/if}
 		</div>
 
                  <!-- Title Row -->
 		 <div class="bar-wrapper">
-			<div class="bar" class:open={isOpen}>
-				<div class="bar-align top">
+			<div class="bar" class:open={isOpen} class:closed={!isOpen}>
+				<div class="bar-align top" class:open={isOpen} class:closed={!isOpen}>
 					<div class="title-row">
-						<span class="title">Omnibar</span>
-						<span class="shortcut-pill">⌘O</span>
 						{#if isOpen}
 							<input 
+								id="omnibar-input"
 								type="text" 
 								class="omnibar-input"
-								placeholder="Type to search..."
+								placeholder="Tell Econic what to do..."
 								onclick={(e) => e.stopPropagation()}
 								onmousedown={(e) => e.stopPropagation()}
 							/>
@@ -428,23 +430,29 @@
 					class:closed={!isOpen}
 					class:hover={!isOpen}
 					>
-					<div class="controls-bottom-right">
+					<div class="title-row">
+						<span class="title">Omnibar</span>
+						<span class="shortcut-pill">⌘O</span>
+					</div>					
+					<div class="controls-bottom-right-wrapper" class:hover={!isOpen}>
+						<div class="controls-bottom-right">
 
-						<div class="chat-icons">
-							<button aria-label="Add"><i class="fa-light fa-plus"></i></button>
-							<button aria-label="Image"><i class="fa-light fa-camera"></i></button>
-							<button aria-label="Voice"><i class="fa-light fa-microphone-lines"></i></button>
-						</div>
-						
-						<div class="controls-divider" aria-hidden="true"></div>
+							<div class="chat-icons">
+								<button aria-label="Add"><i class="fa-light fa-plus"></i></button>
+								<button aria-label="Image"><i class="fa-light fa-camera"></i></button>
+								<button aria-label="Voice"><i class="fa-light fa-microphone-lines"></i></button>
+							</div>
+							
+							<div class="controls-divider" aria-hidden="true"></div>
 
-						<div class="nav-icons">
-							<button class:active={navSelected==='home'} onclick={() => assistant.setNavSelected('home')} aria-label="Home"><i class="fa-solid fa-house"></i></button>
-							<button class:active={navSelected==='people'} onclick={() => assistant.setNavSelected('people')} aria-label="People"><i class="fa-solid fa-user-group"></i></button>
-							<button class:active={navSelected==='search'} onclick={() => assistant.setNavSelected('search')} aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-							<button class:active={navSelected==='calls'} onclick={() => assistant.setNavSelected('calls')} aria-label="Calls"><i class="fa-solid fa-phone"></i></button>
+							<div class="nav-icons">
+								<button class:active={navSelected==='home'} onclick={() => assistant.setNavSelected('home')} aria-label="Home"><i class="fa-solid fa-house"></i></button>
+								<button class:active={navSelected==='people'} onclick={() => assistant.setNavSelected('people')} aria-label="People"><i class="fa-solid fa-user-group"></i></button>
+								<button class:active={navSelected==='search'} onclick={() => assistant.setNavSelected('search')} aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+								<button class:active={navSelected==='calls'} onclick={() => assistant.setNavSelected('calls')} aria-label="Calls"><i class="fa-solid fa-phone"></i></button>
+							</div>
+							
 						</div>
-						
 					</div>
 				</div>
 			</div>
@@ -507,11 +515,18 @@
 
 	.bar-align {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 
 		&.top {
 			justify-content: flex-start;
 			align-items: flex-start;
+			width: calc(100% + 2rem);
+			margin-left: -1rem;
+
+			&.closed {
+				width: 0;
+				height: 0;
+			}
 		}
 
 		&.bottom {
@@ -523,23 +538,39 @@
 			opacity: 1;
 
 			&.closed {
-				opacity: 0;
-				width: 0;
+				.controls-bottom-right-wrapper {
+					opacity: 0;
+					width: 0;
+				}
 			}
 			
 			.bar.open & {
 				align-items: flex-start;
+				padding-top: 0;
 			}
 		}
 	}
+	.bar.open {
+		padding-top: 0;
+	}
+
+	.controls-bottom-right-wrapper {
+		transition: width 1s ease, opacity 1s ease;
+		width: 100%;
+		opacity: 1;
+		display: flex;
+		justify-content: flex-end;
+	}
+
     .assistant-box.dragging {
 		cursor: grabbing;
 		user-select: none;
 	}
     /* Omnibar content */
-	.bar-wrapper { height: 100%; overflow: hidden; max-height: 150px; }
+	.bar-wrapper { height: 100%; overflow: hidden; max-height: 130px; }
     .bar { 
 		justify-content: space-between; 
+		flex-direction: column;
 		height: 100%; 
 		position: relative; 
 		display: flex; 
@@ -547,11 +578,11 @@
 		padding: 2rem 2rem 2rem 3rem; 
 		transition: padding-right 200ms ease;
 		
-		&.open {
+		/* &.open {
 			flex-direction: column;
 			align-items: stretch;
 			justify-content: space-between;
-		}
+		} */
 	}
     .title-row { 
 		display: flex; 
@@ -570,13 +601,13 @@
 		outline: none;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		font-size: 1.25rem;
-		color: var(--sk-fg-1);
+		font-size: 1.5rem;
+		color: var(--sk-fg-3);
 		min-width: 0;
 		height: 40px;
 		
 		&::placeholder {
-			color: var(--sk-fg-3);
+			color: var(--sk-fg-4);
 			opacity: 0.7;
 		}
 		
@@ -636,9 +667,10 @@
         width: 100%;
     }
     
-    .assistant-box.closed:hover .controls-bottom-right { 
+    .assistant-box.closed:hover .controls-bottom-right-wrapper { 
 		opacity: 1;
 		transform: translateY(0);
+		width: 100%;
 
 	}
     .assistant-box.minimized .controls-bottom-right { opacity: 1; transform: translateY(0); }
@@ -888,8 +920,11 @@
 
 	.assistant-content {
 		flex: 1;
-		/* padding: 1.5rem; */
-		overflow-y: auto;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		border-radius: 42px;
 	}
 
 	/* Mobile responsiveness - disable drag/resize on mobile */
@@ -904,7 +939,7 @@
 			max-width: 100%;
 			height: 80vh !important;
 			max-height: 100vh;
-			border-radius: 1rem 1rem 0 0;
+
 			transform: none !important;
 		}
 
