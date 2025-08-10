@@ -7,7 +7,7 @@
 	import AppSecondaryNav from './AppSecondaryNav.svelte';
 	import { tick } from 'svelte';
 	
-	let { home_title = 'Homepage', title, links, user, appMountPoint = '', webMountPoint = '' } = $props();
+	let { home_title = '', title = '', links, user, appMountPoint = '', webMountPoint = '' } = $props();
 
 	let visible = $state(true);
 
