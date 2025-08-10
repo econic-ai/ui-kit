@@ -1,8 +1,8 @@
 import { Persisted } from './Persisted.svelte';
 
-interface AssistantPosition {
-	x: number;
-	y: number;
+interface AssistantOffsets {
+    right: number;
+    bottom: number;
 }
 
 interface AssistantSize {
@@ -21,7 +21,7 @@ interface FullscreenConfig {
 
 class AssistantState {
 	#isOpen = new Persisted<'true' | 'false'>('sv:assistant-open', 'false');
-	#position = new Persisted<string>('sv:assistant-position', JSON.stringify({ x: 0, y: 0 }));
+    #position = new Persisted<string>('sv:assistant-position', JSON.stringify({ right: 192, bottom: 192 }));
 	#size = new Persisted<string>('sv:assistant-size', JSON.stringify({ width: 500, height: 800 }));
 	#dockConfig = new Persisted<string>('sv:assistant-dock', JSON.stringify({ isDocked: false, dockedWidth: 25 }));
 	#fullscreenConfig = new Persisted<string>('sv:assistant-fullscreen', JSON.stringify({ isFullscreen: false }));
@@ -29,8 +29,8 @@ class AssistantState {
 	// Make isOpen reactive with $derived
 	isOpen = $derived(this.#isOpen.current === 'true');
 
-	// Position and size as reactive derived values
-	position = $derived(JSON.parse(this.#position.current) as AssistantPosition);
+    // Offsets and size as reactive derived values
+    offsets = $derived(JSON.parse(this.#position.current) as AssistantOffsets);
 	size = $derived(JSON.parse(this.#size.current) as AssistantSize);
 	dockConfig = $derived(JSON.parse(this.#dockConfig.current) as DockConfig);
 	fullscreenConfig = $derived(JSON.parse(this.#fullscreenConfig.current) as FullscreenConfig);
@@ -47,16 +47,16 @@ class AssistantState {
 		this.#isOpen.current = 'false';
 	}
 
-	setPosition(x: number, y: number) {
-		this.#position.current = JSON.stringify({ x, y });
-	}
+    setOffsets(right: number, bottom: number) {
+        this.#position.current = JSON.stringify({ right, bottom });
+    }
 
 	setSize(width: number, height: number) {
 		this.#size.current = JSON.stringify({ width, height });
 	}
 
-	resetPosition() {
-		this.#position.current = JSON.stringify({ x: 0, y: 0 });
+    resetOffsets() {
+        this.#position.current = JSON.stringify({ right: 192, bottom: 192 });
 	}
 
 	resetSize() {

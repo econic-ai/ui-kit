@@ -11,9 +11,9 @@
 	}>();
 
 	// Create reactive derived values
-	const isOpen = $derived(assistant.isOpen);
-	const persistedPosition = $derived(assistant.position);
-	const persistedSize = $derived(assistant.size);
+    const isOpen = $derived(assistant.isOpen);
+    const persistedOffsets = $derived(assistant.offsets);
+    const persistedSize = $derived(assistant.size);
 	const dockConfig = $derived(assistant.dockConfig);
 	const fullscreenConfig = $derived(assistant.fullscreenConfig);
 
@@ -41,30 +41,16 @@
 		assistant.toggleFullscreen();
 	}
 
-	// Calculate initial position (bottom-right corner)
-	const calculateInitialPosition = () => {
-		if (typeof window !== 'undefined') {
-			// Position the box at bottom-right with 12rem (192px) margin
-			const margin = 192; // 12rem in pixels
-			return {
-				x: window.innerWidth - 500 - margin, // 500 is default width
-				y: window.innerHeight - 800 - margin // 800 is default height
-			};
-		}
-		return { x: 0, y: 0 };
-	};
-
-	// Check if we need initial position (no persisted position)
-	const needsInitialPosition = persistedPosition.x === 0 && persistedPosition.y === 0;
-	const initialPos = needsInitialPosition ? calculateInitialPosition() : persistedPosition;
+    // Offsets relative to bottom-right corner
+    const initialOffsets = persistedOffsets;
 
 	// Dragging state with $state
 	let isDragging = $state(false);
 	let dragStartX = $state(0);
 	let dragStartY = $state(0);
-	// Initialize position to bottom-right corner or persisted position
-	let currentX = $state(initialPos.x);
-	let currentY = $state(initialPos.y);
+    // Position stored as offsets from right and bottom
+    let currentRight = $state(initialOffsets.right);
+    let currentBottom = $state(initialOffsets.bottom);
 
 	// Resizing state with $state
 	let isResizing = $state(false);
@@ -72,8 +58,6 @@
 	let resizeStartY = $state(0);
 	let resizeStartWidth = $state(500);
 	let resizeStartHeight = $state(800);
-	let resizeStartPosX = $state(0);
-	let resizeStartPosY = $state(0);
 	let currentWidth = $state(persistedSize.width);
 	let currentHeight = $state(persistedSize.height);
 
@@ -111,50 +95,66 @@
 		}
 	});
 
-	// Initialize position and size when opening
-	$effect(() => {
-		if (isOpen && !isDragging && !isResizing && !dockConfig.isDocked) {
-			// If this is the first time (initial position was calculated), save it
-			if (needsInitialPosition && currentX === initialPos.x && currentY === initialPos.y) {
-				assistant.setPosition(currentX, currentY);
-			}
-			
-			// Sync with persisted values if they've changed
-			if (currentX !== persistedPosition.x || currentY !== persistedPosition.y) {
-				currentX = persistedPosition.x;
-				currentY = persistedPosition.y;
-			}
-			
-			if (currentWidth !== persistedSize.width || currentHeight !== persistedSize.height) {
-				currentWidth = persistedSize.width;
-				currentHeight = persistedSize.height;
-			}
-		}
-	});
+    function clampToViewport() {
+        if (!isOpen || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
 
-	function handleDragStart(e: MouseEvent) {
-		if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable dragging when docked or fullscreen
-		isDragging = true;
-		dragStartX = e.clientX - currentX;
-		dragStartY = e.clientY - currentY;
-		document.addEventListener('mousemove', handleDragMove);
-		document.addEventListener('mouseup', handleDragEnd);
-		e.preventDefault();
-	}
+        // Ensure the assistant remains fully within the viewport from bottom-right anchoring
+        const maxRight = Math.max(0, window.innerWidth - currentWidth);
+        const maxBottom = Math.max(0, window.innerHeight - currentHeight);
+        currentRight = Math.min(currentRight, maxRight);
+        currentBottom = Math.min(currentBottom, maxBottom);
 
-	function handleDragMove(e: MouseEvent) {
-		if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
-		currentX = e.clientX - dragStartX;
-		currentY = e.clientY - dragStartY;
-	}
+        // If the viewport shrinks such that width/height would push top/left offscreen, clamp size
+        const allowedWidth = Math.max(300, window.innerWidth - currentRight);
+        const allowedHeight = Math.max(400, window.innerHeight - currentBottom);
+        currentWidth = Math.min(currentWidth, allowedWidth);
+        currentHeight = Math.min(currentHeight, allowedHeight);
+    }
 
-	function handleDragEnd() {
-		isDragging = false;
-		document.removeEventListener('mousemove', handleDragMove);
-		document.removeEventListener('mouseup', handleDragEnd);
-		// Persist the new position
-		assistant.setPosition(currentX, currentY);
-	}
+    // Initialize offsets and size when opening
+    $effect(() => {
+        if (isOpen && !isDragging && !isResizing && !dockConfig.isDocked) {
+            // Sync with persisted values if they've changed
+            if (currentRight !== persistedOffsets.right || currentBottom !== persistedOffsets.bottom) {
+                currentRight = persistedOffsets.right;
+                currentBottom = persistedOffsets.bottom;
+            }
+
+            if (currentWidth !== persistedSize.width || currentHeight !== persistedSize.height) {
+                currentWidth = persistedSize.width;
+                currentHeight = persistedSize.height;
+            }
+        }
+    });
+
+    function handleDragStart(e: MouseEvent) {
+        if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable dragging when docked or fullscreen
+        isDragging = true;
+        // compute current left/top from right/bottom offsets
+        const currentLeft = window.innerWidth - currentRight - currentWidth;
+        const currentTop = window.innerHeight - currentBottom - currentHeight;
+        dragStartX = e.clientX - currentLeft;
+        dragStartY = e.clientY - currentTop;
+        document.addEventListener('mousemove', handleDragMove);
+        document.addEventListener('mouseup', handleDragEnd);
+        e.preventDefault();
+    }
+
+    function handleDragMove(e: MouseEvent) {
+        if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+        const newLeft = e.clientX - dragStartX;
+        const newTop = e.clientY - dragStartY;
+        currentRight = Math.max(0, window.innerWidth - newLeft - currentWidth);
+        currentBottom = Math.max(0, window.innerHeight - newTop - currentHeight);
+    }
+
+    function handleDragEnd() {
+        isDragging = false;
+        document.removeEventListener('mousemove', handleDragMove);
+        document.removeEventListener('mouseup', handleDragEnd);
+        // Persist the new offsets
+        assistant.setOffsets(currentRight, currentBottom);
+    }
 
 	function handleResizeStart(e: MouseEvent) {
 		if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable corner resize when docked or fullscreen
@@ -163,40 +163,31 @@
 		resizeStartY = e.clientY;
 		resizeStartWidth = currentWidth;
 		resizeStartHeight = currentHeight;
-		resizeStartPosX = currentX;
-		resizeStartPosY = currentY;
 		document.addEventListener('mousemove', handleResizeMove);
 		document.addEventListener('mouseup', handleResizeEnd);
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
-	function handleResizeMove(e: MouseEvent) {
-		if (!isResizing || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
-		// Resize from top-left, so we need to invert the delta
-		const deltaX = resizeStartX - e.clientX;
-		const deltaY = resizeStartY - e.clientY;
-		
-		const newWidth = Math.max(300, resizeStartWidth + deltaX);
-		const newHeight = Math.max(400, resizeStartHeight + deltaY);
-		
-		currentWidth = newWidth;
-		currentHeight = newHeight;
-		
-		// To keep bottom-right corner fixed, we need to move the box
-		// by the same amount we're resizing
-		currentX = resizeStartPosX - deltaX;
-		currentY = resizeStartPosY - deltaY;
-	}
+    function handleResizeMove(e: MouseEvent) {
+        if (!isResizing || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+        // Resize from top-left, so we need to invert the delta to expand upward/leftward
+        const deltaX = resizeStartX - e.clientX;
+        const deltaY = resizeStartY - e.clientY;
 
-	function handleResizeEnd() {
-		isResizing = false;
-		document.removeEventListener('mousemove', handleResizeMove);
-		document.removeEventListener('mouseup', handleResizeEnd);
-		// Persist the new size and adjusted position
-		assistant.setSize(currentWidth, currentHeight);
-		assistant.setPosition(currentX, currentY);
-	}
+        currentWidth = Math.max(300, resizeStartWidth + deltaX);
+        currentHeight = Math.max(400, resizeStartHeight + deltaY);
+        // Offsets remain unchanged to keep bottom-right fixed
+    }
+
+    function handleResizeEnd() {
+        isResizing = false;
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        // Persist the new size; offsets unchanged
+        assistant.setSize(currentWidth, currentHeight);
+        assistant.setOffsets(currentRight, currentBottom);
+    }
 
 	// Divider drag handlers
 	function handleDividerDragStart(e: MouseEvent) {
@@ -275,11 +266,11 @@
 		class:resizing={isResizing}
 		class:docked={dockConfig.isDocked}
 		class:fullscreen={fullscreenConfig.isFullscreen}
-		style="{fullscreenConfig.isFullscreen 
-			? `width: 100vw; height: ${fullscreenHeight()}; transform: none;` 
-			: dockConfig.isDocked 
-				? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; transform: none;` 
-				: `transform: translate(${currentX}px, ${currentY}px); width: ${currentWidth}px; height: ${currentHeight}px;`}"
+        style="{fullscreenConfig.isFullscreen 
+            ? `width: 100vw; height: ${fullscreenHeight()}; transform: none;` 
+            : dockConfig.isDocked 
+                ? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; right: 0; bottom: 0; transform: none;` 
+                : `right: ${currentRight}px; bottom: ${currentBottom}px; width: ${currentWidth}px; height: ${currentHeight}px; transform: none;`}"
 		transition:fly={{ 
 			duration: 300, 
 			y: 100, 
