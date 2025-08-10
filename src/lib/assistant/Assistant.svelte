@@ -98,17 +98,39 @@
     function clampToViewport() {
         if (!isOpen || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
 
-        // Ensure the assistant remains fully within the viewport from bottom-right anchoring
-        const maxRight = Math.max(0, window.innerWidth - currentWidth);
-        const maxBottom = Math.max(0, window.innerHeight - currentHeight);
-        currentRight = Math.min(currentRight, maxRight);
-        currentBottom = Math.min(currentBottom, maxBottom);
+		const minWidth = 300;
+		const minHeight = 400;
 
-        // If the viewport shrinks such that width/height would push top/left offscreen, clamp size
-        const allowedWidth = Math.max(300, window.innerWidth - currentRight);
-        const allowedHeight = Math.max(400, window.innerHeight - currentBottom);
-        currentWidth = Math.min(currentWidth, allowedWidth);
-        currentHeight = Math.min(currentHeight, allowedHeight);
+		// 1) Compute max size permitted by current offsets (to keep top/left >= 0)
+		const maxWidthByOffsets = Math.max(0, window.innerWidth - currentRight);
+		const maxHeightByOffsets = Math.max(0, window.innerHeight - currentBottom);
+
+		// 2) Clamp size to fit within viewport using current offsets
+		let nextWidth = Math.min(currentWidth, maxWidthByOffsets);
+		let nextHeight = Math.min(currentHeight, maxHeightByOffsets);
+
+		// 3) Enforce minimums; if the viewport cannot accommodate min width/height at current offsets,
+		//    reduce the offsets so the assistant still fits while anchored bottom-right
+		if (nextWidth < minWidth) {
+			nextWidth = Math.min(minWidth, window.innerWidth); // never exceed viewport width
+			currentRight = Math.max(0, window.innerWidth - nextWidth);
+		}
+		if (nextHeight < minHeight) {
+			nextHeight = Math.min(minHeight, window.innerHeight); // never exceed viewport height
+			currentBottom = Math.max(0, window.innerHeight - nextHeight);
+		}
+
+		currentWidth = nextWidth;
+		currentHeight = nextHeight;
+
+		// 4) Finally, ensure offsets themselves are within bounds for the new size
+		const maxRight = Math.max(0, window.innerWidth - currentWidth);
+		const maxBottom = Math.max(0, window.innerHeight - currentHeight);
+		currentRight = Math.min(currentRight, maxRight);
+		currentBottom = Math.min(currentBottom, maxBottom);
+		// Persist clamped values so localStorage reflects the latest
+		assistant.setSize(currentWidth, currentHeight);
+		assistant.setOffsets(currentRight, currentBottom);
     }
 
     // Initialize offsets and size when opening
@@ -245,6 +267,8 @@
 	// 	}
 	// });
 </script>
+
+<svelte:window on:resize={clampToViewport} />
 
 <!-- Floating Action Button -->
 {#if !isOpen}
