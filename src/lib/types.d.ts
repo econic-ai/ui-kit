@@ -63,3 +63,14 @@ export interface BannerData {
 		sm?: string;
 	};
 }
+
+/**
+ * Common shape for root layout PageData shared across Econic web/app surfaces.
+ * Consumers can augment or extend this if needed in their own app.d.ts.
+ */
+export interface PageData {
+    nav_links: NavigationLink[];
+    user: unknown | null;
+    isLoggedIn: boolean;
+    docs: Record<string, Document>;
+}
