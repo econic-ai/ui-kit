@@ -3,6 +3,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import Icon from '../branding/econic_logo_letter.svg?raw';
+	import OmnibarIcon from '../icons/omnibar.svg?raw';
 	import MessageScaffolding from './MessageScaffolding.svelte';
 
 	// Props
@@ -45,6 +46,31 @@
 		assistant.toggleFullscreen();
 	}
 
+	function cycleViewMode() {
+		// Cycle through: closed -> minimized -> floating -> docked -> fullscreen -> floating
+		if (!isOpen) {
+			// If closed, open to minimized
+			assistant.open();
+			assistant.setMinimized(true);
+		} else if (mode === 'minimized') {
+			// If minimized, go to floating
+			assistant.setMode('floating');
+			// Ensure the assistant stays within viewport bounds
+			setTimeout(() => clampToViewport(), 50);
+		} else if (mode === 'floating') {
+			// If floating, go to docked
+			assistant.setMode('docked');
+		} else if (mode === 'docked') {
+			// If docked, go to fullscreen
+			assistant.setMode('fullscreen');
+		} else if (mode === 'fullscreen') {
+			// If fullscreen, go back to floating
+			assistant.setMode('floating');
+			// Ensure the assistant stays within viewport bounds
+			setTimeout(() => clampToViewport(), 50);
+		}
+	}
+
     // Offsets relative to bottom-right corner
     const initialOffsets = persistedOffsets;
 
@@ -77,6 +103,9 @@
 
 	// Assistant box element reference
 	let assistantBox: HTMLDivElement;
+	
+	// Track hover state
+	let isHoveringHandle = $state(false);
 
 	// Get the target element
 	const getTargetElement = () => {
@@ -195,6 +224,7 @@
 
     function handleDragMove(e: MouseEvent) {
         if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+        e.preventDefault();
         const newLeft = e.clientX - dragStartX;
         const newTop = e.clientY - dragStartY;
         currentRight = Math.max(0, window.innerWidth - newLeft - dragBoxWidth);
@@ -298,36 +328,31 @@
 			assistant.openToDefault();
 			console.debug('[Assistant] openToDefault via Cmd/Ctrl+O (global)');
 		}
+		
+		// Handle ESC key when open
+		if (e.key === 'Escape' && isOpen) {
+			e.preventDefault();
+			
+			if (mode === 'docked' || mode === 'fullscreen') {
+				// If docked or fullscreen, go back to floating
+				assistant.setMode('floating');
+				console.debug('[Assistant] ESC: transitioning to floating from', mode);
+			} else {
+				// If minimized or floating, close completely
+				assistant.close();
+				console.debug('[Assistant] ESC: closing from', mode);
+			}
+		}
 	}
 
 	function handleContainerClick() {
 		if (isDragging) return;
-		if (!isOpen) {
-			assistant.open();
-			assistant.setMinimized(true);
-			console.debug('[Assistant] box click: opening to open-minimized');
-			return;
-		}
-		if (isMinimized) {
-			assistant.setMinimized(false);
-			console.debug('[Assistant] box click: restoring from minimized');
-		}
+		// Use the same cycle view mode function
+		cycleViewMode();
+		console.debug('[Assistant] box click: cycling view mode');
 	}
 
-	function handleMaximizeButtonClick(e: MouseEvent) {
-		e.stopPropagation();
-		handleFullscreen();
-	}
 
-	function handlePinButtonClick(e: MouseEvent) {
-		e.stopPropagation();
-		handlePin();
-	}
-
-	function handleMinimizeButtonClick(e: MouseEvent) {
-		e.stopPropagation();
-		handleToggleMinimize();
-	}
 
 </script>
 
@@ -345,6 +370,7 @@
     class:resizing={isResizing}
     class:docked={dockConfig.isDocked}
     class:fullscreen={fullscreenConfig.isFullscreen}
+    class:hovering-handle={isHoveringHandle}
     style="{fullscreenConfig.isFullscreen 
         ? `width: 100vw; height: ${fullscreenHeight()}; right: 0; bottom: 0; transform: none;` 
         : dockConfig.isDocked 
@@ -371,6 +397,8 @@
         <div class="handle-left" 
             onmousedown={(e) => { e.stopPropagation(); handleDragStart(e); }} 
             onclick={(e) => e.stopPropagation()}
+            onmouseenter={() => isHoveringHandle = true}
+            onmouseleave={() => isHoveringHandle = false}
             aria-label="Drag Omnibar">
             <i class="fa-solid fa-grip"></i>
         </div>
@@ -401,11 +429,13 @@
 				</svg> -->
 			</div>
 		{/if}
+		{#if isOpen && !isMinimized}
         <div class="assistant-content">
 			{#if isOpen && !isMinimized}
 				<MessageScaffolding />
 			{/if}
-		</div>
+			</div>
+		{/if}
 
                  <!-- Title Row -->
 		 <div class="bar-wrapper">
@@ -431,8 +461,9 @@
 					class:hover={!isOpen}
 					>
 					<div class="title-row">
-						<span class="title">Omnibar</span>
-						<span class="shortcut-pill">⌘O</span>
+						<div class="omnibar-icon">
+							{@html OmnibarIcon}
+						</div>
 					</div>					
 					<div class="controls-bottom-right-wrapper" class:hover={!isOpen}>
 						<div class="controls-bottom-right">
@@ -459,11 +490,12 @@
         </div>
 
         <!-- Top-right actions (absolute) -->
-        <div class="top-right-actions">
-            <button onclick={(e) => { e.stopPropagation(); assistant.close(); assistant.setMinimized(false); }} aria-label="Close"><i class="fa-solid fa-ellipsis"></i></button>
-            <button onclick={(e) => { e.stopPropagation(); assistant.toggleFullscreen(); }} aria-label="Fullscreen"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
-            <button onclick={(e) => { e.stopPropagation(); assistant.toggleDocked(); }} aria-label="Dock"><i class="fa-solid fa-arrow-right-to-bracket"></i></button>
-        </div>
+        {#if isOpen}
+            <div class="top-right-actions">
+                <button onclick={(e) => { e.stopPropagation(); assistant.close(); assistant.setMinimized(false); }} aria-label="Close"><i class="fa-solid fa-ellipsis"></i></button>
+                <button onclick={(e) => { e.stopPropagation(); cycleViewMode(); }} aria-label="Cycle View Mode"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
+            </div>
+        {/if}
 
     </div>
 
@@ -488,14 +520,25 @@
 		rgba(0, 0, 0, 0.45) 0%, 
 		rgba(0, 0, 0, 0.95) 100%
 	); */
-	background: var(--sk-bg-2);
+	background: rgba(0, 0, 0, 0.4); /* 50% transparent black */
 
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
-	/* border: 1px solid rgba(255, 255, 255, 0.1); */
+	border: 2px solid var(--sk-fg-accent);
 	
 	/* Add transition for all properties */
 	transition: width 200ms ease, height 200ms ease, border-radius 200ms ease;
+}
+
+/* Add focus-visible outline to match design system */
+.assistant-box:focus-visible {
+	outline: 2px solid var(--sk-fg-accent);
+	outline-offset: 2px;
+}
+
+/* Remove top-right corner radius when controls are visible */
+.assistant-box:has(.top-right-actions) {
+	border-top-right-radius: 0;
 }
 
 .assistant-box.closed {
@@ -509,7 +552,7 @@
 } */
 
 .assistant-box.minimized {
-    height: 150px;
+    /* height: 150px; */
     transition: width 1s ease, height 1s ease;
 }
 
@@ -520,7 +563,7 @@
 		&.top {
 			justify-content: flex-start;
 			align-items: flex-start;
-			width: calc(100% + 2rem);
+			width: calc(100% + 1rem);
 			margin-left: -1rem;
 
 			&.closed {
@@ -531,7 +574,7 @@
 
 		&.bottom {
 			justify-content: flex-end;
-			align-items: flex-end!important;
+			align-items: center!important;
 			overflow: hidden;
 			transition: width 1s ease, opacity 1s ease;
 			width: 100%;
@@ -567,7 +610,7 @@
 		user-select: none;
 	}
     /* Omnibar content */
-	.bar-wrapper { height: 100%; overflow: hidden; max-height: 130px; }
+	.bar-wrapper { height: 100%; overflow: hidden; max-height: 120px; }
     .bar { 
 		justify-content: space-between; 
 		flex-direction: column;
@@ -575,7 +618,7 @@
 		position: relative; 
 		display: flex; 
 		align-items: center; 
-		padding: 2rem 2rem 2rem 3rem; 
+		padding: 1rem 2rem 1rem 2.5rem;
 		transition: padding-right 200ms ease;
 		
 		/* &.open {
@@ -587,22 +630,39 @@
     .title-row { 
 		display: flex; 
 		align-items: center; 
-		gap: 0.75rem; 
+		/* gap: 0.75rem;  */
 		height: 50px;
+		margin-top: 0.1rem;
 		width: 100%;
 	}
     .title { font-weight: 500; letter-spacing: 0.5px; opacity: 0.9; font-size: 1.8rem; flex-shrink: 0; }
     .shortcut-pill { font-weight: 500; opacity: 1; background: var(--sk-bg-1); padding: 1.2rem 1.2rem; border-radius: 0.5rem; font-size: 1.25rem; flex-shrink: 0; }
+    
+    .omnibar-icon {
+        width: 130px;
+        height: 40px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        
+        :global(svg) {
+            width: 100%;
+            height: 100%;
+        }
+    }
 	
 	.omnibar-input {
 		flex: 1;
-		background: var(--sk-bg-1);
+		/* background: var(--sk-bg-3); */
+		background: transparent;
+		/* backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);		 */
 		border: none;
 		outline: none;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
-		font-size: 1.5rem;
-		color: var(--sk-fg-3);
+		font-size: 1.75rem;
+		color: var(--sk-fg-1);
 		min-width: 0;
 		height: 40px;
 		
@@ -610,17 +670,13 @@
 			color: var(--sk-fg-4);
 			opacity: 0.7;
 		}
-		
-		&:focus {
-			background: var(--sk-bg-1);
-		}
 	}
 
     .controls-bottom-right {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 2.5rem;
+		padding: 0.75rem 1rem;
 		padding-right: 0px;
 		opacity: 1;
 		transition: opacity 200ms ease, transform 200ms ease;
@@ -662,12 +718,12 @@
     /* .assistant-box.closed:hover .bar { padding-right: 12rem; } */
     
     /* Show bottom bar on hover when closed */
-    .assistant-box.closed:hover .bar-align.bottom {
+    .assistant-box.closed:hover:not(.hovering-handle):not(.dragging) .bar-align.bottom {
         opacity: 1;
         width: 100%;
     }
     
-    .assistant-box.closed:hover .controls-bottom-right-wrapper { 
+    .assistant-box.closed:hover:not(.hovering-handle):not(.dragging) .controls-bottom-right-wrapper { 
 		opacity: 1;
 		transform: translateY(0);
 		width: 100%;
@@ -676,9 +732,44 @@
     .assistant-box.minimized .controls-bottom-right { opacity: 1; transform: translateY(0); }
 
     /* Absolute adornments */
-    .handle-left { position: absolute; left: 0; top: 50%; transform: translate(-50%, -50%); background: var(--sk-bg-4); width: 25px; height: 32px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; cursor: grab; }
-    .top-right-actions { position: absolute; right: 0; top: 0; transform: translate(0%, -50%); display: inline-flex; gap: 0; border-radius: 8px; background: var(--sk-bg-4); }
-    .top-right-actions button { width: 25px; height: 25px; border: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .handle-left { 
+        position: absolute; 
+        left: 0; 
+        top: 50%; 
+        transform: translate(-50%, -50%); 
+        background: var(--sk-bg-0); 
+        width: 25px; 
+        height: 32px; 
+        border-radius: 5px; 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        cursor: grab; 
+        z-index: 11;
+    }
+    .top-right-actions { 
+        position: absolute; 
+        right: 0; 
+        top: 0; 
+        display: inline-flex; 
+        gap: 0;
+    }
+    .top-right-actions button { 
+        width: 30px; 
+        height: 30px; 
+        border: 0; 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center;
+        background: transparent;
+        color: var(--sk-fg-3);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .top-right-actions button:hover {
+        color: var(--sk-fg-1);
+        background: var(--sk-bg-4);
+    }
 
 	.assistant-box.resizing {
 		user-select: none;
@@ -726,10 +817,7 @@
 
 	/* Light theme styles */
 	:global(.light) .assistant-box {
-		background: linear-gradient(135deg, 
-			rgba(255, 255, 255, 0.95) 0%, 
-			rgba(255, 255, 255, 0.85) 100%
-		);
+		background: rgba(255, 255, 255, 0.5); /* 50% transparent white for light theme */
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 	}
@@ -924,7 +1012,10 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 0;
-		border-radius: 42px;
+		margin-top: 30px;
+		margin-bottom: 0.25rem;
+		border-top: 1px solid color-mix(in srgb, var(--sk-fg-4) 20%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--sk-fg-4) 20%, transparent);
 	}
 
 	/* Mobile responsiveness - disable drag/resize on mobile */
