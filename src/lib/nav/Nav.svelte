@@ -317,7 +317,7 @@
 		align-items: center;
 		width: 100vw;
 		top: 0;
-		z-index: 101;
+		z-index: 1000;
 		width: 100vw;
 		height: var(--sk-nav-height);
 		margin: 0 auto;
