@@ -47,11 +47,11 @@
 	}
 
 	function cycleViewMode() {
-		// Cycle through: closed -> minimized -> floating -> docked -> fullscreen -> floating
+		// Cycle through states, respecting last open state when opening from closed
 		if (!isOpen) {
-			// If closed, open to minimized
-			assistant.open();
-			assistant.setMinimized(true);
+			// If closed, open to the last open state (which the assistant tracks)
+			assistant.openToDefault();
+			console.debug('[Assistant] opening to last state via cycle');
 		} else if (mode === 'minimized') {
 			// If minimized, go to floating
 			assistant.setMode('floating');
@@ -64,10 +64,8 @@
 			// If docked, go to fullscreen
 			assistant.setMode('fullscreen');
 		} else if (mode === 'fullscreen') {
-			// If fullscreen, go back to floating
-			assistant.setMode('floating');
-			// Ensure the assistant stays within viewport bounds
-			setTimeout(() => clampToViewport(), 50);
+			// If fullscreen, go back to minimized to complete the cycle
+			assistant.setMode('minimized');
 		}
 	}
 
@@ -103,6 +101,9 @@
 
 	// Assistant box element reference
 	let assistantBox: HTMLDivElement;
+	
+	// Omnibar input reference
+	let omnibarInput: HTMLInputElement;
 	
 	// Track hover state
 	let isHoveringHandle = $state(false);
@@ -175,8 +176,6 @@
         // if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
         // Minimizing should close the assistant (enter closed state)
         assistant.close();
-        assistant.setMinimized(false);
-		assistant.setDocked(false)
         console.debug('[Assistant] minimize -> closed');
     }
 
@@ -200,9 +199,32 @@
         }
     });
 
-    function handleDragStart(e: MouseEvent) {
+    // Focus input when assistant opens
+    $effect(() => {
+        if (isOpen && omnibarInput) {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                omnibarInput?.focus();
+            }, 50);
+        }
+    });
+
+    // Unified function to get coordinates from either mouse or touch event
+    function getEventCoordinates(e: MouseEvent | TouchEvent): { clientX: number; clientY: number } {
+        if ('touches' in e && e.touches.length > 0) {
+            return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+        } else if ('clientX' in e) {
+            return { clientX: e.clientX, clientY: e.clientY };
+        }
+        return { clientX: 0, clientY: 0 };
+    }
+
+    function handleDragStart(e: MouseEvent | TouchEvent) {
         if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable dragging when docked or fullscreen
         isDragging = true;
+        
+        const coords = getEventCoordinates(e);
+        
         // determine the actual rendered box size for drag calculations
         const effectiveWidth = floatingOpen
             ? currentWidth
@@ -215,18 +237,25 @@
         // compute current left/top from right/bottom offsets
         const currentLeft = window.innerWidth - currentRight - effectiveWidth;
         const currentTop = window.innerHeight - currentBottom - effectiveHeight;
-        dragStartX = e.clientX - currentLeft;
-        dragStartY = e.clientY - currentTop;
+        dragStartX = coords.clientX - currentLeft;
+        dragStartY = coords.clientY - currentTop;
+        
+        // Add both mouse and touch listeners
         document.addEventListener('mousemove', handleDragMove);
         document.addEventListener('mouseup', handleDragEnd);
+        document.addEventListener('touchmove', handleDragMove, { passive: false });
+        document.addEventListener('touchend', handleDragEnd);
+        
         e.preventDefault();
     }
 
-    function handleDragMove(e: MouseEvent) {
+    function handleDragMove(e: MouseEvent | TouchEvent) {
         if (!isDragging || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
         e.preventDefault();
-        const newLeft = e.clientX - dragStartX;
-        const newTop = e.clientY - dragStartY;
+        
+        const coords = getEventCoordinates(e);
+        const newLeft = coords.clientX - dragStartX;
+        const newTop = coords.clientY - dragStartY;
         currentRight = Math.max(0, window.innerWidth - newLeft - dragBoxWidth);
         currentBottom = Math.max(0, window.innerHeight - newTop - dragBoxHeight);
     }
@@ -235,28 +264,35 @@
         isDragging = false;
         document.removeEventListener('mousemove', handleDragMove);
         document.removeEventListener('mouseup', handleDragEnd);
+        document.removeEventListener('touchmove', handleDragMove);
+        document.removeEventListener('touchend', handleDragEnd);
         // Persist the new offsets
         assistant.setOffsets(currentRight, currentBottom);
     }
 
-	function handleResizeStart(e: MouseEvent) {
+	function handleResizeStart(e: MouseEvent | TouchEvent) {
 		if (dockConfig.isDocked || fullscreenConfig.isFullscreen) return; // Disable corner resize when docked or fullscreen
 		isResizing = true;
-		resizeStartX = e.clientX;
-		resizeStartY = e.clientY;
+		const coords = getEventCoordinates(e);
+		resizeStartX = coords.clientX;
+		resizeStartY = coords.clientY;
 		resizeStartWidth = currentWidth;
 		resizeStartHeight = currentHeight;
 		document.addEventListener('mousemove', handleResizeMove);
 		document.addEventListener('mouseup', handleResizeEnd);
+		document.addEventListener('touchmove', handleResizeMove, { passive: false });
+		document.addEventListener('touchend', handleResizeEnd);
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
-    function handleResizeMove(e: MouseEvent) {
+    function handleResizeMove(e: MouseEvent | TouchEvent) {
         if (!isResizing || dockConfig.isDocked || fullscreenConfig.isFullscreen) return;
+        e.preventDefault();
+        const coords = getEventCoordinates(e);
         // Resize from top-left, so we need to invert the delta to expand upward/leftward
-        const deltaX = resizeStartX - e.clientX;
-        const deltaY = resizeStartY - e.clientY;
+        const deltaX = resizeStartX - coords.clientX;
+        const deltaY = resizeStartY - coords.clientY;
 
         currentWidth = Math.max(300, resizeStartWidth + deltaX);
         currentHeight = Math.max(400, resizeStartHeight + deltaY);
@@ -267,6 +303,8 @@
         isResizing = false;
         document.removeEventListener('mousemove', handleResizeMove);
         document.removeEventListener('mouseup', handleResizeEnd);
+        document.removeEventListener('touchmove', handleResizeMove);
+        document.removeEventListener('touchend', handleResizeEnd);
         // Persist the new size; offsets unchanged
         assistant.setSize(currentWidth, currentHeight);
         assistant.setOffsets(currentRight, currentBottom);
@@ -333,20 +371,14 @@
 		if (e.key === 'Escape' && isOpen) {
 			e.preventDefault();
 			
-			if (mode === 'docked' || mode === 'fullscreen') {
-				// If docked or fullscreen, go back to floating
-				assistant.setMode('floating');
-				console.debug('[Assistant] ESC: transitioning to floating from', mode);
-			} else {
-				// If minimized or floating, close completely
-				assistant.close();
-				console.debug('[Assistant] ESC: closing from', mode);
-			}
+			// Always close on ESC, preserving the current mode
+			assistant.close();
+			console.debug('[Assistant] ESC: closing from', mode);
 		}
 	}
 
 	function handleContainerClick() {
-		if (isDragging) return;
+		if (isDragging || isResizing) return;
 		// Use the same cycle view mode function
 		cycleViewMode();
 		console.debug('[Assistant] box click: cycling view mode');
@@ -368,12 +400,12 @@
     class:minimized={isOpen && !dockConfig.isDocked && !fullscreenConfig.isFullscreen && isMinimized}
     class:dragging={isDragging}
     class:resizing={isResizing}
-    class:docked={dockConfig.isDocked}
-    class:fullscreen={fullscreenConfig.isFullscreen}
+    class:docked={isOpen && dockConfig.isDocked}
+    class:fullscreen={isOpen && fullscreenConfig.isFullscreen}
     class:hovering-handle={isHoveringHandle}
-    style="{fullscreenConfig.isFullscreen 
+    style="{isOpen && fullscreenConfig.isFullscreen 
         ? `width: 100vw; height: ${fullscreenHeight()}; right: 0; bottom: 0; transform: none;` 
-        : dockConfig.isDocked 
+        : isOpen && dockConfig.isDocked 
             ? `width: ${dockConfig.dockedWidth}vw; height: ${dockedHeight()}; right: 0; bottom: 0; transform: none;` 
             : floatingOpen 
                 ? `right: ${currentRight}px; bottom: ${currentBottom}px; width: ${currentWidth}px; height: ${currentHeight}px; transform: none;`
@@ -391,20 +423,24 @@
     tabindex="0"
     onkeydown={handleGlobalKeydown}
     onmousedown={!floatingOpen ? handleDragStart : undefined}
+    ontouchstart={!floatingOpen ? handleDragStart : undefined}
     onclick={handleContainerClick}
 >
         <!-- Left Handle (drag) -->
-        <div class="handle-left" 
-            onmousedown={(e) => { e.stopPropagation(); handleDragStart(e); }} 
-            onclick={(e) => e.stopPropagation()}
-            onmouseenter={() => isHoveringHandle = true}
-            onmouseleave={() => isHoveringHandle = false}
-            aria-label="Drag Omnibar">
-            <i class="fa-solid fa-grip"></i>
-        </div>
+        {#if !dockConfig.isDocked && !fullscreenConfig.isFullscreen}
+            <div class="handle-left" 
+                onmousedown={(e) => { e.stopPropagation(); handleDragStart(e); }}
+                ontouchstart={(e) => { e.stopPropagation(); handleDragStart(e); }}
+                onclick={(e) => e.stopPropagation()}
+                onmouseenter={() => isHoveringHandle = true}
+                onmouseleave={() => isHoveringHandle = false}
+                aria-label="Drag Omnibar">
+                <i class="fa-solid fa-grip"></i>
+            </div>
+        {/if}
 
 		<!-- Divider for docked mode -->
-		{#if dockConfig.isDocked && !fullscreenConfig.isFullscreen}
+		{#if isOpen && dockConfig.isDocked && !fullscreenConfig.isFullscreen}
 			<div 
 				class="divider"
 				class:dragging={isDraggingDivider}
@@ -421,6 +457,8 @@
 			<div 
 				class="resize-handle"
 				onmousedown={handleResizeStart}
+				ontouchstart={handleResizeStart}
+				onclick={(e) => e.stopPropagation()}
 				role="separator"
 				aria-label="Resize assistant window"
 			>
@@ -444,6 +482,7 @@
 					<div class="title-row">
 						{#if isOpen}
 							<input 
+								bind:this={omnibarInput}
 								id="omnibar-input"
 								type="text" 
 								class="omnibar-input"
@@ -492,7 +531,7 @@
         <!-- Top-right actions (absolute) -->
         {#if isOpen}
             <div class="top-right-actions">
-                <button onclick={(e) => { e.stopPropagation(); assistant.close(); assistant.setMinimized(false); }} aria-label="Close"><i class="fa-solid fa-ellipsis"></i></button>
+                <button onclick={(e) => { e.stopPropagation(); assistant.close(); }} aria-label="Close"><i class="fa-solid fa-ellipsis"></i></button>
                 <button onclick={(e) => { e.stopPropagation(); cycleViewMode(); }} aria-label="Cycle View Mode"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>
             </div>
         {/if}
@@ -533,7 +572,6 @@
 /* Add focus-visible outline to match design system */
 .assistant-box:focus-visible {
 	outline: 2px solid var(--sk-fg-accent);
-	outline-offset: 2px;
 }
 
 /* Remove top-right corner radius when controls are visible */
@@ -737,7 +775,7 @@
         left: 0; 
         top: 50%; 
         transform: translate(-50%, -50%); 
-        background: var(--sk-bg-0); 
+        background: var(--sk-bg-1); 
         width: 25px; 
         height: 32px; 
         border-radius: 5px; 
@@ -773,6 +811,13 @@
 
 	.assistant-box.resizing {
 		user-select: none;
+		/* Disable transitions during resize for smooth performance */
+		transition: none !important;
+	}
+	
+	/* Disable pointer events on children during resize to prevent interference */
+	.assistant-box.resizing > *:not(.resize-handle) {
+		pointer-events: none;
 	}
 
 	.assistant-box.docked {
@@ -784,8 +829,11 @@
 		border-radius: 0;
 		transform: none !important;
 		box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+		border: none;
 		border-left: 1px solid rgba(255, 255, 255, 0.1);
 		cursor: default;
+		/* Disable transitions in docked mode for instant width changes */
+		transition: none !important;
 	}
 
 	:global(.light) .assistant-box.docked {
@@ -808,6 +856,7 @@
 		border-radius: 0;
 		transform: none !important;
 		box-shadow: none;
+		border: none;
 		z-index: 10000; /* Highest z-index for fullscreen */
 	}
 
@@ -837,11 +886,13 @@
 		align-items: flex-start;
 		justify-content: flex-start;
 		color: rgba(255, 255, 255, 0.3);
-		z-index: 1;
+		z-index: 20; /* Increased z-index to ensure it's above other elements */
 		padding: 0;
 		border-radius: 2.5rem 0 0 0;
 		overflow: hidden;
 		transition: color 0.2s ease;
+		pointer-events: auto; /* Ensure pointer events are captured */
+		touch-action: none; /* Prevent default touch behaviors */
 	}
 
 	.resize-handle svg {
