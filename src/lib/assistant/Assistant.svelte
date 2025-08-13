@@ -47,6 +47,7 @@
 	}
 
 	function cycleViewMode() {
+		console.debug('[Assistant] cycleViewMode called, current mode:', mode);
 		// Cycle through states, respecting last open state when opening from closed
 		if (!isOpen) {
 			// If closed, open to the last open state (which the assistant tracks)
@@ -55,17 +56,21 @@
 		} else if (mode === 'minimized') {
 			// If minimized, go to floating
 			assistant.setMode('floating');
+			console.debug('[Assistant] cycling: minimized -> floating');
 			// Ensure the assistant stays within viewport bounds
 			setTimeout(() => clampToViewport(), 50);
 		} else if (mode === 'floating') {
 			// If floating, go to docked
 			assistant.setMode('docked');
+			console.debug('[Assistant] cycling: floating -> docked');
 		} else if (mode === 'docked') {
 			// If docked, go to fullscreen
 			assistant.setMode('fullscreen');
+			console.debug('[Assistant] cycling: docked -> fullscreen');
 		} else if (mode === 'fullscreen') {
 			// If fullscreen, go back to minimized to complete the cycle
 			assistant.setMode('minimized');
+			console.debug('[Assistant] cycling: fullscreen -> minimized');
 		}
 	}
 
@@ -363,8 +368,10 @@
 	function handleGlobalKeydown(e: KeyboardEvent) {
 		if ((e.metaKey || e.ctrlKey) && (e.key === 'o' || e.key === 'O')) {
 			e.preventDefault();
-			assistant.openToDefault();
-			console.debug('[Assistant] openToDefault via Cmd/Ctrl+O (global)');
+			
+			// Always use cycleViewMode which handles both closed and open states
+			cycleViewMode();
+			console.debug('[Assistant] cycling view mode via Cmd/Ctrl+O');
 		}
 		
 		// Handle ESC key when open
@@ -468,10 +475,17 @@
 			</div>
 		{/if}
 		{#if isOpen && !isMinimized}
-        <div class="assistant-content">
-			{#if isOpen && !isMinimized}
-				<MessageScaffolding />
-			{/if}
+			<!-- Breadcrumb -->
+			<div class="assistant-breadcrumb">
+				<span class="breadcrumb-item">{navSelected || 'Home'}</span>
+				<span class="breadcrumb-divider"></span>
+				<span class="breadcrumb-item">Overview</span>
+			</div>
+			
+			<div class="assistant-content">
+				{#if isOpen && !isMinimized}
+					<MessageScaffolding />
+				{/if}
 			</div>
 		{/if}
 
@@ -508,18 +522,18 @@
 						<div class="controls-bottom-right">
 
 							<div class="chat-icons">
-								<button aria-label="Add"><i class="fa-light fa-plus"></i></button>
-								<button aria-label="Image"><i class="fa-light fa-camera"></i></button>
-								<button aria-label="Voice"><i class="fa-light fa-microphone-lines"></i></button>
+								<button onclick={(e) => e.stopPropagation()} aria-label="Add"><i class="fa-light fa-plus"></i></button>
+								<button onclick={(e) => e.stopPropagation()} aria-label="Image"><i class="fa-light fa-camera"></i></button>
+								<button onclick={(e) => e.stopPropagation()} aria-label="Voice"><i class="fa-light fa-microphone-lines"></i></button>
 							</div>
 							
 							<div class="controls-divider" aria-hidden="true"></div>
 
 							<div class="nav-icons">
-								<button class:active={navSelected==='home'} onclick={() => assistant.setNavSelected('home')} aria-label="Home"><i class="fa-solid fa-house"></i></button>
-								<button class:active={navSelected==='people'} onclick={() => assistant.setNavSelected('people')} aria-label="People"><i class="fa-solid fa-user-group"></i></button>
-								<button class:active={navSelected==='search'} onclick={() => assistant.setNavSelected('search')} aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-								<button class:active={navSelected==='calls'} onclick={() => assistant.setNavSelected('calls')} aria-label="Calls"><i class="fa-solid fa-phone"></i></button>
+								<button class:active={navSelected==='home'} onclick={(e) => { e.stopPropagation(); assistant.setNavSelected('home'); }} aria-label="Home"><i class="fa-solid fa-house"></i></button>
+								<button class:active={navSelected==='people'} onclick={(e) => { e.stopPropagation(); assistant.setNavSelected('people'); }} aria-label="People"><i class="fa-solid fa-user-group"></i></button>
+								<button class:active={navSelected==='search'} onclick={(e) => { e.stopPropagation(); assistant.setNavSelected('search'); }} aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+								<button class:active={navSelected==='calls'} onclick={(e) => { e.stopPropagation(); assistant.setNavSelected('calls'); }} aria-label="Calls"><i class="fa-solid fa-phone"></i></button>
 							</div>
 							
 						</div>
@@ -550,7 +564,7 @@
 	max-height: 100vh;
 	border-radius: 42px;
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-	z-index: 9999;
+	z-index: 999; /* Below nav components (1001-1002) */
 	display: flex;
 	flex-direction: column;
 	
@@ -857,7 +871,7 @@
 		transform: none !important;
 		box-shadow: none;
 		border: none;
-		z-index: 10000; /* Highest z-index for fullscreen */
+		z-index: 999; /* Higher than normal assistant but still below nav */
 	}
 
 	.assistant-box.fullscreen .assistant-header {
@@ -1057,15 +1071,39 @@
 		cursor: ew-resize;
 	}
 
+	.assistant-breadcrumb {
+		height: 30px;
+		display: flex;
+		align-items: center;
+		padding: 0 2.5rem;
+		gap: 0.75rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--sk-fg-4) 20%, transparent);
+	}
+	
+	.breadcrumb-item {
+		font-size: 1rem;
+		color: var(--sk-fg-1);
+		text-transform: capitalize;
+		
+		&:last-child {
+			color: var(--sk-fg-2);
+		}
+	}
+	
+	.breadcrumb-divider {
+		width: 1px;
+		height: 14px;
+		background: var(--sk-fg-4);
+		opacity: 0.5;
+	}
+
 	.assistant-content {
 		flex: 1;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		min-height: 0;
-		margin-top: 30px;
 		margin-bottom: 0.25rem;
-		border-top: 1px solid color-mix(in srgb, var(--sk-fg-4) 20%, transparent);
 		border-bottom: 1px solid color-mix(in srgb, var(--sk-fg-4) 20%, transparent);
 	}
 
