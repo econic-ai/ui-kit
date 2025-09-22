@@ -2,7 +2,7 @@ import { MediaQuery } from 'svelte/reactivity';
 import { Persisted } from './Persisted.svelte';
 import { browser } from '$app/environment';
 
-class Theme {
+export class Theme {
 	#preference = new Persisted<'system' | 'light' | 'dark'>('sv:theme', 'system');
 	#query = browser ? new MediaQuery('prefers-color-scheme: dark') : null;
 	#system = $derived<'dark' | 'light'>(
@@ -18,4 +18,4 @@ class Theme {
 	}
 }
 
-export const theme = new Theme();
+// export const theme = new Theme();

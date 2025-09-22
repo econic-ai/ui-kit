@@ -22,7 +22,7 @@ import { Persisted } from './Persisted.svelte';
 type AssistantMode = 'minimized' | 'floating' | 'docked' | 'fullscreen';
 type AssistantDefaultOpen = 'minimized' | 'floating' | 'docked' | 'fullscreen';
 
-class AssistantState {
+export class AssistantState {
     #isOpen = new Persisted<'true' | 'false'>('sv:assistant-open', 'false');
     #position = new Persisted<string>('sv:assistant-position', JSON.stringify({ right: 192, bottom: 192 }));
     #size = new Persisted<string>('sv:assistant-size', JSON.stringify({ width: 500, height: 800 }));
@@ -109,4 +109,4 @@ class AssistantState {
     }
 }
 
-export const assistant = new AssistantState(); 
+// export const assistant = new AssistantState(); 
