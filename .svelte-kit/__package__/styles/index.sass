@@ -1,0 +1,209 @@
+@use './design-system_variables' as *
+@use './design-system' as *
+@use './_css_variables' as *
+
+/* Import fonts */
+@import '@fontsource/inter/100.css'
+@import '@fontsource/inter/200.css'
+@import '@fontsource/inter/300.css'
+@import '@fontsource/inter/400.css'
+@import '@fontsource/inter/500.css'
+@import '@fontsource/inter/600.css'
+@import '@fontsource/inter/700.css'
+@import '@fontsource/inter/800.css'
+
+/* Import Font Awesome */
+@import './fontawesome/css/all.css'
+
+/* Base styles */
+// @layer base
+@import './css/base.css'
+
+/* Import other styles from css */
+@import './css/tokens.css'
+@import './css/text.css'
+@import './css/utils/buttons.css'
+@import './css/utils/dividers.css'
+@import './css/utils/nav.css'
+@import './css/utils/twoslash.css'
+
+
+html 
+  height: 100vh
+  scroll-behavior: smooth
+ 
+body 
+  font-family: Inter
+  margin: 0
+
+a 
+  text-decoration: none
+
+// Custom Utility
+.hide-caret
+  caret-color: transparent
+
+img
+  caret-color: transparent
+
+
+/* Graph styles */
+.graph-info-msg
+  top: 50%
+  width: 100%
+  text-align: center
+  color: lavender
+  opacity: 0.7
+  font-size: 22px
+  position: absolute
+  font-family: Sans-serif
+
+.scene-container 
+  .clickable
+    cursor: pointer
+  
+  .grabbable
+    cursor: move
+    cursor: grab
+    cursor: -moz-grab
+    cursor: -webkit-grab
+    
+    &:active
+      cursor: grabbing
+      cursor: -moz-grabbing
+      cursor: -webkit-grabbing
+
+.my-gray
+  background-color: #191919
+
+.my-selected
+  background-color: #036655e5
+
+.markdown
+  white-space: normal
+
+  h1
+    font-size: 2rem
+
+  h2
+    font-size: 1.5rem
+
+  h3
+    font-size: 1.25rem
+
+  code
+    background-color: #bfbfbf
+    color: black
+    font-weight: 200
+    padding: 0.2em 0.4em
+    border-radius: 5px
+    margin: 0.3em
+
+  pre
+    background-color: #bfbfbf
+    margin: 0.5em 0
+    padding: 0.2em 0.4em
+    border-radius: 5px
+    overflow: auto
+    text-wrap: pretty
+
+    code
+      background: none
+      padding: 0  
+
+  ul, ol
+    margin-left: 1em
+    padding-left: 1em
+
+  li
+    margin-bottom: 0.5em
+
+  li p
+    margin: 0
+
+.node
+  background-color: none
+  i
+    font-size: 1.5rem	
+  &.app
+    color: turquoise
+    font-size: 2.5rem
+    i
+      font-size: 4rem
+  &.agency
+    color: #ff8000
+    font-size: 1.2rem
+    i
+      font-size: 2rem
+  &.agent
+    color: #00bc67
+    font-size: 0.5rem
+    i
+      font-size: 1.2rem
+  &.ai
+    color: #ff8400
+    font-size: 0.8rem
+    i
+      font-size: 1.8rem			
+  &.contact
+    color: #e602ff
+    font-size: 1rem
+    i
+      font-size: 2rem
+  &.property
+    color: #02c4ff
+    font-size: 1rem
+    i
+      font-size: 2rem
+  &.message
+    color: gray
+    font-size: 1rem
+    i
+      font-size: 1rem
+  &.role
+    color: #02ff20
+    font-size: 2rem
+    i
+      font-size: 2rem
+  &.trigger
+    color: #f202ff
+    font-size: 0.8rem
+    i
+      font-size: 2rem
+  &.task
+    color: #ff4502
+    font-size: 0.8rem
+    i
+      font-size: 2rem
+  &.supplier
+    color: #02ff20
+    font-size: 0.8rem
+    i
+      font-size: 2rem
+  &.event
+    color: #657df7
+    font-size: 0.8rem
+    i
+      font-size: 2rem	
+  &.workflow
+    color: #ffffff
+    font-size: 1.2rem
+    i
+      font-size: 2.4rem 
+
+
+  // AppNav
+.appnav-item
+  height: 3.2rem
+  border-radius: var(--sk-border-radius)
+
+  &:hover
+    border-color: var(--sk-raised-hover-color)
+
+  &:active
+    border-color: var(--sk-raised-active-color)
+    border-width: var(--sk-raised-active-width)     
+
+.flex-spacer
+    flex: 1
+    min-height: 2rem

@@ -109,4 +109,4 @@ export class AssistantState {
     }
 }
 
-// export const assistant = new AssistantState(); 
+export const assistant = new AssistantState(); 

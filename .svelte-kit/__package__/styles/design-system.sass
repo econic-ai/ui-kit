@@ -1,0 +1,2095 @@
+// import variables
+@use './design-system_variables' as *
+// @use './mixins' as *
+
+// Page styles
+
+.sk-page
+    display: flex
+    flex-direction: column
+    min-height: calc(100vh - var(--sk-nav-height))
+    width: 100%
+
+.sk-footer
+    flex-shrink: 0
+    margin-top: auto
+
+
+// Block Styles
+
+.sk-section-large
+    position: relative
+    width: 100%
+    padding: $space-24 0
+    @media (min-width: $breakpoint-lg)
+        padding: $space-32 0
+
+.sk-section
+    position: relative
+    width: 100%
+    padding: $space-8 0
+
+    @media (min-width: $breakpoint-md)
+        padding: $space-16 0
+
+    @media (min-width: $breakpoint-lg)
+        padding: $space-24 0
+
+.full-height
+    height: 100vh
+
+.flex-center
+    display: flex
+    align-items: center
+
+.sk-section-thin
+    position: relative
+    width: 100%
+    padding: $space-6 0
+
+    @media (min-width: $breakpoint-lg)
+        padding: $space-12 0
+
+.sk-section-extra-thin
+    position: relative
+    width: 100%
+    padding: $space-2 0
+
+    @media (min-width: $breakpoint-lg)
+        padding: $space-4 0        
+
+.sk-section-none
+    position: relative
+    width: 100%
+    padding: 0
+
+.sk-container
+    position: relative
+    margin: 0 auto
+    padding: $space-12
+    display: flex
+    flex-direction: column
+    width: $w-full
+    max-width: 1440px
+
+    @media (min-width: $breakpoint-sm)
+        padding: $space-16
+
+    @media (min-width: $breakpoint-md)
+        padding-left: $space-24
+        padding-right: $space-24
+
+    @media (min-width: $breakpoint-lg)
+        flex-direction: row
+        padding: $space-14 $space-24
+
+.sk-content-container
+    position: relative
+    display: flex
+    flex-direction: column
+    width: $w-full
+    margin-bottom: $space-8
+    padding: $space-2
+
+    @media (min-width: $breakpoint-lg)
+        width: $w-5
+        margin-bottom: 0
+
+.sk-graphic-container
+    position: relative
+    width: $w-11
+    margin: 0 auto
+    cursor: default
+
+    @media (min-width: $breakpoint-lg)
+        width: $w-7
+
+.sk-cta-container
+    display: flex
+    flex-direction: row
+    gap: $space-6
+
+    @media (min-width: $breakpoint-md)
+        gap: $space-16
+
+.sk-divider-container
+    width: var(--sk-w-full)
+    display: flex
+    position: relative
+    justify-content: center
+    align-items: center
+    margin: var(--sk-space-4) 0
+
+//Elements
+.__title_xl
+    font-size: $text-7xl
+    font-weight: $font-weight-bold
+    line-height: $line-height-tight-xs
+    @media (min-width: 420px)
+        font-size: $text-9xl
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-10xl
+
+.__title_lg
+    font-size: $text-5xl
+    font-weight: $font-weight-bold
+    line-height: $line-height-tight-xs
+    @media (min-width: 420px)
+        font-size: $text-6xl
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-6xl
+    @media (min-width: $breakpoint-md)
+    @media (min-width: $breakpoint-lg) //container = row
+        font-size: $text-7xl
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-8xl
+
+.__title_md
+    font-weight: $font-weight-bold
+    font-size: $text-3xl
+    line-height: $line-height-tight-sm
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-4xl
+    @media (min-width: $breakpoint-md)
+    @media (min-width: $breakpoint-lg) //container = row
+        font-size: $text-5xl
+    @media (min-width: $breakpoint-xl)
+        
+
+.__title_sm
+    // font-size: $text-lg
+    font-weight: $font-weight-semibold
+    line-height: $line-height-normal-sm
+    // @media (min-width: $breakpoint-sm)
+    // font-size: $text-lg
+    // @media (min-width: $breakpoint-md)
+    // font-size: $text-xl
+    // @media (min-width: $breakpoint-lg) //container = row
+    font-size: $text-3xl
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-4xl
+
+.__title_xs
+    font-weight: $font-weight-semibold
+    line-height: $line-height-normal-sm
+    font-size: $text-2xl
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-3xl
+
+
+.__description_lg
+    font-size: var(--sk-text-2xl)
+    font-weight: var(--sk-font-light)
+    line-height: var(--sk-leading-tight)
+    // margin: .7lh 0
+    @media (min-width: $breakpoint-sm)
+        font-size: var(--sk-text-3xl)
+    @media (min-width: $breakpoint-md)
+        font-size: var(--sk-text-4xl)
+    @media (min-width: $breakpoint-lg)
+        font-size: var(--sk-text-5xl)
+
+.__description
+    // width: $w-full
+    font-weight: $font-weight-light
+    font-size: $text-base
+    line-height: $line-height-normal
+    margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-lg
+    @media (min-width: $breakpoint-lg) //container = row
+        // width: $w-full
+        font-size: $text-lg
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-xl
+
+.__description_sm
+    width: $w-full
+    font-weight: $font-weight-light
+    font-size: $text-xs
+    line-height: $line-height-normal
+    margin: 1lh 0
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-sm
+    @media (min-width: $breakpoint-lg) //container = row
+        width: $w-full
+        font-size: $text-base
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-lg
+
+// Typography Classes
+.__text_5xl
+    font-weight: $font-weight-normal
+    // font-size: $text-5xl
+    line-height: $line-height-normal
+    // margin: 1lh 0    
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-6xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-7xl
+    @media (min-width: $breakpoint-lg)
+        font-size: $text-8xl
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-9xl
+
+.__text_4xl
+    font-weight: $font-weight-normal
+    // font-size: $text-4xl
+    line-height: $line-height-normal
+    // margin: 1lh 0    
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-5xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-6xl
+    @media (min-width: $breakpoint-lg)
+        font-size: $text-7xl
+    @media (min-width: $breakpoint-xl)
+        font-size: $text-8xl
+
+.__text_3xl
+    font-weight: $font-weight-normal
+    // font-size: $text-3xl
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-4xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-5xl
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-6xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-7xl
+
+.__text_2xl
+    font-weight: $font-weight-normal
+    // font-size: $text-2xl
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-3xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-4xl
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-5xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-6xl
+
+.__text_xl
+    font-weight: $font-weight-normal
+    // font-size: $text-xl
+    line-height: $line-height-normal
+    // margin: 1lh 0    
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-2xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-3xl
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-4xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-5xl
+
+.__text_lg
+    font-weight: $font-weight-normal
+    // font-size: $text-lg
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-xl
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-2xl
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-3xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-4xl
+
+.__text_md
+    font-weight: $font-weight-normal
+    // font-size: $text-base
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-lg
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-xl
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-2xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-3xl
+// Text Mixins
+    
+// @mixin text-sm
+//   font-weight: $font-weight-normal
+//   font-size: $text-sm
+//   line-height: $line-height-normal
+//   @media (min-width: $breakpoint-sm)
+//     font-size: $text-base
+//   @media (min-width: $breakpoint-md)
+//     font-size: $text-lg
+//   @media (min-width: $breakpoint-lg)
+//     font-size: $text-xl
+//   @media (min-width: $breakpoint-xl)
+//     font-size: $text-2xl
+
+.__text_sm
+    // @include text-sm
+    font-weight: $font-weight-normal
+    // font-size: $text-sm
+    line-height: $line-height-normal
+    // @media (min-width: $breakpoint-sm)
+    //     font-size: $text-base
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-lg
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-xl
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-2xl
+
+.__text_xs
+    font-weight: $font-weight-normal
+    // font-size: $text-xs
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    // font-size: $text-sm
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-base
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-lg
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-xl
+
+.__text_2xs
+    // font-size: $text-2xs
+    line-height: $line-height-normal
+    // margin: 1lh 0
+    // @media (min-width: $breakpoint-sm)
+    // font-size: $text-xs
+    // @media (min-width: $breakpoint-md)
+    font-size: $text-sm
+    // @media (min-width: $breakpoint-lg)
+    //     font-size: $text-base
+    // @media (min-width: $breakpoint-xl)
+    //     font-size: $text-lg
+
+
+// Font Weight Variants
+.__text_bold
+    font-weight: $font-weight-bold
+
+.__text_semibold
+    font-weight: $font-weight-semibold
+
+.__text_normal
+    font-weight: $font-weight-normal
+
+.__text_light
+    font-weight: $font-weight-light
+
+// Line Height Variants
+.__text_tight
+    line-height: $line-height-tight
+
+.__text_tight_sm
+    line-height: $line-height-tight-sm
+
+.__text_tight_xs
+    line-height: $line-height-tight-xs
+
+.__text_normal
+    line-height: $line-height-normal
+
+.__text_normal_sm
+    line-height: $line-height-normal-sm
+
+.__text_relaxed
+    line-height: $line-height-relaxed
+
+// Text Alignment
+.__text_left
+    text-align: left
+
+.__text_center
+    text-align: center
+
+.__text_right
+    text-align: right
+
+// Text Transform
+.__text_uppercase
+    text-transform: uppercase
+
+.__text_lowercase
+    text-transform: lowercase
+
+.__text_capitalize
+    text-transform: capitalize
+
+// Text Decoration
+.__text_underline
+    text-decoration: underline
+
+.__text_strikethrough
+    text-decoration: line-through
+
+.__text_no_decoration
+    text-decoration: none
+
+// Text Overflow
+.__text_truncate
+    overflow: hidden
+    text-overflow: ellipsis
+    white-space: nowrap
+
+.__text_wrap
+    white-space: normal
+    word-wrap: break-word
+
+// Text Color
+.__text_primary
+    color: $color-primary
+
+.__text_secondary
+    color: $color-secondary
+
+.__text_link
+    color: $color-link
+
+// .__text-gradient
+//     background: $gradient-1
+//     -webkit-background-clip: text
+//     background-clip: text
+//     -webkit-text-fill-color: transparent
+//     text-fill-color: transparent
+//     white-space: nowrap
+
+// Link Mixins
+@mixin text-gradient-base
+    -webkit-background-clip: text
+    background-clip: text
+    -webkit-text-fill-color: transparent
+    text-fill-color: transparent
+    white-space: nowrap
+
+@mixin text-gradient
+    background: $gradient-1
+    @include text-gradient-base
+
+@mixin text-gradient-1b
+    background: $gradient-1b
+    @include text-gradient-base
+
+@mixin text-gradient-2
+    background: $gradient-2
+    @include text-gradient-base
+
+
+
+@mixin gradient-border($border-radius: 8px)
+    position: relative
+    &::before
+        content: ""
+        position: absolute
+        top: 0
+        left: 0
+        right: 0
+        bottom: 0
+        border-radius: $border-radius
+        padding: 1px
+        background: $gradient-1
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)
+        -webkit-mask-composite: xor
+        mask-composite: exclude
+        pointer-events: none
+
+@mixin link-hover
+    transition: all 0.3s ease
+    &:hover
+        text-decoration: none
+        background-clip: padding-box
+        box-shadow: 0 0 20px 4px rgba(117, 60, 183, 0.6)
+
+.__text-gradient
+    @include text-gradient
+
+.__text-gradient-1b
+    @include text-gradient-1b
+
+.__text-gradient-2
+    @include text-gradient-2
+
+
+.__link
+    padding: $space-4 $space-10
+    border-radius: 12px
+    // background-color: #121212
+    font-size: $text-lg
+    text-decoration: none
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    gap: $space-2
+    position: relative
+    width: fit-content
+    height: fit-content
+    white-space: nowrap
+    // @include gradient-text
+    @include gradient-border(12px)
+    @include link-hover
+    span 
+        @include text-gradient
+
+    i
+        @include text-gradient
+        margin-left: $space-2
+        color: $purple
+
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-xl
+        padding: $space-6 $space-12
+
+    @media (min-width: $breakpoint-lg)
+        font-size: $text-2xl
+
+
+    &.small
+        padding: $space-4 $space-8
+        font-size: $text-base
+        border-radius: 2px
+
+        &:before
+            border-radius: 5px
+
+    &.large
+        padding: $space-6 $space-10
+
+        @media (min-width: $breakpoint-sm)
+            font-size: $text-3xl
+            padding: $space-6 $space-12
+
+        @media (min-width: $breakpoint-lg)
+            font-size: $text-4xl
+            padding: $space-8 $space-16
+
+.__hr
+    width: $w-full
+    max-width: 350px
+    height: .5px
+    margin: $space-12 0
+
+// Graphic Elements 
+.__image
+    width: $w-full
+    height: auto
+    position: relative
+    z-index: 10
+
+.__image-back
+    position: absolute
+    z-index: -10
+    width: $w-7
+    transform: translate(-50%, -50%)
+
+.__title-badge
+    display: inline-block
+    text-transform: uppercase
+    border-radius: 20px
+    position: relative
+    width: fit-content
+    max-width: 100%
+    margin-bottom: $space-8
+    font-size: $text-base
+    font-weight: $font-weight-semibold
+    letter-spacing: 0.5px
+    color: $hot-pink
+
+    @media (min-width: $breakpoint-sm)
+        font-size: $text-xl
+        // padding: 12px 24px
+        margin-bottom: $space-10
+
+        &::before
+            padding: 1.5px
+
+    @media (min-width: $breakpoint-lg)
+        // padding: 14px 28px
+        font-size: $text-xl
+
+// Utility Classes
+.img-placeholder
+    width: 100%
+    height: 100%
+    // background-color: var(--sk-bg-2)
+    align-content: center
+    justify-content: center
+    display: flex
+    align-items: center
+    justify-items: center
+    position: relative
+    border-radius: 8px
+    overflow: hidden
+    min-height: 10px    
+    
+
+.img-responsive
+    max-width: 100%
+    height: auto
+
+// Typography
+.sk-text-xs
+    font-size: $text-xs
+
+.sk-text-sm
+    font-size: $text-sm
+
+.sk-text-base
+    font-size: $text-base
+
+.sk-text-lg
+    font-size: $text-lg
+
+.sk-text-xl
+    font-size: $text-xl
+
+.sk-text-2xl
+    font-size: $text-2xl
+
+.sk-text-3xl
+    font-size: $text-3xl
+
+.sk-text-4xl
+    font-size: $text-4xl
+
+.sk-text-5xl
+    font-size: $text-5xl
+
+.sk-text-6xl
+    font-size: $text-6xl
+
+.sk-text-7xl
+    font-size: $text-7xl
+
+.sk-text-8xl
+    font-size: $text-8xl
+
+.sk-text-9xl
+    font-size: $text-9xl
+
+// Font Weights
+.sk-font-thin
+    font-weight: $font-weight-thin
+
+.sk-font-light
+    font-weight: $font-weight-light
+
+.sk-font-medium
+    font-weight: $font-weight-medium
+
+.sk-font-normal
+    font-weight: $font-weight-normal
+
+.sk-font-semibold
+    font-weight: $font-weight-semibold
+
+.sk-font-bold
+    font-weight: $font-weight-bold
+
+.sk-font-black
+    font-weight: $font-weight-black
+
+// Line Heights
+.sk-leading-tight
+    line-height: $line-height-tight
+
+.sk-leading-normal
+    line-height: $line-height-normal
+
+.sk-leading-relaxed
+    line-height: $line-height-relaxed
+
+// Widths
+.sk-w-full
+    width: $w-full
+
+.sk-w-11
+    width: $w-11
+
+.sk-w-10
+    width: $w-10
+
+.sk-w-9
+    width: $w-9
+
+.sk-w-8
+    width: $w-8
+
+.sk-w-7
+    width: $w-7
+
+.sk-w-6
+    width: $w-6
+
+.sk-w-5
+    width: $w-5
+
+.sk-w-4
+    width: $w-4
+
+.sk-w-3
+    width: $w-3
+
+.sk-w-2
+    width: $w-2
+
+.sk-w-1
+    width: $w-1
+
+// Spacing
+
+// Padding
+.sk-p-0
+    padding: $space-0
+
+.sk-p-1
+    padding: $space-1
+
+.sk-p-2
+    padding: $space-2
+
+.sk-p-3
+    padding: $space-3
+
+.sk-p-4
+    padding: $space-4
+
+.sk-p-5
+    padding: $space-5
+
+.sk-p-6
+    padding: $space-6
+
+.sk-p-7
+    padding: $space-7
+
+.sk-p-8
+    padding: $space-8
+
+.sk-p-9
+    padding: $space-9
+
+.sk-p-10
+    padding: $space-10
+
+.sk-p-11
+    padding: $space-11
+
+.sk-p-12
+    padding: $space-12
+
+.sk-p-14
+    padding: $space-14
+
+.sk-p-16
+    padding: $space-16
+
+.sk-p-20
+    padding: $space-20
+
+.sk-p-24
+    padding: $space-24
+
+.sk-p-28
+    padding: $space-28
+
+.sk-p-32
+    padding: $space-32
+
+.sk-p-36
+    padding: $space-36
+
+.sk-p-40
+    padding: $space-40
+
+.sk-p-44
+    padding: $space-44
+
+.sk-p-48
+    padding: $space-48
+
+.sk-p-52
+    padding: $space-52
+
+.sk-p-56
+    padding: $space-56
+
+.sk-p-60
+    padding: $space-60
+
+.sk-p-64
+    padding: $space-64
+
+//Margin
+.sk-m-0
+    margin: $space-0
+
+.sk-m-1
+    margin: $space-1
+
+.sk-m-2
+    margin: $space-2
+
+.sk-m-3
+    margin: $space-3
+
+.sk-m-4
+    margin: $space-4
+
+.sk-m-5
+    margin: $space-5
+
+.sk-m-6
+    margin: $space-6
+
+.sk-m-7
+    margin: $space-7
+
+.sk-m-8
+    margin: $space-8
+
+.sk-m-9
+    margin: $space-9
+
+.sk-m-10
+    margin: $space-10
+
+.sk-m-11
+    margin: $space-11
+
+.sk-m-12
+    margin: $space-12
+
+.sk-m-14
+    margin: $space-14
+
+.sk-m-16
+    margin: $space-16
+
+.sk-m-20
+    margin: $space-20
+
+.sk-m-24
+    margin: $space-24
+
+.sk-m-28
+    margin: $space-28
+
+.sk-m-32
+    margin: $space-32
+
+.sk-m-36
+    margin: $space-36
+
+.sk-m-40
+    margin: $space-40
+
+.sk-m-44
+    margin: $space-44
+
+.sk-m-48
+    margin: $space-48
+
+.sk-m-52
+    margin: $space-52
+
+.sk-m-56
+    margin: $space-56
+
+.sk-m-60
+    margin: $space-60
+
+.sk-m-64
+    margin: $space-64
+
+// Directional padding utilities
+.sk-pt-0
+    padding-top: $space-0
+
+.sk-pr-0
+    padding-right: $space-0
+
+.sk-pb-0
+    padding-bottom: $space-0
+
+.sk-pl-0
+    padding-left: $space-0
+
+.sk-pt-1
+    padding-top: $space-1
+
+.sk-pr-1
+    padding-right: $space-1
+
+.sk-pb-1
+    padding-bottom: $space-1
+
+.sk-pl-1
+    padding-left: $space-1
+
+.sk-pt-2
+    padding-top: $space-2
+
+.sk-pr-2
+    padding-right: $space-2
+
+.sk-pb-2
+    padding-bottom: $space-2
+
+.sk-pl-2
+    padding-left: $space-2
+
+.sk-pt-3
+    padding-top: $space-3
+
+.sk-pr-3
+    padding-right: $space-3
+
+.sk-pb-3
+    padding-bottom: $space-3
+
+.sk-pl-3
+    padding-left: $space-3
+
+.sk-pt-4
+    padding-top: $space-4
+
+.sk-pr-4
+    padding-right: $space-4
+
+.sk-pb-4
+    padding-bottom: $space-4
+
+.sk-pl-4
+    padding-left: $space-4
+
+.sk-pt-5
+    padding-top: $space-5
+
+.sk-pr-5
+    padding-right: $space-5
+
+.sk-pb-5
+    padding-bottom: $space-5
+
+.sk-pl-5
+    padding-left: $space-5
+
+.sk-pt-6
+    padding-top: $space-6
+
+.sk-pr-6
+    padding-right: $space-6
+
+.sk-pb-6
+    padding-bottom: $space-6
+
+.sk-pl-6
+    padding-left: $space-6
+
+.sk-pt-7
+    padding-top: $space-7
+
+.sk-pr-7
+    padding-right: $space-7
+
+.sk-pb-7
+    padding-bottom: $space-7
+
+.sk-pl-7
+    padding-left: $space-7
+
+.sk-pt-8
+    padding-top: $space-8
+
+.sk-pr-8
+    padding-right: $space-8
+
+.sk-pb-8
+    padding-bottom: $space-8
+
+.sk-pl-8
+    padding-left: $space-8
+
+.sk-pt-9
+    padding-top: $space-9
+
+.sk-pr-9
+    padding-right: $space-9
+
+.sk-pb-9
+    padding-bottom: $space-9
+
+.sk-pl-9
+    padding-left: $space-9
+
+.sk-pt-10
+    padding-top: $space-10
+
+.sk-pr-10
+    padding-right: $space-10
+
+.sk-pb-10
+    padding-bottom: $space-10
+
+.sk-pl-10
+    padding-left: $space-10
+
+.sk-pt-11
+    padding-top: $space-11
+
+.sk-pr-11
+    padding-right: $space-11
+
+.sk-pb-11
+    padding-bottom: $space-11
+
+.sk-pl-11
+    padding-left: $space-11
+
+.sk-pt-12
+    padding-top: $space-12
+
+.sk-pr-12
+    padding-right: $space-12
+
+.sk-pb-12
+    padding-bottom: $space-12
+
+.sk-pl-12
+    padding-left: $space-12
+
+.sk-pt-14
+    padding-top: $space-14
+
+.sk-pr-14
+    padding-right: $space-14
+
+.sk-pb-14
+    padding-bottom: $space-14
+
+.sk-pl-14
+    padding-left: $space-14
+
+.sk-pt-16
+    padding-top: $space-16
+
+.sk-pr-16
+    padding-right: $space-16
+
+.sk-pb-16
+    padding-bottom: $space-16
+
+.sk-pl-16
+    padding-left: $space-16
+
+.sk-pt-20
+    padding-top: $space-20
+
+.sk-pr-20
+    padding-right: $space-20
+
+.sk-pb-20
+    padding-bottom: $space-20
+
+.sk-pl-20
+    padding-left: $space-20
+
+.sk-pt-24
+    padding-top: $space-24
+
+.sk-pr-24
+    padding-right: $space-24
+
+.sk-pb-24
+    padding-bottom: $space-24
+
+.sk-pl-24
+    padding-left: $space-24
+
+.sk-pt-28
+    padding-top: $space-28
+
+.sk-pr-28
+    padding-right: $space-28
+
+.sk-pb-28
+    padding-bottom: $space-28
+
+.sk-pl-28
+    padding-left: $space-28
+
+.sk-pt-32
+    padding-top: $space-32
+
+.sk-pr-32
+    padding-right: $space-32
+
+.sk-pb-32
+    padding-bottom: $space-32
+
+.sk-pl-32
+    padding-left: $space-32
+
+.sk-pt-36
+    padding-top: $space-36
+
+.sk-pr-36
+    padding-right: $space-36
+
+.sk-pb-36
+    padding-bottom: $space-36
+
+.sk-pl-36
+    padding-left: $space-36
+
+.sk-pt-40
+    padding-top: $space-40
+
+.sk-pr-40
+    padding-right: $space-40
+
+.sk-pb-40
+    padding-bottom: $space-40
+
+.sk-pl-40
+    padding-left: $space-40
+
+.sk-pt-44
+    padding-top: $space-44
+
+.sk-pr-44
+    padding-right: $space-44
+
+.sk-pb-44
+    padding-bottom: $space-44
+
+.sk-pl-44
+    padding-left: $space-44
+
+.sk-pt-48
+    padding-top: $space-48
+
+.sk-pr-48
+    padding-right: $space-48
+
+.sk-pb-48
+    padding-bottom: $space-48
+
+.sk-pl-48
+    padding-left: $space-48
+
+.sk-pt-52
+    padding-top: $space-52
+
+.sk-pr-52
+    padding-right: $space-52
+
+.sk-pb-52
+    padding-bottom: $space-52
+
+.sk-pl-52
+    padding-left: $space-52
+
+.sk-pt-56
+    padding-top: $space-56
+
+.sk-pr-56
+    padding-right: $space-56
+
+.sk-pb-56
+    padding-bottom: $space-56
+
+.sk-pl-56
+    padding-left: $space-56
+
+.sk-pt-60
+    padding-top: $space-60
+
+.sk-pr-60
+    padding-right: $space-60
+
+.sk-pb-60
+    padding-bottom: $space-60
+
+.sk-pl-60
+    padding-left: $space-60
+
+.sk-pt-64
+    padding-top: $space-64
+
+.sk-pr-64
+    padding-right: $space-64
+
+.sk-pb-64
+    padding-bottom: $space-64
+
+.sk-pl-64
+    padding-left: $space-64
+
+// Combined directional utilities
+.sk-px-0
+    padding-left: $space-0
+    padding-right: $space-0
+
+.sk-py-0
+    padding-top: $space-0
+    padding-bottom: $space-0
+
+.sk-mx-0
+    margin-left: $space-0
+    margin-right: $space-0
+
+.sk-my-0
+    margin-top: $space-0
+    margin-bottom: $space-0
+
+.sk-px-1
+    padding-left: $space-1
+    padding-right: $space-1
+
+.sk-py-1
+    padding-top: $space-1
+    padding-bottom: $space-1
+
+.sk-mx-1
+    margin-left: $space-1
+    margin-right: $space-1
+
+.sk-my-1
+    margin-top: $space-1
+    margin-bottom: $space-1
+
+.sk-px-2
+    padding-left: $space-2
+    padding-right: $space-2
+
+.sk-py-2
+    padding-top: $space-2
+    padding-bottom: $space-2
+
+.sk-mx-2
+    margin-left: $space-2
+    margin-right: $space-2
+
+.sk-my-2
+    margin-top: $space-2
+    margin-bottom: $space-2
+
+.sk-px-3
+    padding-left: $space-3
+    padding-right: $space-3
+
+.sk-py-3
+    padding-top: $space-3
+    padding-bottom: $space-3
+
+.sk-mx-3
+    margin-left: $space-3
+    margin-right: $space-3
+
+.sk-my-3
+    margin-top: $space-3
+    margin-bottom: $space-3
+
+.sk-px-4
+    padding-left: $space-4
+    padding-right: $space-4
+
+.sk-py-4
+    padding-top: $space-4
+    padding-bottom: $space-4
+
+.sk-mx-4
+    margin-left: $space-4
+    margin-right: $space-4
+
+.sk-my-4
+    margin-top: $space-4
+    margin-bottom: $space-4
+
+.sk-px-5
+    padding-left: $space-5
+    padding-right: $space-5
+
+.sk-py-5
+    padding-top: $space-5
+    padding-bottom: $space-5
+
+.sk-mx-5
+    margin-left: $space-5
+    margin-right: $space-5
+
+.sk-my-5
+    margin-top: $space-5
+    margin-bottom: $space-5
+
+.sk-px-6
+    padding-left: $space-6
+    padding-right: $space-6
+
+.sk-py-6
+    padding-top: $space-6
+    padding-bottom: $space-6
+
+.sk-mx-6
+    margin-left: $space-6
+    margin-right: $space-6
+
+.sk-my-6
+    margin-top: $space-6
+    margin-bottom: $space-6
+
+.sk-px-7
+    padding-left: $space-7
+    padding-right: $space-7
+
+.sk-py-7
+    padding-top: $space-7
+    padding-bottom: $space-7
+
+.sk-mx-7
+    margin-left: $space-7
+    margin-right: $space-7
+
+.sk-my-7
+    margin-top: $space-7
+    margin-bottom: $space-7
+
+.sk-px-8
+    padding-left: $space-8
+    padding-right: $space-8
+
+.sk-py-8
+    padding-top: $space-8
+    padding-bottom: $space-8
+
+.sk-mx-8
+    margin-left: $space-8
+    margin-right: $space-8
+
+.sk-my-8
+    margin-top: $space-8
+    margin-bottom: $space-8
+
+.sk-px-9
+    padding-left: $space-9
+    padding-right: $space-9
+
+.sk-py-9
+    padding-top: $space-9
+    padding-bottom: $space-9
+
+.sk-mx-9
+    margin-left: $space-9
+    margin-right: $space-9
+
+.sk-my-9
+    margin-top: $space-9
+    margin-bottom: $space-9
+
+.sk-px-10
+    padding-left: $space-10
+    padding-right: $space-10
+
+.sk-py-10
+    padding-top: $space-10
+    padding-bottom: $space-10
+
+.sk-mx-10
+    margin-left: $space-10
+    margin-right: $space-10
+
+.sk-my-10
+    margin-top: $space-10
+    margin-bottom: $space-10
+
+.sk-px-11
+    padding-left: $space-11
+    padding-right: $space-11
+
+.sk-py-11
+    padding-top: $space-11
+    padding-bottom: $space-11
+
+.sk-mx-11
+    margin-left: $space-11
+    margin-right: $space-11
+
+.sk-my-11
+    margin-top: $space-11
+    margin-bottom: $space-11
+
+.sk-px-12
+    padding-left: $space-12
+    padding-right: $space-12
+
+.sk-py-12
+    padding-top: $space-12
+    padding-bottom: $space-12
+
+.sk-mx-12
+    margin-left: $space-12
+    margin-right: $space-12
+
+.sk-my-12
+    margin-top: $space-12
+    margin-bottom: $space-12
+
+.sk-px-14
+    padding-left: $space-14
+    padding-right: $space-14
+
+.sk-py-14
+    padding-top: $space-14
+    padding-bottom: $space-14
+
+.sk-mx-14
+    margin-left: $space-14
+    margin-right: $space-14
+
+.sk-my-14
+    margin-top: $space-14
+    margin-bottom: $space-14
+
+.sk-px-16
+    padding-left: $space-16
+    padding-right: $space-16
+
+.sk-py-16
+    padding-top: $space-16
+    padding-bottom: $space-16
+
+.sk-mx-16
+    margin-left: $space-16
+    margin-right: $space-16
+
+.sk-my-16
+    margin-top: $space-16
+    margin-bottom: $space-16
+
+.sk-px-20
+    padding-left: $space-20
+    padding-right: $space-20
+
+.sk-py-20
+    padding-top: $space-20
+    padding-bottom: $space-20
+
+.sk-mx-20
+    margin-left: $space-20
+    margin-right: $space-20
+
+.sk-my-20
+    margin-top: $space-20
+    margin-bottom: $space-20
+
+.sk-px-24
+    padding-left: $space-24
+    padding-right: $space-24
+
+.sk-py-24
+    padding-top: $space-24
+    padding-bottom: $space-24
+
+.sk-mx-24
+    margin-left: $space-24
+    margin-right: $space-24
+
+.sk-my-24
+    margin-top: $space-24
+    margin-bottom: $space-24
+
+.sk-px-28
+    padding-left: $space-28
+    padding-right: $space-28
+
+.sk-py-28
+    padding-top: $space-28
+    padding-bottom: $space-28
+
+.sk-mx-28
+    margin-left: $space-28
+    margin-right: $space-28
+
+.sk-my-28
+    margin-top: $space-28
+    margin-bottom: $space-28
+
+.sk-px-32
+    padding-left: $space-32
+    padding-right: $space-32
+
+.sk-py-32
+    padding-top: $space-32
+    padding-bottom: $space-32
+
+.sk-mx-32
+    margin-left: $space-32
+    margin-right: $space-32
+
+.sk-my-32
+    margin-top: $space-32
+    margin-bottom: $space-32
+
+.sk-px-36
+    padding-left: $space-36
+    padding-right: $space-36
+
+.sk-py-36
+    padding-top: $space-36
+    padding-bottom: $space-36
+
+.sk-mx-36
+    margin-left: $space-36
+    margin-right: $space-36
+
+.sk-my-36
+    margin-top: $space-36
+    margin-bottom: $space-36
+
+.sk-px-40
+    padding-left: $space-40
+    padding-right: $space-40
+
+.sk-py-40
+    padding-top: $space-40
+    padding-bottom: $space-40
+
+.sk-mx-40
+    margin-left: $space-40
+    margin-right: $space-40
+
+.sk-my-40
+    margin-top: $space-40
+    margin-bottom: $space-40
+
+.sk-px-44
+    padding-left: $space-44
+    padding-right: $space-44
+
+.sk-py-44
+    padding-top: $space-44
+    padding-bottom: $space-44
+
+.sk-mx-44
+    margin-left: $space-44
+    margin-right: $space-44
+
+.sk-my-44
+    margin-top: $space-44
+    margin-bottom: $space-44
+
+.sk-px-48
+    padding-left: $space-48
+    padding-right: $space-48
+
+.sk-py-48
+    padding-top: $space-48
+    padding-bottom: $space-48
+
+.sk-mx-48
+    margin-left: $space-48
+    margin-right: $space-48
+
+.sk-my-48
+    margin-top: $space-48
+    margin-bottom: $space-48
+
+.sk-px-52
+    padding-left: $space-52
+    padding-right: $space-52
+
+.sk-py-52
+    padding-top: $space-52
+    padding-bottom: $space-52
+
+.sk-mx-52
+    margin-left: $space-52
+    margin-right: $space-52
+
+.sk-my-52
+    margin-top: $space-52
+    margin-bottom: $space-52
+
+.sk-px-56
+    padding-left: $space-56
+    padding-right: $space-56
+
+.sk-py-56
+    padding-top: $space-56
+    padding-bottom: $space-56
+
+.sk-mx-56
+    margin-left: $space-56
+    margin-right: $space-56
+
+.sk-my-56
+    margin-top: $space-56
+    margin-bottom: $space-56
+
+.sk-px-60
+    padding-left: $space-60
+    padding-right: $space-60
+
+.sk-py-60
+    padding-top: $space-60
+    padding-bottom: $space-60
+
+.sk-mx-60
+    margin-left: $space-60
+    margin-right: $space-60
+
+.sk-my-60
+    margin-top: $space-60
+    margin-bottom: $space-60
+
+.sk-px-64
+    padding-left: $space-64
+    padding-right: $space-64
+
+.sk-py-64
+    padding-top: $space-64
+    padding-bottom: $space-64
+
+.sk-mx-64
+    margin-left: $space-64
+    margin-right: $space-64
+
+.sk-my-64
+    margin-top: $space-64
+    margin-bottom: $space-64
+
+// Directional margin utilities
+.sk-mt-0
+    margin-top: $space-0
+
+.sk-mr-0
+    margin-right: $space-0
+
+.sk-mb-0
+    margin-bottom: $space-0
+
+.sk-ml-0
+    margin-left: $space-0
+
+.sk-mt-1
+    margin-top: $space-1
+
+.sk-mr-1
+    margin-right: $space-1
+
+.sk-mb-1
+    margin-bottom: $space-1
+
+.sk-ml-1
+    margin-left: $space-1
+
+.sk-mt-2
+    margin-top: $space-2
+
+.sk-mr-2
+    margin-right: $space-2
+
+.sk-mb-2
+    margin-bottom: $space-2
+
+.sk-ml-2
+    margin-left: $space-2
+
+.sk-mt-3
+    margin-top: $space-3
+
+.sk-mr-3
+    margin-right: $space-3
+
+.sk-mb-3
+    margin-bottom: $space-3
+
+.sk-ml-3
+    margin-left: $space-3
+
+.sk-mt-4
+    margin-top: $space-4
+
+.sk-mr-4
+    margin-right: $space-4
+
+.sk-mb-4
+    margin-bottom: $space-4
+
+.sk-ml-4
+    margin-left: $space-4
+
+.sk-mt-5
+    margin-top: $space-5
+
+.sk-mr-5
+    margin-right: $space-5
+
+.sk-mb-5
+    margin-bottom: $space-5
+
+.sk-ml-5
+    margin-left: $space-5
+
+.sk-mt-6
+    margin-top: $space-6
+
+.sk-mr-6
+    margin-right: $space-6
+
+.sk-mb-6
+    margin-bottom: $space-6
+
+.sk-ml-6
+    margin-left: $space-6
+
+.sk-mt-7
+    margin-top: $space-7
+
+.sk-mr-7
+    margin-right: $space-7
+
+.sk-mb-7
+    margin-bottom: $space-7
+
+.sk-ml-7
+    margin-left: $space-7
+
+.sk-mt-8
+    margin-top: $space-8
+
+.sk-mr-8
+    margin-right: $space-8
+
+.sk-mb-8
+    margin-bottom: $space-8
+
+.sk-ml-8
+    margin-left: $space-8
+
+.sk-mt-9
+    margin-top: $space-9
+
+.sk-mr-9
+    margin-right: $space-9
+
+.sk-mb-9
+    margin-bottom: $space-9
+
+.sk-ml-9
+    margin-left: $space-9
+
+.sk-mt-10
+    margin-top: $space-10
+
+.sk-mr-10
+    margin-right: $space-10
+
+.sk-mb-10
+    margin-bottom: $space-10
+
+.sk-ml-10
+    margin-left: $space-10
+
+.sk-mt-11
+    margin-top: $space-11
+
+.sk-mr-11
+    margin-right: $space-11
+
+.sk-mb-11
+    margin-bottom: $space-11
+
+.sk-ml-11
+    margin-left: $space-11
+
+.sk-mt-12
+    margin-top: $space-12
+
+.sk-mr-12
+    margin-right: $space-12
+
+.sk-mb-12
+    margin-bottom: $space-12
+
+.sk-ml-12
+    margin-left: $space-12
+
+.sk-mt-14
+    margin-top: $space-14
+
+.sk-mr-14
+    margin-right: $space-14
+
+.sk-mb-14
+    margin-bottom: $space-14
+
+.sk-ml-14
+    margin-left: $space-14
+
+.sk-mt-16
+    margin-top: $space-16
+
+.sk-mr-16
+    margin-right: $space-16
+
+.sk-mb-16
+    margin-bottom: $space-16
+
+.sk-ml-16
+    margin-left: $space-16
+
+.sk-mt-20
+    margin-top: $space-20
+
+.sk-mr-20
+    margin-right: $space-20
+
+.sk-mb-20
+    margin-bottom: $space-20
+
+.sk-ml-20
+    margin-left: $space-20
+
+.sk-mt-24
+    margin-top: $space-24
+
+.sk-mr-24
+    margin-right: $space-24
+
+.sk-mb-24
+    margin-bottom: $space-24
+
+.sk-ml-24
+    margin-left: $space-24
+
+.sk-mt-28
+    margin-top: $space-28
+
+.sk-mr-28
+    margin-right: $space-28
+
+.sk-mb-28
+    margin-bottom: $space-28
+
+.sk-ml-28
+    margin-left: $space-28
+
+.sk-mt-32
+    margin-top: $space-32
+
+.sk-mr-32
+    margin-right: $space-32
+
+.sk-mb-32
+    margin-bottom: $space-32
+
+.sk-ml-32
+    margin-left: $space-32
+
+.sk-mt-36
+    margin-top: $space-36
+
+.sk-mr-36
+    margin-right: $space-36
+
+.sk-mb-36
+    margin-bottom: $space-36
+
+.sk-ml-36
+    margin-left: $space-36
+
+.sk-mt-40
+    margin-top: $space-40
+
+.sk-mr-40
+    margin-right: $space-40
+
+.sk-mb-40
+    margin-bottom: $space-40
+
+.sk-ml-40
+    margin-left: $space-40
+
+.sk-mt-44
+    margin-top: $space-44
+
+.sk-mr-44
+    margin-right: $space-44
+
+.sk-mb-44
+    margin-bottom: $space-44
+
+.sk-ml-44
+    margin-left: $space-44
+
+.sk-mt-48
+    margin-top: $space-48
+
+.sk-mr-48
+    margin-right: $space-48
+
+.sk-mb-48
+    margin-bottom: $space-48
+
+.sk-ml-48
+    margin-left: $space-48
+
+.sk-mt-52
+    margin-top: $space-52
+
+.sk-mr-52
+    margin-right: $space-52
+
+.sk-mb-52
+    margin-bottom: $space-52
+
+.sk-ml-52
+    margin-left: $space-52
+
+.sk-mt-56
+    margin-top: $space-56
+
+.sk-mr-56
+    margin-right: $space-56
+
+.sk-mb-56
+    margin-bottom: $space-56
+
+.sk-ml-56
+    margin-left: $space-56
+
+.sk-mt-60
+    margin-top: $space-60
+
+.sk-mr-60
+    margin-right: $space-60
+
+.sk-mb-60
+    margin-bottom: $space-60
+
+.sk-ml-60
+    margin-left: $space-60
+
+.sk-mt-64
+    margin-top: $space-64
+
+.sk-mr-64
+    margin-right: $space-64
+
+.sk-mb-64
+    margin-bottom: $space-64
+
+.sk-ml-64
+    margin-left: $space-64
+
+// Tag Component System
+.tags-display
+    display: flex
+    flex-wrap: wrap
+    gap: 1rem
+    margin-bottom: 1.5rem
+    
+    &.top-margin
+        margin-bottom: 3.5rem
+        margin-top: 1.5rem
+
+
+
+.tag
+    display: inline-flex
+    align-items: center
+    justify-content: center
+    // background: linear-gradient(135deg, #FC08EA 0%, #A408F3 50%, #6A08FC 100%)
+    border: 1px solid var(--sk-fg-4) 
+    color: var(--sk-fg-3)
+    font-weight: 600
+    text-transform: uppercase
+    border-radius: 3px
+    white-space: nowrap
+    letter-spacing: 0.5px
+    cursor: pointer
+    transition: all 0.2s ease
+    font-family: inherit
+    background: transparent
+    
+    // Default size (small for index pages)
+    padding: 6px 8px
+    line-height: 10px
+    font-size: 10px
+
+    // Button-specific hover effects
+    &:hover
+        background: var(--sk-bg-3)
+        color: var(--sk-fg-1)
+        border-color: var(--sk-fg-3)
+        transform: translateY(-1px)
+
+    &:focus
+        outline: 2px solid var(--sk-fg-accent)
+        outline-offset: 2px
+
+    &:active
+        transform: translateY(0)
+    
+    &.research
+        background: linear-gradient(135deg, #FC08EA 0%, #A408F3 50%, #6A08FC 100%)
+        color: var(--sk-bg-1)
+        border: none
+
+        &:hover
+            background: linear-gradient(135deg, #FD28ED 10%, #B428F6 60%, #7B28FD 110%)
+            transform: translateY(-1px)
+
+    &.software
+        background: linear-gradient(135deg, #4FC3F7 0%, #2196F3 50%, #1565C0 100%)
+        color: var(--sk-bg-1)
+        border: none
+
+        &:hover
+            background: linear-gradient(135deg, #6FD3F7 10%, #42A6F3 60%, #2575D0 110%)
+            transform: translateY(-1px)
+
+    // Large modifier for blog article pages
+    &.large
+        padding: 8px 12px
+        font-size: $text-sm
+        line-height: normal
+        border-radius: 6px
+        
+        @media (min-width: $breakpoint-sm)
+            padding: 10px 16px
+            font-size: $text-base
+
+
+
+.highlighted-tag-container
+    display: flex
+    align-items: center
+    justify-content: center
+    background: linear-gradient(135deg, #FC08EA 0%, #A408F3 50%, #6A08FC 100%)
+    padding: 8px 16px
+    border-radius: 3px
+
+
+.highlighted-tag
+    // color: white
+    color: var(--sk-bg-1)
+    font-weight: var(--sk-font-bold)
+    font-size: var(--sk-text-lg)
+    text-transform: uppercase
+    border: none
+
+.align-horizontal
+    display: flex
+    gap: 25px
+

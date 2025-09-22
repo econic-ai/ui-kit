@@ -18,4 +18,4 @@ export class Theme {
 	}
 }
 
-// export const theme = new Theme();
+export const theme = new Theme();
