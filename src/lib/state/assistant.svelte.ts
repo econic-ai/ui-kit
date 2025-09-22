@@ -1,23 +1,23 @@
 import { Persisted } from './Persisted.svelte';
 
-interface AssistantOffsets {
-    right: number;
-    bottom: number;
-}
+// interface AssistantOffsets {
+//     right: number;
+//     bottom: number;
+// }
 
-interface AssistantSize {
-	width: number;
-	height: number;
-}
+// interface AssistantSize {
+// 	width: number;
+// 	height: number;
+// }
 
-interface DockConfig {
-	isDocked: boolean;
-	dockedWidth: number; // percentage of viewport width
-}
+// interface DockConfig {
+// 	isDocked: boolean;
+// 	dockedWidth: number; // percentage of viewport width
+// }
 
-interface FullscreenConfig {
-	isFullscreen: boolean;
-}
+// interface FullscreenConfig {
+// 	isFullscreen: boolean;
+// }
 
 type AssistantMode = 'minimized' | 'floating' | 'docked' | 'fullscreen';
 type AssistantDefaultOpen = 'minimized' | 'floating' | 'docked' | 'fullscreen';
@@ -36,12 +36,12 @@ class AssistantState {
     minimized = $derived((this.#mode.current as AssistantMode) === 'minimized');
 
     // Offsets and size as reactive derived values
-    offsets = $derived(JSON.parse(this.#position.current) as AssistantOffsets);
-	size = $derived(JSON.parse(this.#size.current) as AssistantSize);
-    dockConfig = $derived({ isDocked: (this.#mode.current as AssistantMode) === 'docked', dockedWidth: Number(this.#dockWidth.current) || 25 } satisfies DockConfig);
-    fullscreenConfig = $derived({ isFullscreen: (this.#mode.current as AssistantMode) === 'fullscreen' } satisfies FullscreenConfig);
-    lastOpenState = $derived(this.#lastOpen.current as AssistantDefaultOpen);
-    mode = $derived(this.#mode.current as AssistantMode);
+    offsets = $derived(JSON.parse(this.#position.current));
+	size = $derived(JSON.parse(this.#size.current));
+    dockConfig = $derived({ isDocked: (this.#mode.current as AssistantMode) === 'docked', dockedWidth: Number(this.#dockWidth.current) || 25 });
+    fullscreenConfig = $derived({ isFullscreen: (this.#mode.current as AssistantMode) === 'fullscreen' });
+    lastOpenState = $derived(this.#lastOpen.current);
+    mode = $derived(this.#mode.current);
     navSelected = $derived(this.#navSelected.current);
 
 	toggle() {
