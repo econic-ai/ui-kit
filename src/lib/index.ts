@@ -2,4 +2,4 @@
 export type { NavigationLink, Document, Section, BannerData, PageData } from './types.js';
 
 // Export assistant
-export * from './assistant'; 
+export * from '../../../../src/components/assistant/index.js'; 
