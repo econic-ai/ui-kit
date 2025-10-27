@@ -65,6 +65,22 @@
 		return $page.url.pathname.startsWith('/' + slug);
 	}
 
+	// let custom_links = [{
+	// 	title: 'All Services',
+	// 	slug: 'custom-links',
+	// },
+	// {
+	// 	title: 'Resources',
+	// 	slug: 'assistant',
+	// },
+	// {
+	// 	title: 'Company',
+	// 	slug: 'assistant',
+	// },
+	// ]
+
+	// custom_links = links;
+
 </script>
 
 <svelte:window
