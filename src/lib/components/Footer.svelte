@@ -23,29 +23,29 @@
 
 		<div class="footer-logo-container">
 			<a href="/" class="logo-link">
-				<img src="/logos/footer/econic-logo.svg" alt="Econic Logo" width="160" />
+				<img src="/logos/econic.svg" alt="Econic Logo" width="160" />
 				<!-- <img src="../branding/econic_logo.svg" alt="Econic Logo" width="150" /> -->
 			</a>
 
-			<div class="footer-social-icons">
-				<a href="https://discord.gg/YpKq92XWz2" class="footer-social-icon discord">
+			<!-- <div class="footer-social-icons">
+				<a href="https://discord.gg/YpKq92XWz2" class="footer-social-icon discord"> -->
 					<!-- <img src="../icons/footer/discord-icon.svg" alt="Discord" width="24" height="24" /> -->
-				</a>		
-				<a href="/" class="footer-social-icon github">
+				<!-- </a>		
+				<a href="/" class="footer-social-icon github"> -->
 					<!-- <img src="../icons/footer/github-icon.svg" alt="GitHub" width="24" height="24" /> -->
-				</a>
-				<a href="/" class="footer-social-icon instagram">
+				<!-- </a> -->
+				<!-- <a href="/" class="footer-social-icon instagram"> -->
 					<!-- <img src="../icons/footer/instagram-icon.svg" alt="Instagram" width="24" height="24" /> -->
-				</a>
-				<a href="/" class="footer-social-icon youtube">
+				<!-- </a> -->
+				<!-- <a href="/" class="footer-social-icon youtube"> -->
 					<!-- <img src="../icons/footer/youtube-icon.svg" alt="YouTube" width="24" height="24" /> -->
-				</a>
-			</div>
+				<!-- </a> -->
+			<!-- </div> -->
 
 		</div>
 
 		<footer class="footer">
-			<div class="footer-grid">
+			<!-- <div class="footer-grid">
 				{#each footerLinks as link}
 					{#if link.sections && link.sections.length > 0}
 						<div class="footer-section">
@@ -58,9 +58,14 @@
 						</div>
 					{/if}
 				{/each}
-			</div>
+			</div> -->
 			<div class="footer-bottom">
+				<div class="footer-bottom-links">
+					<a href="/privacy">Privacy Policy</a>
+					<a href="/terms">Terms of Service</a>
+				</div>
 				<div class="copyright">
+
 					© {currentYear} Econic. All rights reserved.
 				</div>
 				<!-- <p>© {currentYear} Econic. All rights reserved.</p> -->
@@ -93,7 +98,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding-top: var(--sk-space-24);
+		/* padding-top: var(--sk-space-24); */
 	}
 
 	.top-border::before {
@@ -110,7 +115,7 @@
 	.footer {
 		position: relative;
 		width: 100%;
-		padding-top: var(--sk-space-24);
+		/* padding-top: var(--sk-space-24); */
 		padding-left: var(--sk-space-24);
 		padding-right: var(--sk-space-24);
 		/* background-color: var(--sk-bg-0, #121212); */
@@ -132,7 +137,18 @@
 	}
 
 
+	.footer-bottom-links {
+		display: flex;
+		flex-direction: row;
+		gap: 2rem;
+		margin-right: 2rem;
+	}
 
+	.footer-bottom-links a {
+		color: var(--sk-fg-3);
+		text-decoration: none;
+		font-size: var(--sk-text-base);
+	}
 
 	.logo-link {
 		display: inline-block;
