@@ -249,7 +249,7 @@
 
 {#if open}
 	<div class="mobile">
-		<MobileMenu {links} {current} {user} {session} onclose={() => (open = false)} />
+		<MobileMenu {links} {current} {user} onclose={() => (open = false)} />
 	</div>
 {/if}
 
@@ -369,14 +369,14 @@
 
 	.links {
 		display: flex;
-		width: 100%;
+		/* width: 100%;
 		height: 100%;
 		justify-content: center;
-		align-items: center;
+		align-items: center; */
 		/* margin-left: 16px; */
 
 		a {
-			color: inherit;
+			color: var(--sk-fg-3);
 			font: var(--sk-font-ui-medium);
 			white-space: nowrap;
 			height: 100%;
@@ -388,22 +388,23 @@
 			position: relative;
 			z-index: 1002; /* Above the mega menu */
 			font-size: 14px;
+			margin: 0 0.5rem;
 
-			&::after {
-				content: '';
-				position: absolute;
-				bottom: 0px;
-				left: 0;
-				width: 100%;
-				height: 0.5px;
-				opacity: 0;
-				transition: opacity 0.2s ease;
-				z-index: 1002; /* Above the mega menu */
+
+			&:hover {
+				/* opacity: 1; */
+				/* background-color: var(--sk-fg-accent); */
+				background-color: var(--sk-bg-3);
+				color: var(--sk-fg-2);
+				border-radius: 5px;
+				transition: all 0.2s ease;
+
 			}
 
-			&:hover::after {
-				opacity: 1;
-				background-color: var(--sk-fg-accent);
+			&.current {
+				color: var(--sk-fg-1);
+				background-color: var(--sk-bg-3);
+				border-radius: 5px;				
 			}
 
 			/* &[aria-current='page']::after {
@@ -412,7 +413,7 @@
 			} */
 
 			&:not(.secondary) {
-				padding: 1.25rem;
+				padding: 0.75rem 2rem;
 			}
 
 			/* &.secondary {
@@ -523,7 +524,7 @@
 			margin-left: 20px; */
 			margin: 0 12px 0 2rem;
 			width: 115px;
-			background: url(../branding/econic_logo.svg) no-repeat 0 50% /
+			background: url(../branding/econic.svg) no-repeat 0 50% /
 				calc(100% - var(--padding-right)) auto;			
 		}
 
@@ -732,13 +733,13 @@
 		text-decoration: none;
 		/* background-color: black;	 */
 
-		&:hover {
+		/* &:hover {
 			color: var(--sk-fg-accent, #0070f3);
 			background-color: var(--sk-bg-2);
 			transition: background-color 0.3s ease;
 
 			/* border-color: hsla(var(--sk-fg-1), 8%, 10%, 0.85); */
-		}
+		/* } */
 
 	}
 
@@ -798,13 +799,13 @@
 		background: rgba(0, 112, 243, 0.05); 
 	} */
 
-	.links a.active {
+	/* .links a.active {
 		color: var(--sk-fg-accent, #0070f3);
 	}
 
 	.links a.current {
 		color: var(--sk-fg-accent, #0070f3);
-	}
+	} */
 
 	.section-title {
 		font-weight: 600;

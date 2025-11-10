@@ -136,9 +136,12 @@
 			</button>
 
 			
-			<a href="{appMountPoint}/login" class="auth-button nav-button inverted">
-				<span>Register | Sign in</span>
+			<a href="{appMountPoint}/login" class="auth-button nav-button ">
+				<span>Sign in</span>
 			</a>			
+			<a href="{appMountPoint}/login" class="auth-button nav-button inverted">
+				<span>Start a Project</span>
+			</a>						
 
 		{/if}
 	</div>
@@ -211,11 +214,13 @@
 		font-size: 1.4rem !important;
 		color: var(--sk-fg-2);
 		/* background-color: var(--sk-bg-1); */
-		border-radius: 8px;
+		border-radius: 5px;
 		border: none;
 		/* margin: 0 1rem; */
+		margin-left: 1rem;
 		text-decoration: none;
 		transition: all 0.3s ease;
+		border: 1px solid var(--sk-bg-4);
 
 		&:hover {
 			/* color: var(--sk-bg-2); */
@@ -223,11 +228,15 @@
 			transition: all 0.3s ease;
 		}
 
-/* 
+
 		&.inverted {
 			color: var(--sk-fg-2);
 			background-color: var(--sk-bg-2);
-		} */
+		}
+
+		&.inverted:hover {
+			background-color: var(--sk-bg-4);
+		}
 		
 	}	
 
