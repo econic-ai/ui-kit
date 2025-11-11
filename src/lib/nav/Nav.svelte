@@ -20,6 +20,9 @@
 	// @ts-ignore - esrap parser has issues with HTMLButtonElement type annotations
 	let menu_button: HTMLButtonElement;
 	
+	// Dropdown state management
+	let openDropdown = $state<string | null>(null);
+	
 	// Backdrop state management (after open is declared)
 	let backdropState = $derived.by(() => {
 		if (open) return 'mobile-open';
@@ -129,90 +132,68 @@
 		>
 			<div class="links">
 				{#each links as link}
-					<a
-						href="/{link.slug}"
+					<div 
+						class="nav-item-wrapper"
+						role="group"
 						onmouseenter={() => {
+							if (link.sections) {
+								openDropdown = link.slug;
+							}
 							hoveredMenu = link.slug;
 							showMegaMenu = true;
 						}}
 						onmouseleave={() => {
+							if (link.sections) {
+								openDropdown = null;
+							}
 							hoveredMenu = null;
 						}}
-						onfocus={() => {
+						onfocusin={() => {
+							if (link.sections) {
+								openDropdown = link.slug;
+							}
 							hoveredMenu = link.slug;
 							showMegaMenu = true;
 						}}
-						onblur={() => {
+						onfocusout={() => {
+							if (link.sections) {
+								openDropdown = null;
+							}
 							hoveredMenu = null;
 						}}
-						onclick={() => {
-							showMegaMenu = false;
-						}}
-						class:active={hoveredMenu === link.slug}
-						class:current={isCurrentSection(link.slug)}
 					>
-						{link.title}
-					</a>
-				{/each}
-			</div>
-		</div>
+						<a
+							href="/{link.slug}"
+							onclick={() => {
+								showMegaMenu = false;
+								openDropdown = null;
+							}}
+							class:active={hoveredMenu === link.slug}
+							class:current={isCurrentSection(link.slug)}
+						>
+							{link.title} {#if link.sections}
+								<i class="nav-dropdown-icon fa-solid fa-caret-down"></i>
+							{/if}
+						</a>
 
-		<div
-			class="mega-menu"
-			class:visible={showMegaMenu}
-			onmouseenter={() => (showMegaMenu = true)}
-			onmouseleave={() => (showMegaMenu = false)}
-			role="navigation"
-		>
-				<div
-					class="mega-menu-grid"
-				>
-					{#each links as link}
 						{#if link.sections}
-							<div class="mega-column {hoveredMenu === link.slug ? 'active' : ''}">
-								<!-- Section icon at the top -->
-								
-								<a class="section-title __text_md" href={'/' + link.slug} class:selected={isCurrentSection(link.slug)} onclick={() => (showMegaMenu = false)}>
-									<!-- <div class="section-icon-wrapper">
-										<img
-											src="/logos/logo_mg.png"
-											alt={link.title + ' icon'}
-											class="icon"
-											width="64"
-											height="64"
-										/>
-									</div> -->
-									<!-- <div class="subIcon-box larger">
-										<i
-											class="menu-item-icon {isCurrentSection(link.slug) ? link.iconActive ?? link.icon : link.icon}"
-											aria-label={link.title + ' icon'}
-										></i>
-									</div> -->
-									{link.title}
-									{#if link.subtitle}
-										<p class="section-subtitle">{link.subtitle}</p>
-									{/if}
-								</a>
-								
-								<div class="menu-sub-items">
-									{#each link.sections as item}
-										<a
-											class="menu-sub-item"
-											href={item.path || '#'}
-											class:active={hoveredMenu === link.slug}
-											class:selected={isCurrentPage(item.path || '')}
-											onclick={() => (showMegaMenu = false)}
+							<div class="dropdown-menu" class:visible={openDropdown === link.slug}>
+								<div class="dropdown-content">
+									{#each link.sections as section}
+										<a 
+											href={section.path} 
+											class="dropdown-item"
+											onclick={() => {
+												openDropdown = null;
+											}}
 										>
-											<div class="subIcon-box">
-												<i
-													class="menu-item-icon {isCurrentPage(item.path || '') ? item.iconActive ?? item.icon : item.icon}"
-													aria-label={item.title + ' icon'}
-												></i>
+											<div class="dropdown-item-icon">
+												<i class="{section.icon}" aria-label="{section.title} icon"></i>
 											</div>
-											<div class="menu-sub-item-content">
-												<span class="menu-item-title">{item.title}</span>
-												{#if item.description}
-													<span class="menu-item-description __text_sm">{item.description}</span>
+											<div class="dropdown-item-text">
+												<div class="dropdown-item-title">{section.title}</div>
+												{#if section.description}
+													<div class="dropdown-item-description">{section.description}</div>
 												{/if}
 											</div>
 										</a>
@@ -220,9 +201,12 @@
 								</div>
 							</div>
 						{/if}
-					{/each}
-				</div>
+					</div>
+				{/each}
 			</div>
+		</div>
+
+
 	</div>
 
 	<div class="desktop desktop-secondary-nav">
@@ -314,7 +298,7 @@
 		}
 
 		/* Mobile positioning (bottom) */
-		@media (max-width: 1048px) {
+		@media (max-width: 1148px) {
 			top: unset;
 			bottom: 0;
 
@@ -357,7 +341,7 @@
 		font: var(--sk-font-ui-medium);
 	}
 
-	@media (max-width: 1048px) {
+	@media (max-width: 1148px) {
 		nav {
 			transition: transform 0.2s;
 		}
@@ -367,6 +351,17 @@
 		}
 	}
 
+	.nav-dropdown-icon {
+		font-size: 12px;
+		margin-left: 0.7rem;
+	}
+
+	.nav-item-wrapper {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+	}
+
 	.links {
 		display: flex;
 		/* width: 100%;
@@ -374,63 +369,136 @@
 		justify-content: center;
 		align-items: center; */
 		/* margin-left: 16px; */
+	}
 
-		a {
-			color: var(--sk-fg-3);
-			font: var(--sk-font-ui-medium);
-			white-space: nowrap;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			text-decoration: none;
-			outline-offset: -2px;
-			font-weight: 500;
-			position: relative;
-			z-index: 1002; /* Above the mega menu */
-			font-size: 14px;
-			margin: 0 0.5rem;
+	/* Main navigation link styles - only for direct children */
+	.nav-item-wrapper > a {
+		color: var(--sk-fg-3);
+		font: var(--sk-font-ui-medium);
+		white-space: nowrap;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+		outline-offset: -2px;
+		font-weight: 500;
+		position: relative;
+		z-index: 1002; /* Above the mega menu */
+		font-size: 14px;
+		margin: 0 0.5rem;
+		padding: 0.75rem 2rem;
 
+		&:hover {
+			/* opacity: 1; */
+			/* background-color: var(--sk-fg-accent); */
+			background-color: var(--sk-bg-3);
+			color: var(--sk-fg-2);
+			border-radius: 5px;
+			transition: all 0.2s ease;
 
-			&:hover {
-				/* opacity: 1; */
-				/* background-color: var(--sk-fg-accent); */
-				background-color: var(--sk-bg-3);
-				color: var(--sk-fg-2);
-				border-radius: 5px;
-				transition: all 0.2s ease;
-
-			}
-
-			&.current {
-				color: var(--sk-fg-1);
-				background-color: var(--sk-bg-3);
-				border-radius: 5px;				
-			}
-
-			/* &[aria-current='page']::after {
-				opacity: 1;
-				background-color: var(--sk-fg-accent);
-			} */
-
-			&:not(.secondary) {
-				padding: 0.75rem 2rem;
-			}
-
-			/* &.secondary {
-				box-shadow: none;
-				line-height: 1;
-				padding: 2rem;
-
-				&[aria-current='page'] {
-					color: var(--sk-fg-accent);
-					box-shadow: inset 0 -1px 0 0 var(--sk-fg-accent);
-				}
-
-				&::after {
-					background-color: transparent;
-				}
-			} */
 		}
+
+		&.current {
+			color: var(--sk-fg-1);
+			background-color: var(--sk-bg-3);
+			border-radius: 5px;				
+		}
+
+		/* &[aria-current='page']::after {
+			opacity: 1;
+			background-color: var(--sk-fg-accent);
+		} */
+	}
+
+	/* Dropdown Menu Styles */
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 1001;
+		padding-top: 12px;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.2s ease, visibility 0.2s ease;
+		pointer-events: none;
+
+		&.visible {
+			opacity: 1;
+			visibility: visible;
+			pointer-events: all;
+		}
+	}
+
+	.dropdown-content {
+		background: var(--sk-bg-0);
+		border: 1px solid var(--sk-bg-4);
+		border-radius: 8px;
+		padding: 0;
+		min-width: 280px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+		:root.dark & {
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+			border-color: var(--sk-raised-highlight);
+		}
+	}
+
+	.dropdown-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+		padding: 1rem;
+		border-radius: 6px;
+		text-decoration: none;
+		color: var(--sk-fg-2);
+		transition: all 0.2s ease;
+		margin: 0 !important;
+		height: auto !important;
+
+		&:hover {
+			background-color: var(--sk-bg-3);
+			color: var(--sk-fg-1);
+		}
+	}
+
+	.dropdown-item-icon {
+		width: 40px;
+		height: 40px;
+		border-radius: 6px;
+		background-color: var(--sk-bg-0);
+		border: 1px solid var(--sk-bg-4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		margin-top: 0.2rem;
+
+		i {
+			font-size: 14px;
+			color: var(--sk-fg-3);
+		}
+	}
+
+	.dropdown-item-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.dropdown-item-title {
+		font: var(--sk-font-ui-medium);
+		font-weight: 600;
+		font-size: 14px;
+		color: inherit;
+	}
+
+	.dropdown-item-description {
+		font: var(--sk-font-ui-small);
+		font-size: 12px;
+		color: var(--sk-fg-3);
+		line-height: 1.4;
 	}
 
 	.menu {
@@ -476,7 +544,7 @@
 		display: block;
 	}
 
-	@media (max-width: 1048px) {
+	@media (max-width: 1148px) {
 		nav {
 			top: unset;
 			bottom: 0;
@@ -518,7 +586,7 @@
 		}
 	}
 
-	@media (min-width: 1049px) {
+	@media (min-width: 1149px) {
 		.home-link {
 			/* margin-right: 40px;
 			margin-left: 20px; */
@@ -597,272 +665,6 @@
 		height: 100%;
 	}
 
-	.mega-menu {
-		position: absolute;
-		top: var(--sk-nav-height); /* Ensure it drops just below nav */
-		left: 0;
-		width: 100vw; /* Take up full screen */
-		padding: 2rem;
-		border-top: 1px solid #ccc;
-		border-bottom: 1px solid #ccc;
-		z-index: 1001;
-		padding-bottom: 5rem;
-		
-		/* Background handled by backdrop element, but mega menu needs its own background */
-		background-color: rgba(255, 255, 255, 0.6); /* semi-transparent white for light mode */
-		backdrop-filter: blur(15px); /* Keep backdrop filter for mega menu content area */
-		-webkit-backdrop-filter: blur(15px); /* for Safari support */
-		
-		/* Visibility and transition controls */
-		opacity: 0;
-		visibility: hidden;
-		transform: translateY(-10px);
-		transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-		pointer-events: none;
-	}
-
-	.mega-menu.visible {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(0);
-		pointer-events: auto;
-	}
-
-	.mega-menu-grid {
-		columns: auto;
-		column-width: 250px;
-		column-gap: 0rem;
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 0 2rem;
-	}
-
-	.section-icon-wrapper {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-bottom: 1rem;
-	}
-
-	/* .section-icon-wrapper .icon {
-		width: 4vw;
-		height: 4vw;
-		max-width: 80px;
-		max-height: 80px;
-		object-fit: contain;
-		margin-bottom: 2rem;
-	} */
-
-	.mega-column {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		align-self: start;
-		break-inside: avoid;
-		margin-bottom: 2rem;
-	}
-
-	/* .mega-column h3 {
-		font-family: Inter;
-		font-style: normal;
-		font-weight: 600;
-		font-size: 1.6rem;
-		line-height: 2rem;
-	} */
-
-	.mega-column a {
-		transition: color 0.3s ease, text-decoration 0.3s ease;
-		color: var(--sk-fg-3);
-	}
-
-	.mega-column a:hover {
-		color: var(--sk-fg-1);
-		text-decoration: underline;
-	}
-
-	.menu-sub-item-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.menu-item-title {
-		font-weight: 600;
-		font-size: 14px;
-		
-	}
-
-	.menu-item-description {
-		/* color: var(--sk-fg-3); */
-		font-family: Inter;
-		font-style: normal;
-		font-weight: 300;
-		font-size: 1.2rem;
-		line-height: 1.5rem;
-		width: 100%;
-		margin: 0;
-	}
-
-	.menu-sub-items {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		/* padding-top: 1.5rem; */
-	}
-
-	.menu-sub-item {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		position: relative;
-		/* transition: color 2s ease; */
-		padding: 0.5rem 1rem 0.5rem 0.5rem;
-		margin: 0 0.5rem;
-
-		transition:
-			color 2s ease,
-			background-color 3s ease,
-			border-color 0.3s ease,
-			border-radius 0.3s ease;
-
-		/* gap: 1rem; */
-		border-radius: 12px;
-		border-style: solid;
-		border-color: transparent;
-		border-width: thin;
-		text-decoration: none;
-		/* background-color: black;	 */
-
-		/* &:hover {
-			color: var(--sk-fg-accent, #0070f3);
-			background-color: var(--sk-bg-2);
-			transition: background-color 0.3s ease;
-
-			/* border-color: hsla(var(--sk-fg-1), 8%, 10%, 0.85); */
-		/* } */
-
-	}
-
-	.subIcon-box {
-		width: 42px;
-		height: 42px;
-		border-radius: 8px;
-		background-color: var(--sk-bg-1);
-		transition: background-color 0.3s ease;
-		flex-shrink: 0;
-		border: 0.5px solid var(--sk-bg-4);
-		display: flex;              
-		align-items: center;        
-		justify-content: center;   
-	}
-
-	.subIcon-box.larger {
-		width: 64px;
-		height: 64px;
-		margin-bottom: 8px;
-
-		/* .menu-item-icon {
-			font-size: 18px;
-		} */
-	}
-
-	.menu-item-icon {
-		font-size: 16px;
-		color: var(--sk-fg-3);
-		transition: color 0.3s ease;
-	}
-
-	.menu-sub-item:hover .subIcon-box {
-		background-color: var(--sk-bg-2);
-		/* background-color: var(--sk-fg-2) !important; */
-		transition: background-color 0.3s ease;
-	}
-
-	.menu-sub-item:hover .menu-item-icon {
-		color: var(--sk-fg-2);
-
-	}
-
-	/* Selected state - inverts colors and overrides hover */
-	.menu-sub-item.selected .subIcon-box {
-		background-color: var(--sk-fg-2) !important;
-		border-color: var(--sk-fg-1) !important;
-		font-weight: 800 !important;
-	}
-
-	.menu-sub-item.selected .menu-item-icon {
-		color: var(--sk-bg-1) !important;
-	}
-
-	/* .mega-column.active {
-		border: 2px solid var(--sk-fg-accent, #0070f3);
-		background: rgba(0, 112, 243, 0.05); 
-	} */
-
-	/* .links a.active {
-		color: var(--sk-fg-accent, #0070f3);
-	}
-
-	.links a.current {
-		color: var(--sk-fg-accent, #0070f3);
-	} */
-
-	.section-title {
-		font-weight: 600;
-		/* font-size: 2rem; */
-		transition: color 0.3s ease;
-		padding: 3rem 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		border-radius: 12px;
-		text-decoration: none;
-		color: var(--sk-fg-3)!important;
-
-		&:hover {
-			color: var(--sk-fg-1, #0070f3)!important;
-			/* background-color: var(--sk-bg-2); */
-			transition: all 0.3s ease;
-
-			.section-subtitle {
-				color: var(--sk-fg-1, #0070f3)!important;
-				transition: all 0.3s ease;
-
-			}
-		}
-	}
-
-	.section-subtitle {
-		font-size: 1.2rem;
-		color: var(--sk-fg-3);
-		margin: 0 0 0.5rem 0;
-		font-weight: 400;
-		line-height: 1.4;
-		transition: all 0.3s ease;
-
-	}
-
-	:root.dark .mega-menu {
-		background-color: hsla(var(--sk-bg-hue), 5%, 7%, 0.9); /* darker for dark mode */
-		color: white;
-		border-color: #333;
-	}
-
-	/* :root.dark .mega-column a {
-		color: var(--sk-fg-1);
-	} */
-
-	/* :root.dark .mega-column a:hover {
-		color: var(--sk-fg-accent, #00ffd5);
-	} */
-
-	/* :root.dark .subIcon-box {
-		background-color: var(--sk-bg-1, #333);
-	} */
-
-	/* :root.dark .menu-sub-item:hover .subIcon-box {
-		background-color: var(--sk-fg-accent, #00ffd5);
-	} */
 </style>
 
 

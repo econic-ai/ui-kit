@@ -54,7 +54,7 @@ The main shell of the application. It provides a slot for the top navigation, th
 		top: var(--sk-nav-height);
 	}
 
-	@media (max-width: 832px) {
+	@media (max-width: 1148px) {
 		main {
 			top: 0!important;
 			height: 100vh;
