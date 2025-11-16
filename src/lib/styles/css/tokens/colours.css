@@ -40,6 +40,11 @@
 	--shiki-token-punctuation: var(--shiki-color-text);
 	--shiki-token-link: var(--shiki-token-keyword);
 
+	/* Gradients */
+	--sk-gradient-1: linear-gradient(135deg, #FC08EA 0%, #A408F3 50%, #6A08FC 100%);
+	--sk-gradient-2: linear-gradient(135deg, #12121240 0%, #1f0c3440 50%, #12121240 100%);
+	--sk-gradient-3: linear-gradient(135deg, #E5E5E5 0%, #666666 100%);
+
 	/* Misc */
 	--sk-scrollbar: rgba(0, 0, 0, 0.3);
 	--sk-shadow: drop-shadow(0px 0px 14px rgba(0, 0, 0, 0.1));
@@ -76,6 +81,11 @@
 	--shiki-token-keyword: hsl(204, 88%, 65%);
 	--shiki-token-function: hsl(19, 67%, 75%);
 	--shiki-token-string: hsl(41, 37%, 68%);
+
+	/* Gradients */
+	--sk-gradient-1: linear-gradient(135deg, #FC08EA 0%, #A408F3 50%, #6A08FC 100%);
+	--sk-gradient-2: linear-gradient(135deg, #12121240 0%, #1f0c3440 50%, #12121240 100%);
+	--sk-gradient-3: linear-gradient(135deg, #000 0%, #FFF 100%);
 
 	/* Misc */
 	--sk-scrollbar: rgba(255, 255, 255, 0.3);

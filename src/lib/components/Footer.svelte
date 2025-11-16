@@ -153,7 +153,7 @@
 	.logo-link {
 		display: inline-block;
 		/* width: 150px; */
-		background-image: url(../branding/econic_logo.svg);
+		background-image: url(../branding/econic.svg);
 		background-repeat: no-repeat;
 		background-position: 50% 50%;
 		background-size: contain;

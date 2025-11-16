@@ -16,18 +16,33 @@ $color-link: hsl(304, 98%, 51%)
 
 $dark-bg: #1e1c20
 
-$pink: #FC08EA
-$hot-pink: #A408F3
-$purple:  #6A08FC 
+// Gradient colour stops - generalised naming
+$gradient-colour-1: #FC08EA
+$gradient-colour-2: #A408F3
+$gradient-colour-3: #6A08FC 
+
+// Legacy colour names (deprecated - use gradient-colour-* instead)
+$pink: $gradient-colour-1
+$hot-pink: $gradient-colour-2
+$purple: $gradient-colour-3
+
 $muted-grey: #4d596c
 $light-grey: #69798c
 
 $btn-hover-bg: rgb(28, 18, 39) 
 
-$gradient-1: linear-gradient(135deg, $pink 0%, $hot-pink 50%, $purple 100%)
-$gradient-1b: linear-gradient(135deg, $pink 0%, $hot-pink 100%)
+// Gradient definitions
+// Gradient 1: Primary vibrant gradient (pink to purple)
+$gradient-1: linear-gradient(135deg, $gradient-colour-1 0%, $gradient-colour-2 50%, $gradient-colour-3 100%)
 
+// Gradient 2: Subtle dark overlay
 $gradient-2: linear-gradient(135deg, #12121240 0%, #1f0c3440 50%, #12121240 100%)
+
+// Gradient 3: Gray gradient (dark theme: dark to light, light theme: light to dark)
+// 135deg = top-left to bottom-right
+$gradient-3-dark: linear-gradient(135deg, #333333 0%, #FFF 100%)
+$gradient-3-light: linear-gradient(135deg, #E5E5E5 0%, #666666 100%)
+$gradient-3: $gradient-3-dark // Default to dark theme
 
 $box-shadow-purple: 0 -1px 15px 2px rgba(117, 60, 183, 0.1), 0 2px 10px 2px rgba(117, 60, 183, 0.2)
 $border-purple: 1px solid rgba(117, 60, 183, 0.5) 

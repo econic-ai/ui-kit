@@ -413,17 +413,17 @@
 		margin-left: 1.5rem;
 		width: 8.4rem;
 		height: 100%;
-		background: url(../branding/econic_logo.svg) no-repeat 0 50% / calc(100% - var(--padding-right))
+		background: url(../branding/econic.svg) no-repeat 0 50% / calc(100% - var(--padding-right))
 			auto;
 		padding: 0 var(--padding-right) 0 calc(var(--sk-page-padding-side) + 0rem);
 
 		/* :root.dark & {
-			background-image: url(../branding/econic_logo.svg);
+			background-image: url(../branding/econic.svg);
 		} */
 
 
 		/* &.in_app {
-			background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+			background: url(../branding/econic_logo.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
 		} */
 	}
 
@@ -469,18 +469,18 @@
 			width: 10.2rem;
 			/* background: url(../branding/econic_logo.svg) no-repeat 0 50% /
 				calc(100% - var(--padding-right)) auto; */
-			background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+			background: url(../branding/econic_logo.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
 			width: 3.5rem;
 
 			padding: 0 var(--padding-right) 0 calc(var(--sk-page-padding-side) + 0rem);
 			/* width: 3.5rem; */
 /* 
 			:root.dark & {
-				background-image: url(../branding/econic_logo.svg);
+				background-image: url(../branding/econic.svg);
 			} */
 
 			/* &.in_app {
-				background: url(../branding/econic_logo_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
+				background: url(../branding/econic_letter.svg) no-repeat 0 50% / calc(100% - var(--padding-right)) auto;
 				width: 3.5rem;
 			} */
 		}
