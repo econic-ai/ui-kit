@@ -21,7 +21,7 @@ body {
 	font-family: var(--sk-font-family-body);
 	line-height: 1.5;
 	color: var(--sk-fg-2);
-	/* background-color: var(--sk-bg-1); */
+	/* background-color: var(--sk-bg-0); */
 	width: 100%;
 	tab-size: 2;
 	-moz-tab-size: 2;
