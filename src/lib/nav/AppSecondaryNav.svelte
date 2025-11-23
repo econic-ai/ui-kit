@@ -152,7 +152,7 @@
 		width: 100%;
 		display: flex;
 		justify-content: flex-end;
-		padding: 0 1rem;
+		padding: 0 1rem 0 0;
 		height: 100%;
 	}
 
@@ -219,6 +219,7 @@
 		/* margin: 0 1rem; */
 		margin-left: 1rem;
 		text-decoration: none;
+		white-space: nowrap;
 		transition: all 0.3s ease;
 		border: 1px solid var(--sk-bg-4);
 

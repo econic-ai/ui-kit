@@ -197,7 +197,7 @@
 		position: relative;
 		padding-left: 2rem;
 
-		&::before {
+		/* &::before {
 			content: "";
 			position: absolute;
 			left: 4px;
@@ -207,7 +207,7 @@
 			height: 3px;
 			background-color: var(--sk-fg-4);
 			border-radius: 5px;
-		}
+		} */
 
 		&[aria-current='page']::before {
 			background-color: var(--sk-fg-accent);
