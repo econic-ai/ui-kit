@@ -125,7 +125,7 @@
 		margin-top: 1rem;
 	}
 
-	.second-level::before {
+	/* .second-level::before {
 		content: "";
 		position: absolute;
 		left: 4px;
@@ -135,7 +135,7 @@
 		height: 3px;
 		background-color: var(--sk-fg-4);
 		border-radius: 5px;
-	}
+	} */
 
 	[aria-current='page'].second-level::before {
 		background-color: var(--sk-fg-accent);
