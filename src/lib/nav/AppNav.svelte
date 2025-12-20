@@ -492,7 +492,7 @@
 			margin-left: 20px; */
 			margin: 0 12px 0 2rem;
 			width: 115px;
-			background: url(../branding/econic_logo.svg) no-repeat 0 50% /
+			background: url(../branding/econic.svg) no-repeat 0 50% /
 				calc(100% - var(--padding-right)) auto;			
 		}
 

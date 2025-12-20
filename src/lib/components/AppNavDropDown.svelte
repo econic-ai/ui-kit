@@ -24,7 +24,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-{#if visible}
+{#if true}
 	<div 
 		class="app-nav-dropdown"
 		role="menu"
@@ -47,7 +47,7 @@
 
 		<!-- Omni Search Section -->
 		<div class="search-section">
-			<button class="search-content menu-item" onclick={triggerSearch} aria-label="Open search">
+			<button class="search-content" onclick={triggerSearch} aria-label="Open search">
 				<span class="search-label">Omni Search</span>
 				<div class="search-controls">
 					<div class="search-shortcut">⌘ K</div>
@@ -161,6 +161,7 @@
 		overflow: hidden;
 		color: var(--sk-fg-1, #ffffff);
 		margin-right: 1rem;
+		padding-bottom: 0.2rem;
 	}
 
 	.profile-section {
@@ -214,7 +215,7 @@
 	}
 
 	.search-section {
-		padding: 0 1.5rem 1.5rem 1.5rem;
+		padding: 0.25rem 0.5rem; /* Same as menu-section */
 	}
 
 	.search-content {
@@ -222,7 +223,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.75rem 0.75rem; /* Match menu item padding */
+		padding: 1.5rem 1.5rem; /* Larger padding than menu-item (0.75rem 1rem) for bigger hover area */
 		background: none;
 		border: none;
 		border-radius: 8px;
@@ -270,11 +271,11 @@
 	.divider {
 		height: 1px;
 		background-color: var(--sk-bg-4, #333);
-		margin: 0.5rem 1.5rem;
+		margin: 0.5rem 0; /* Full width - extends to edges */
 	}
 
 	.menu-section {
-		padding: 0.25rem 1rem; /* Tighter spacing */
+		padding: 0.25rem 0.5rem; /* Tighter spacing */
 	}
 
 	.menu-item {
@@ -282,7 +283,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.75rem 0.75rem; /* Reduced padding for tighter spacing */
+		padding: 0.75rem 1rem; /* Reduced padding for tighter spacing */
 		background: none;
 		border: none;
 		color: var(--sk-fg-1, #ffffff);
