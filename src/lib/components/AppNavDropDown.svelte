@@ -24,7 +24,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-{#if true}
+{#if visible}
 	<div 
 		class="app-nav-dropdown"
 		role="menu"
