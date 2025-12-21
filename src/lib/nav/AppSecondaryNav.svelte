@@ -2,8 +2,19 @@
 	import { AppNavDropDown } from '../components';
 	import { search } from '../state/search.svelte';
 	import { theme } from '../state';
+	import type { Snippet } from 'svelte';
 
-	let { user, appMountPoint = '', webMountPoint = '' } = $props();
+	let { 
+		user, 
+		appMountPoint = '', 
+		webMountPoint = '',
+		customControls
+	}: {
+		user: any;
+		appMountPoint?: string;
+		webMountPoint?: string;
+		customControls?: Snippet;
+	} = $props();
 
 	// Dropdown state
 	let showDropdown = $state(false);
@@ -79,18 +90,12 @@
 
 		<!-- Auth Button -->
 		{#if isLoggedIn}
-			<!-- <a href="/" class="auth-button nav-button inverted" data-sveltekit-reload>
-				<span>Documentation</span>
-			</a>
-			<button
-				class="icon-link search-button"
-				aria-label="Search"
-				onclick={() => {
-					search.active = true;
-				}}
-			>
-				<i class="fa-solid fa-search" aria-hidden="true"></i>
-			</button> -->
+			<!-- Custom controls slot (e.g., scope selector) -->
+			{#if customControls}
+				<div class="custom-controls">
+					{@render customControls()}
+				</div>
+			{/if}
 
 			<!-- Avatar profile link with dropdown -->
 			<div 
@@ -240,6 +245,13 @@
 		}
 		
 	}	
+
+	.custom-controls {
+		display: flex;
+		align-items: center;
+		height: var(--sk-nav-height);
+		margin-right: 0.5rem;
+	}
 
 	.avatar-container {
 		position: relative;

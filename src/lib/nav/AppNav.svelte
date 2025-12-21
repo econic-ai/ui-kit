@@ -7,8 +7,21 @@
 	import AppSecondaryNav from './AppSecondaryNav.svelte';
 	import { tick } from 'svelte';
 	import type { NavigationLink } from '../types';
+	import type { Snippet } from 'svelte';
 	
-	let { links, user, appMountPoint = '', webMountPoint = '' } = $props();
+	let { 
+		links, 
+		user, 
+		appMountPoint = '', 
+		webMountPoint = '',
+		customControls
+	}: {
+		links: any[];
+		user: any;
+		appMountPoint?: string;
+		webMountPoint?: string;
+		customControls?: Snippet;
+	} = $props();
 
 	let visible = $state(true);
 
@@ -195,11 +208,11 @@
 	</div>
 
 	<div class="desktop desktop-secondary-nav">
-		<AppSecondaryNav {user} appMountPoint={appMountPoint} webMountPoint={webMountPoint} />
+		<AppSecondaryNav {user} appMountPoint={appMountPoint} webMountPoint={webMountPoint} {customControls} />
 	</div>
 
 	<div class="mobile mobile-menu">
-		<AppSecondaryNav {user} appMountPoint={appMountPoint} webMountPoint={webMountPoint} />
+		<AppSecondaryNav {user} appMountPoint={appMountPoint} webMountPoint={webMountPoint} {customControls} />
 		<!-- @ts-ignore - menu_button type handled above -->
 		<button
 			bind:this={menu_button}
