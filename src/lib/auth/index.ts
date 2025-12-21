@@ -2,7 +2,8 @@ import { SignJWT, jwtVerify } from 'jose';
 import { 
     AUTH0_CLIENT_SECRET, 
     AUTH0_SECRET, 
-    AUTH0_SCOPE
+    AUTH0_SCOPE,
+    AUTH0_AUDIENCE
 } from '$env/static/private';
 import { 
     PUBLIC_AUTH0_CLIENT_ID, 
@@ -59,7 +60,8 @@ export async function generateLoginUrl(returnTo?: string, connection?: string): 
         response_type: 'code',
         client_id: PUBLIC_AUTH0_CLIENT_ID,
         redirect_uri: PUBLIC_AUTH0_CALLBACK_URL,
-        scope: AUTH0_SCOPE || 'openid profile email',
+        scope: AUTH0_SCOPE || 'openid profile email offline_access',
+        audience: AUTH0_AUDIENCE,  // Required to get JWT access token instead of opaque token
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
         state: returnTo ? `${state}:${returnTo}` : state
@@ -123,9 +125,12 @@ export async function handleCallback(
 }
 
 /**
- * Create a signed session JWT
+ * @deprecated Use encrypted session cookies instead (JWE in src/lib/server/crypto.ts)
+ * 
+ * Create a signed session JWT (legacy - tokens should not be embedded in cookies)
  */
 export async function createSessionToken(user: any, tokens: any): Promise<string> {
+    console.warn('createSessionToken is deprecated - use encrypted session cookies');
     const secret = new TextEncoder().encode(AUTH0_SECRET);
     
     const payload = {
@@ -134,12 +139,6 @@ export async function createSessionToken(user: any, tokens: any): Promise<string
         name: user.name,
         picture: user.picture,
         email_verified: user.email_verified,
-        tokens: {
-            access_token: tokens.access_token,
-            id_token: tokens.id_token,
-            refresh_token: tokens.refresh_token,
-            expires_at: Date.now() + (tokens.expires_in * 1000)
-        }
     };
     
     const jwt = await new SignJWT(payload)
@@ -152,9 +151,12 @@ export async function createSessionToken(user: any, tokens: any): Promise<string
 }
 
 /**
- * Verify and decode session JWT
+ * @deprecated Use decryptSession from src/lib/server/crypto.ts instead
+ * 
+ * Verify and decode session JWT (legacy)
  */
 export async function verifySessionToken(token: string): Promise<any> {
+    console.warn('verifySessionToken is deprecated - use decryptSession');
     const secret = new TextEncoder().encode(AUTH0_SECRET);
     
     try {
@@ -163,6 +165,37 @@ export async function verifySessionToken(token: string): Promise<any> {
     } catch (error) {
         throw new Error('Invalid session token');
     }
+}
+
+/**
+ * Refresh an Auth0 access token using a refresh token
+ */
+export async function refreshAuth0Token(refreshToken: string): Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in: number;
+    token_type: string;
+}> {
+    const tokenResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/oauth/token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            client_id: PUBLIC_AUTH0_CLIENT_ID,
+            client_secret: AUTH0_CLIENT_SECRET,
+            refresh_token: refreshToken,
+        })
+    });
+    
+    if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('Token refresh failed:', errorText);
+        throw new Error('Token refresh failed');
+    }
+    
+    return tokenResponse.json();
 }
 
 /**

@@ -21,5 +21,6 @@ declare module '$env/static/private' {
     export const AUTH0_CLIENT_SECRET: string;
     export const AUTH0_SECRET: string;
     export const AUTH0_SCOPE: string;
+    export const AUTH0_AUDIENCE: string;
 }
   
