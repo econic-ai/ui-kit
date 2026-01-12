@@ -109,7 +109,18 @@
 				<button class="avatar-link" aria-label="Profile">
 					<div class="avatar">
 						{#if user?.picture}
-							<img src={user.picture} alt="Profile" class="avatar-image" />
+							<img 
+								src="{appMountPoint}/_/avatar" 
+								alt="Profile" 
+								class="avatar-image"
+								onerror={(e) => { 
+									const img = e.currentTarget as HTMLImageElement;
+									img.style.display = 'none';
+									const next = img.nextElementSibling as HTMLElement;
+									if (next) next.style.display = 'flex';
+								}}
+							/>
+							<i class="fa-solid fa-user fallback-icon" aria-hidden="true" style="display:none"></i>
 						{:else}
 							<i class="fa-solid fa-user" aria-hidden="true"></i>
 						{/if}
@@ -251,7 +262,7 @@
 		align-items: center;
 		height: var(--sk-nav-height);
 		margin-right: 0.5rem;
-	}
+	}	
 
 	.avatar-container {
 		position: relative;
@@ -296,5 +307,14 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	.avatar .fallback-icon {
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.2rem;
+		color: var(--sk-fg-3);
 	}
 </style> 

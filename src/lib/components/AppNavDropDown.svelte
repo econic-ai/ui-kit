@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { theme } from '../state';
 	import { search } from '../state/search.svelte';
-	import { PUBLIC_AUTH0_LOGOUT_URL } from '$env/static/public';
 	
 	let { user, visible = false, appMountPoint = '', webMountPoint = ''} = $props();
 
@@ -32,13 +31,24 @@
 	>
 		<!-- Profile Section - picture, name and email -->
 		<div class="profile-section">
-			<div class="profile-avatar">
-				{#if user?.picture}
-					<img src={user.picture} alt="Profile" class="profile-picture" />
-				{:else}
-					<i class="fa-solid fa-user" aria-hidden="true"></i>
-				{/if}
-			</div>
+		<div class="profile-avatar">
+			{#if user?.picture}
+				<img 
+					src="{appMountPoint}/_/avatar" 
+					alt="Profile" 
+					class="profile-picture"
+					onerror={(e) => { 
+						const img = e.currentTarget as HTMLImageElement;
+						img.style.display = 'none';
+						const next = img.nextElementSibling as HTMLElement;
+						if (next) next.style.display = 'flex';
+					}}
+				/>
+				<i class="fa-solid fa-user fallback-icon" aria-hidden="true" style="display:none"></i>
+			{:else}
+				<i class="fa-solid fa-user" aria-hidden="true"></i>
+			{/if}
+		</div>
 			<div class="profile-info">
 				<div class="profile-name">{user?.name || 'Unknown User'}</div>
 				<div class="profile-email">{user?.email || 'Unknown Email'}</div>
@@ -137,7 +147,7 @@
 
 		<!-- Logout Section -->
 		<div class="menu-section">
-			<a href="{appMountPoint}/api/auth/logout?returnTo={encodeURIComponent(PUBLIC_AUTH0_LOGOUT_URL)}" class="menu-item menu-link logout-item" aria-label="Logout" data-sveltekit-reload>
+			<a href="{appMountPoint}/logout" class="menu-item menu-link logout-item" aria-label="Logout">
 				<span class="menu-item-text">Logout</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i>
@@ -194,6 +204,13 @@
 	.profile-avatar i {
 		font-size: 1.5rem;
 		color: var(--sk-fg-3);
+	}
+
+	.profile-avatar .fallback-icon {
+		width: 100%;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.profile-info {

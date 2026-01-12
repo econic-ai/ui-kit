@@ -1,15 +1,21 @@
-import { SignJWT, jwtVerify } from 'jose';
+/**
+ * Auth utilities for SSR (SvelteKit)
+ * 
+ * With the new architecture:
+ * - SSR initiates login (generates Auth0 URL with PKCE)
+ * - API handles callback (exchanges code for tokens, creates session)
+ * - SSR only verifies session tokens using public key
+ * 
+ * AUTH0_CLIENT_SECRET and AUTH0_SECRET are no longer needed on SSR side.
+ */
+
 import { 
-    AUTH0_CLIENT_SECRET, 
-    AUTH0_SECRET, 
     AUTH0_SCOPE,
     AUTH0_AUDIENCE
 } from '$env/static/private';
 import { 
     PUBLIC_AUTH0_CLIENT_ID, 
     PUBLIC_AUTH0_DOMAIN,
-    PUBLIC_AUTH0_LOGOUT_URL,
-    PUBLIC_AUTH0_CALLBACK_URL
 } from '$env/static/public';
 
 /**
@@ -50,16 +56,31 @@ function generateState(): string {
 
 /**
  * Generate Auth0 login URL with PKCE
+ * 
+ * SSR calls this to initiate login, storing the codeVerifier in a cookie.
+ * The API will use the codeVerifier when handling the callback.
+ * 
+ * @param returnTo - Optional URL to redirect to after login
+ * @param connection - Optional Auth0 connection (e.g., 'google-oauth2')
+ * @param callbackUrl - Optional callback URL (defaults to /api/auth/callback on current origin)
  */
-export async function generateLoginUrl(returnTo?: string, connection?: string): Promise<{ url: string; state: string; codeVerifier: string }> {
+export async function generateLoginUrl(
+    returnTo?: string, 
+    connection?: string,
+    callbackUrl?: string
+): Promise<{ url: string; state: string; codeVerifier: string }> {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     const state = generateState();
     
+    // Default callback URL - API handles callback on same domain
+    // This will be resolved at runtime when used from SSR
+    const redirectUri = callbackUrl || '/api/auth/callback';
+    
     const params = new URLSearchParams({
         response_type: 'code',
         client_id: PUBLIC_AUTH0_CLIENT_ID,
-        redirect_uri: PUBLIC_AUTH0_CALLBACK_URL,
+        redirect_uri: redirectUri,
         scope: AUTH0_SCOPE || 'openid profile email offline_access',
         audience: AUTH0_AUDIENCE,  // Required to get JWT access token instead of opaque token
         code_challenge: codeChallenge,
@@ -78,134 +99,69 @@ export async function generateLoginUrl(returnTo?: string, connection?: string): 
 }
 
 /**
- * Exchange authorization code for tokens
- */
-export async function handleCallback(
-    code: string, 
-    state: string, 
-    codeVerifier: string
-): Promise<{ user: any; tokens: any }> {
-    
-    // Exchange code for tokens
-    const tokenResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/oauth/token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            grant_type: 'authorization_code',
-            client_id: PUBLIC_AUTH0_CLIENT_ID,
-            client_secret: AUTH0_CLIENT_SECRET,
-            code,
-            redirect_uri: PUBLIC_AUTH0_CALLBACK_URL,
-            code_verifier: codeVerifier
-        })
-    });
-    
-    if (!tokenResponse.ok) {
-        throw new Error('Token exchange failed');
-    }
-    
-    const tokens = await tokenResponse.json();
-    
-    // Get user info
-    const userResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/userinfo`, {
-        headers: {
-            'Authorization': `Bearer ${tokens.access_token}`,
-        },
-    });
-    
-    if (!userResponse.ok) {
-        throw new Error('User info fetch failed');
-    }
-    
-    const user = await userResponse.json();
-    
-    return { user, tokens };
-}
-
-/**
- * @deprecated Use encrypted session cookies instead (JWE in src/lib/server/crypto.ts)
- * 
- * Create a signed session JWT (legacy - tokens should not be embedded in cookies)
- */
-export async function createSessionToken(user: any, tokens: any): Promise<string> {
-    console.warn('createSessionToken is deprecated - use encrypted session cookies');
-    const secret = new TextEncoder().encode(AUTH0_SECRET);
-    
-    const payload = {
-        sub: user.sub,
-        email: user.email,
-        name: user.name,
-        picture: user.picture,
-        email_verified: user.email_verified,
-    };
-    
-    const jwt = await new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime('7d')
-        .sign(secret);
-    
-    return jwt;
-}
-
-/**
- * @deprecated Use decryptSession from src/lib/server/crypto.ts instead
- * 
- * Verify and decode session JWT (legacy)
- */
-export async function verifySessionToken(token: string): Promise<any> {
-    console.warn('verifySessionToken is deprecated - use decryptSession');
-    const secret = new TextEncoder().encode(AUTH0_SECRET);
-    
-    try {
-        const { payload } = await jwtVerify(token, secret);
-        return payload;
-    } catch (error) {
-        throw new Error('Invalid session token');
-    }
-}
-
-/**
- * Refresh an Auth0 access token using a refresh token
- */
-export async function refreshAuth0Token(refreshToken: string): Promise<{
-    access_token: string;
-    refresh_token?: string;
-    expires_in: number;
-    token_type: string;
-}> {
-    const tokenResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/oauth/token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            client_id: PUBLIC_AUTH0_CLIENT_ID,
-            client_secret: AUTH0_CLIENT_SECRET,
-            refresh_token: refreshToken,
-        })
-    });
-    
-    if (!tokenResponse.ok) {
-        const errorText = await tokenResponse.text();
-        console.error('Token refresh failed:', errorText);
-        throw new Error('Token refresh failed');
-    }
-    
-    return tokenResponse.json();
-}
-
-/**
  * Generate Auth0 logout URL
+ * 
+ * @param returnTo - Optional URL to redirect to after logout
  */
 export function generateLogoutUrl(returnTo?: string): string {
+    // Default return URL - back to app logout page
+    const logoutReturnUrl = returnTo || '/logout';
+    
     const params = new URLSearchParams({
         client_id: PUBLIC_AUTH0_CLIENT_ID,
-        returnTo: returnTo || PUBLIC_AUTH0_LOGOUT_URL
+        returnTo: logoutReturnUrl
     });
     
     return `https://${PUBLIC_AUTH0_DOMAIN}/v2/logout?${params.toString()}`;
-} 
+}
+
+// ============================================================================
+// DEPRECATED FUNCTIONS - Kept for backwards compatibility during migration
+// These will be removed in a future version
+// ============================================================================
+
+/**
+ * @deprecated API now handles callback - use API endpoint /api/auth/callback
+ */
+export async function handleCallback(
+    _code: string, 
+    _state: string, 
+    _codeVerifier: string
+): Promise<{ user: any; tokens: any }> {
+    throw new Error(
+        'handleCallback is deprecated. ' +
+        'Auth0 callback is now handled by the API at /api/auth/callback. ' +
+        'Configure AUTH0_CALLBACK_URL to point to the API.'
+    );
+}
+
+/**
+ * @deprecated API now handles token refresh - use SSR endpoint /api/auth/refresh
+ */
+export async function refreshAuth0Token(_refreshToken: string): Promise<any> {
+    throw new Error(
+        'refreshAuth0Token is deprecated. ' +
+        'Token refresh is now handled by the API. ' +
+        'Use the SSR /api/auth/refresh endpoint which proxies to the API.'
+    );
+}
+
+/**
+ * @deprecated Use API-signed session tokens instead
+ */
+export async function createSessionToken(_user: any, _tokens: any): Promise<string> {
+    throw new Error(
+        'createSessionToken is deprecated. ' +
+        'Session tokens are now created and signed by the API.'
+    );
+}
+
+/**
+ * @deprecated Use verifySessionToken from $lib/server/session-crypto instead
+ */
+export async function verifySessionToken(_token: string): Promise<any> {
+    throw new Error(
+        'verifySessionToken from ui-kit is deprecated. ' +
+        'Use verifySessionToken from $lib/server/session-crypto instead.'
+    );
+}
