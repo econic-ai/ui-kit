@@ -1,7 +1,15 @@
-import { SignJWT, jwtVerify } from 'jose';
+/**
+ * Auth utilities for SSR (SvelteKit)
+ * 
+ * With the new architecture:
+ * - SSR initiates login (generates Auth0 URL with PKCE)
+ * - API handles callback (exchanges code for tokens, creates session)
+ * - SSR only verifies session tokens using public key
+ * 
+ * AUTH0_CLIENT_SECRET and AUTH0_SECRET are no longer needed on SSR side.
+ */
+
 import { 
-    AUTH0_CLIENT_SECRET, 
-    AUTH0_SECRET, 
     AUTH0_SCOPE,
     AUTH0_AUDIENCE
 } from '$env/static/private';
@@ -50,6 +58,9 @@ function generateState(): string {
 
 /**
  * Generate Auth0 login URL with PKCE
+ * 
+ * SSR calls this to initiate login, storing the codeVerifier in a cookie.
+ * The API will use the codeVerifier when handling the callback.
  */
 export async function generateLoginUrl(returnTo?: string, connection?: string): Promise<{ url: string; state: string; codeVerifier: string }> {
     const codeVerifier = generateCodeVerifier();
@@ -75,127 +86,6 @@ export async function generateLoginUrl(returnTo?: string, connection?: string): 
     const url = `https://${PUBLIC_AUTH0_DOMAIN}/authorize?${params.toString()}`;
     
     return { url, state, codeVerifier };
-}
-
-/**
- * Exchange authorization code for tokens
- */
-export async function handleCallback(
-    code: string, 
-    state: string, 
-    codeVerifier: string
-): Promise<{ user: any; tokens: any }> {
-    
-    // Exchange code for tokens
-    const tokenResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/oauth/token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            grant_type: 'authorization_code',
-            client_id: PUBLIC_AUTH0_CLIENT_ID,
-            client_secret: AUTH0_CLIENT_SECRET,
-            code,
-            redirect_uri: PUBLIC_AUTH0_CALLBACK_URL,
-            code_verifier: codeVerifier
-        })
-    });
-    
-    if (!tokenResponse.ok) {
-        throw new Error('Token exchange failed');
-    }
-    
-    const tokens = await tokenResponse.json();
-    
-    // Get user info
-    const userResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/userinfo`, {
-        headers: {
-            'Authorization': `Bearer ${tokens.access_token}`,
-        },
-    });
-    
-    if (!userResponse.ok) {
-        throw new Error('User info fetch failed');
-    }
-    
-    const user = await userResponse.json();
-    
-    return { user, tokens };
-}
-
-/**
- * @deprecated Use encrypted session cookies instead (JWE in src/lib/server/crypto.ts)
- * 
- * Create a signed session JWT (legacy - tokens should not be embedded in cookies)
- */
-export async function createSessionToken(user: any, tokens: any): Promise<string> {
-    console.warn('createSessionToken is deprecated - use encrypted session cookies');
-    const secret = new TextEncoder().encode(AUTH0_SECRET);
-    
-    const payload = {
-        sub: user.sub,
-        email: user.email,
-        name: user.name,
-        picture: user.picture,
-        email_verified: user.email_verified,
-    };
-    
-    const jwt = await new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime('7d')
-        .sign(secret);
-    
-    return jwt;
-}
-
-/**
- * @deprecated Use decryptSession from src/lib/server/crypto.ts instead
- * 
- * Verify and decode session JWT (legacy)
- */
-export async function verifySessionToken(token: string): Promise<any> {
-    console.warn('verifySessionToken is deprecated - use decryptSession');
-    const secret = new TextEncoder().encode(AUTH0_SECRET);
-    
-    try {
-        const { payload } = await jwtVerify(token, secret);
-        return payload;
-    } catch (error) {
-        throw new Error('Invalid session token');
-    }
-}
-
-/**
- * Refresh an Auth0 access token using a refresh token
- */
-export async function refreshAuth0Token(refreshToken: string): Promise<{
-    access_token: string;
-    refresh_token?: string;
-    expires_in: number;
-    token_type: string;
-}> {
-    const tokenResponse = await fetch(`https://${PUBLIC_AUTH0_DOMAIN}/oauth/token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            client_id: PUBLIC_AUTH0_CLIENT_ID,
-            client_secret: AUTH0_CLIENT_SECRET,
-            refresh_token: refreshToken,
-        })
-    });
-    
-    if (!tokenResponse.ok) {
-        const errorText = await tokenResponse.text();
-        console.error('Token refresh failed:', errorText);
-        throw new Error('Token refresh failed');
-    }
-    
-    return tokenResponse.json();
 }
 
 /**
