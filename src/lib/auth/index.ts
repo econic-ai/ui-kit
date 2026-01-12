@@ -59,10 +59,6 @@ function generateState(): string {
  * 
  * SSR calls this to initiate login, storing the codeVerifier in a cookie.
  * The API will use the codeVerifier when handling the callback.
- * 
- * @param returnTo - Optional URL to redirect to after login
- * @param connection - Optional Auth0 connection (e.g., 'google-oauth2')
- * @param callbackUrl - Optional callback URL (defaults to /api/auth/callback on current origin)
  */
 export async function generateLoginUrl(
     returnTo?: string, 

@@ -33,7 +33,7 @@ The main shell of the application. It provides a slot for the top navigation, th
 	<ModalOverlay onclose={() => {}} />
 {/if}
 
-<main id="main" style="top:{nav_visible ? 'var(--sk-nav-height)' : '0'}">
+<main id="main" class:nav-hidden={!nav_visible}>
 	<div class="sk-page">
 		{@render children?.()}
 		{@render footer?.()}
@@ -46,7 +46,6 @@ The main shell of the application. It provides a slot for the top navigation, th
 		margin: 0 auto;
 		/* padding-top: var(--sk-banner-height); */
 		padding-bottom: 0;
-		/* height: 100%; */
 		overflow-y: auto;
 		scroll-behavior: smooth;
 		height: calc(100vh - var(--sk-nav-height));
