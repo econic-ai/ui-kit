@@ -1,6 +1,50 @@
 import { extract_frontmatter, slugify, smart_quotes } from '../../markdown/utils';
 import type { Document } from '../../types';
 
+/**
+ * Normalize an asset URL for the read() function.
+ * 
+ * Different URL formats by context:
+ * - Dev mode: /@fs/absolute/path/to/file.md (Vite filesystem access)
+ * - Dev with base: /www/@fs/... or @fs/... (base path may be prepended)
+ * - Build mode: /_app/immutable/assets/file.hash.md
+ * - Build with base: /www/_app/immutable/... (base prepended) - KEEP THE BASE!
+ * - Build with assets URL: http://cdn.example.com/_app/immutable/...
+ * 
+ * The read() function expects:
+ * - Dev: /@fs/... format
+ * - Build: The full path including base (e.g., /www/_app/immutable/...)
+ *          because SvelteKit's build creates directories matching the base path
+ */
+function normalizeAssetUrl(url: string): string {
+	// Handle @fs URLs (Vite's special filesystem access for files outside project root)
+	// When base path is set, these can get mangled (e.g., /www/@fs/... or @fs/...)
+	// The read() function expects /@fs/... format
+	const fsIndex = url.indexOf('@fs/');
+	if (fsIndex !== -1) {
+		// Extract from @fs onwards and ensure leading slash
+		return '/' + url.slice(fsIndex);
+	}
+	
+	// If it's an absolute URL (CDN/external), extract just the pathname
+	// For external assets URLs, we strip the origin but keep the path structure
+	if (url.startsWith('http://') || url.startsWith('https://')) {
+		try {
+			const parsed = new URL(url);
+			return parsed.pathname;
+		} catch {
+			// If URL parsing fails, return as-is
+			return url;
+		}
+	}
+	
+	// For all other URLs (including those with base path like /www/_app/...),
+	// return as-is. The read() function during build expects the full path
+	// including the base path because SvelteKit creates the output directory
+	// structure to match the base path.
+	return url;
+}
+
 export async function create_index(
 	documents: Record<string, string>,
 	assets: Record<string, string>,
@@ -17,7 +61,9 @@ export async function create_index(
 		const file = key.slice(base.length + 1);
 		const slug = file.replace(/(^|\/)[\d-]+-/g, '$1').replace(/(\/index)?\.md$/, '');
 
-		const text = await read(documents[key]).text();
+		// Normalize the asset URL in case paths.assets is an absolute URL
+		const assetPath = normalizeAssetUrl(documents[key]);
+		const text = await read(assetPath).text();
 		let { metadata, body } = extract_frontmatter(text);
 
 		if (!metadata.title) {

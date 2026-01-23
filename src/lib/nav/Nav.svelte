@@ -65,7 +65,9 @@
 
 	// @ts-ignore - esrap parser has issues with function parameter type annotations
 	function isCurrentSection(slug) {
-		return $page.url.pathname.startsWith('/' + slug);
+		// Account for webMountPoint when checking current section
+		const basePath = webMountPoint || '';
+		return $page.url.pathname.startsWith(basePath + '/' + slug);
 	}
 
 	// let custom_links = [{
@@ -162,15 +164,15 @@
 							hoveredMenu = null;
 						}}
 					>
-						<a
-							href="/{link.slug}"
-							onclick={() => {
-								showMegaMenu = false;
-								openDropdown = null;
-							}}
-							class:active={hoveredMenu === link.slug}
-							class:current={isCurrentSection(link.slug)}
-						>
+					<a
+						href="{webMountPoint}/{link.slug}"
+						onclick={() => {
+							showMegaMenu = false;
+							openDropdown = null;
+						}}
+						class:active={hoveredMenu === link.slug}
+						class:current={isCurrentSection(link.slug)}
+					>
 							{link.title} {#if link.sections}
 								<i class="nav-dropdown-icon fa-solid fa-caret-down"></i>
 							{/if}

@@ -134,7 +134,7 @@
 				</div>
 			</a>
 			
-			<a href="{webMountPoint}/docs/technology" class="menu-item menu-link" aria-label="Documentation">
+			<a href="{webMountPoint}/docs/the-docs/introduction" class="menu-item menu-link" aria-label="Documentation">
 				<span class="menu-item-text">Documentation</span>
 				<div class="menu-item-icon">
 					<i class="fa-solid fa-book" aria-hidden="true"></i>
