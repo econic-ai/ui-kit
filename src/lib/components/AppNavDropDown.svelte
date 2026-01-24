@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { theme } from '../state';
 	import { search } from '../state/search.svelte';
 	

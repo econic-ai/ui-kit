@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import type { Document } from '../types';
 
@@ -42,8 +43,8 @@
 							<li>
 								<a
 									class="page second-level"
-									aria-current={`/${slug}` === $page.url.pathname ? 'page' : undefined}
-									href="/{slug}"
+									aria-current={`${base}/${slug}` === $page.url.pathname ? 'page' : undefined}
+									href="{base}/{slug}"
 								>
 									{metadata.title}
 								</a>
@@ -55,8 +56,8 @@
 					<h3>
 						<a 
 							class="primary-level"
-							aria-current={`/${section.slug}` === $page.url.pathname ? 'page' : undefined}
-							href="/{section.slug}">
+							aria-current={`${base}/${section.slug}` === $page.url.pathname ? 'page' : undefined}
+							href="{base}/{section.slug}">
 							{section.metadata.title}
 						</a>
 					</h3>
@@ -118,6 +119,7 @@
 		font-weight: 300;
 		font-size: var(--sk-font-ui-small);
 		text-transform: uppercase;
+		margin-bottom: 0.5rem;
 	}
 
 	.section-group {
