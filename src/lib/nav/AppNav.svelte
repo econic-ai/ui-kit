@@ -120,7 +120,7 @@
 			<div class="links">
 				{#each links as link}
 					<a
-						href="/{link.slug}"
+						href="{webMountPoint}/{link.slug}"
 						onmouseenter={() => {
 							hoveredMenu = link.slug;
 							showMegaMenu = true;
@@ -155,7 +155,7 @@
 							<div class="mega-column {hoveredMenu === link.slug ? 'active' : ''}">
 								<!-- Section icon at the top -->
 								
-								<a class="section-title __text_md" href={'/' + link.slug} class:selected={isCurrentSection(link.slug)}>
+								<a class="section-title __text_md" href={webMountPoint + '/' + link.slug} class:selected={isCurrentSection(link.slug)}>
 									<!-- <div class="section-icon-wrapper">
 										<img
 											src="/logos/logo_mg.png"
@@ -181,7 +181,7 @@
 									{#each link.sections as item}
 										<a
 											class="menu-sub-item"
-											href={item.path || '#'}
+											href={item.path?.startsWith('http') ? item.path : webMountPoint + (item.path || '')}
 											class:active={hoveredMenu === link.slug}
 											class:selected={isCurrentPage(item.path || '')}
 										>

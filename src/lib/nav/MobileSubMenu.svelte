@@ -1,9 +1,17 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import type { NavigationLink } from '../types';
 	import { onMount } from 'svelte';
 
 	let { title, contents = [] }: { title: string; contents: NavigationLink['sections'] } = $props();
+
+	// Helper to prepend base to internal paths
+	function href(path: string | undefined): string {
+		if (!path) return base + '/';
+		if (path.startsWith('http')) return path;
+		return base + path;
+	}
 
 	let nav = $state() as HTMLElement;
 	let nav_inner = $state() as HTMLElement;
@@ -59,7 +67,7 @@
 														<a
 															class="page second-level"
 															aria-current={page.path === currentPathname ? 'page' : undefined}
-															href={page.path}
+															href={href(page.path)}
 														>
 															{page.title}
 														</a>
@@ -68,7 +76,7 @@
 											</ul>
 										{:else if section.path}
 											<!-- Direct page link (like blog posts) -->
-											<a href={section.path} aria-current={section.path === currentPathname ? 'page' : undefined}>
+											<a href={href(section.path)} aria-current={section.path === currentPathname ? 'page' : undefined}>
 												{section.title}
 											</a>
 										{/if}
@@ -77,7 +85,7 @@
 							</ul>
 							{:else if item.path}
 								<!-- Simple direct link -->
-								<a href={item.path} aria-current={item.path === currentPathname ? 'page' : undefined}>
+								<a href={href(item.path)} aria-current={item.path === currentPathname ? 'page' : undefined}>
 									{item.title}
 								</a>
 							{/if}

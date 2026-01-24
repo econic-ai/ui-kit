@@ -2,6 +2,7 @@
 	import { overlay_open, on_this_page_open } from '../stores';
 	import { search } from '../state/search.svelte';
 	import { Icon } from '../components';
+	import { base } from '$app/paths';
 	import { page } from '$app/stores';
 	import MobileMenu from './MobileMenu.svelte';
 	import AppSecondaryNav from './AppSecondaryNav.svelte';
@@ -65,9 +66,8 @@
 
 	// @ts-ignore - esrap parser has issues with function parameter type annotations
 	function isCurrentSection(slug) {
-		// Account for webMountPoint when checking current section
-		const basePath = webMountPoint || '';
-		return $page.url.pathname.startsWith(basePath + '/' + slug);
+		// Account for base path when checking current section
+		return $page.url.pathname.startsWith(base + '/' + slug);
 	}
 
 	// let custom_links = [{
@@ -114,7 +114,7 @@
 	style:z-index={$overlay_open && (search.active || $on_this_page_open) ? 80 : null}
 	aria-label="Primary"
 >
-	<a class="home-link" href="{webMountPoint}" title={home_title} aria-label="Svelte"></a>
+	<a class="home-link" href="{base}/" title={home_title} aria-label="Svelte"></a>
 
 	{#if title}
 		<div class="current-section mobile">
@@ -165,7 +165,7 @@
 						}}
 					>
 					<a
-						href="{webMountPoint}/{link.slug}"
+						href="{base}/{link.slug}"
 						onclick={() => {
 							showMegaMenu = false;
 							openDropdown = null;
@@ -183,7 +183,7 @@
 								<div class="dropdown-content">
 									{#each link.sections as section}
 										<a 
-											href={section.path} 
+											href={section.path.startsWith('http') ? section.path : `${base}${section.path}`} 
 											class="dropdown-item"
 											onclick={() => {
 												openDropdown = null;

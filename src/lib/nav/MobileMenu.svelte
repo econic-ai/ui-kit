@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { trap } from '../actions';
 	import { reduced_motion } from '../stores';
 	import { tick } from 'svelte';
@@ -40,7 +41,7 @@
 	}
 
 	function isCurrentSection(slug: string): boolean {
-		return currentPathname.startsWith('/' + slug);
+		return currentPathname.startsWith(base + '/' + slug);
 	}
 
 	afterNavigate(onclose);
@@ -131,7 +132,7 @@
 						<ul class="nav-list">
 							{#each links as link}
 								<li class="nav-item">
-									<a href="/{link.slug}" class="nav-link parent-link" aria-current={isCurrentSection(link.slug) ? 'page' : undefined}>
+									<a href="{base}/{link.slug}" class="nav-link parent-link" aria-current={isCurrentSection(link.slug) ? 'page' : undefined}>
 										<div class="icon-box">
 											<i class="nav-icon {isCurrentSection(link.slug) ? link.iconActive ?? link.icon : link.icon}" aria-label="{link.title} icon"></i>
 										</div>
@@ -144,7 +145,7 @@
 												<li class="sub-nav-item">
 													{#if section.sections && section.sections.length > 0}
 														<div class="nav-link-with-dropdown">
-															<a href={section.path} class="nav-link child-link" aria-current={isCurrentPage(section.path || '') ? 'page' : undefined}>
+															<a href={section.path?.startsWith('http') ? section.path : `${base}${section.path}`} class="nav-link child-link" aria-current={isCurrentPage(section.path || '') ? 'page' : undefined}>
 																<div class="icon-box small">
 																	<i class="nav-icon {isCurrentPage(section.path || '') ? section.iconActive ?? section.icon : section.icon}" aria-label="{section.title} icon"></i>
 																</div>
@@ -167,7 +168,7 @@
 															</button>
 														</div>
 													{:else}
-														<a href={section.path} class="nav-link child-link" aria-current={isCurrentPage(section.path || '') ? 'page' : undefined}>
+														<a href={section.path?.startsWith('http') ? section.path : `${base}${section.path}`} class="nav-link child-link" aria-current={isCurrentPage(section.path || '') ? 'page' : undefined}>
 															<div class="icon-box small">
 																<i class="nav-icon {isCurrentPage(section.path || '') ? section.iconActive ?? section.icon : section.icon}" aria-label="{section.title} icon"></i>
 															</div>
