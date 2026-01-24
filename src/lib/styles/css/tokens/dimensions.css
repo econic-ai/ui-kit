@@ -1,7 +1,7 @@
 :root {
 	--sk-nav-height: 6rem;
 	--sk-secondary-nav-height: 5rem;
-	--sk-page-padding-top: 6rem;
+	--sk-page-padding-top: 1rem;
 	--sk-page-padding-bottom: 8rem;
 	--sk-page-padding-side: 0.8rem;
 	--sk-thick-border-width: 0.3rem;
@@ -16,7 +16,7 @@
 	}
 
 	@media screen and (min-width: 800px) {
-		--sk-page-padding-top: 8rem;
+		--sk-page-padding-top: 1rem;
 		--sk-page-padding-side: 2rem;
 		--sk-secondary-nav-height: 6rem;
 	}
