@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { assets, base } from '$app/paths';
+	
 	const currentYear = new Date().getFullYear();
 	let { links } = $props();
 
@@ -22,8 +24,8 @@
 		<!-- <div class="sk-container"> -->
 
 		<div class="footer-logo-container">
-			<a href="/" class="logo-link">
-				<img src="/logos/econic.svg" alt="Econic Logo" width="160" />
+			<a href="{base}/" class="logo-link">
+				<img src="{assets}/logos/econic.svg" alt="Econic Logo" width="160" />
 				<!-- <img src="../branding/econic_logo.svg" alt="Econic Logo" width="150" /> -->
 			</a>
 
@@ -61,14 +63,12 @@
 			</div> -->
 			<div class="footer-bottom">
 				<div class="footer-bottom-links">
-					<a href="/privacy">Privacy Policy</a>
-					<a href="/terms">Terms of Service</a>
+					<a href="{base}/legal/privacy-policy">Privacy Policy</a>
+					<a href="{base}/legal/terms-of-service">Terms of Service</a>
 				</div>
 				<div class="copyright">
-
 					© {currentYear} Econic. All rights reserved.
 				</div>
-				<!-- <p>© {currentYear} Econic. All rights reserved.</p> -->
 			</div>
 		</footer>
 		<!-- </div> -->
@@ -147,7 +147,13 @@
 	.footer-bottom-links a {
 		color: var(--sk-fg-3);
 		text-decoration: none;
-		font-size: var(--sk-text-base);
+		font: var(--sk-font-ui-small);
+		opacity: 0.8;
+		transition: opacity 0.2s ease;
+	}
+
+	.footer-bottom-links a:hover {
+		opacity: 1;
 	}
 
 	.logo-link {
