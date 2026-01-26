@@ -3,6 +3,7 @@ import { createHash, Hash } from 'node:crypto';
 import fs from 'node:fs';
 import process from 'node:process';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import * as marked from 'marked';
 import { codeToHtml, createCssVariablesTheme } from 'shiki';
@@ -30,17 +31,8 @@ const theme = createCssVariablesTheme({
 // how the markdown is rendered (whose logic live here). This is to avoid serving stale code snippets.
 const hash = createHash('sha256');
 hash.update(fs.readFileSync('./pnpm-lock.yaml', 'utf-8'));
-// CAREFUL: update this URL in case you ever move this file or start the dev/build process from another directory
-// When running from econic.ai, ui-kit is at ../ui-kit (workspace package)
-const original_file = '../ui-kit/src/lib/markdown/renderer.ts';
-if (!fs.existsSync(original_file)) {
-	throw new Error(
-		'Update the path to the markdown renderer code. Current value: ' +
-			original_file +
-			' | Current cwd: ' +
-			process.cwd()
-	);
-}
+// Use import.meta.url to get the actual file path, works regardless of cwd or workspace structure
+const original_file = fileURLToPath(import.meta.url);
 hash_graph(hash, original_file);
 const digest = hash.digest().toString('base64').replace(/\//g, '-');
 
