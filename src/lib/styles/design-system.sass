@@ -597,6 +597,23 @@
             font-size: $text-4xl
             padding: $space-8 $space-16
 
+// Text-only link with subtle glow on hover (no box/border)
+.__link_textonly
+    text-decoration: none
+    display: inline-flex
+    align-items: center
+    gap: $space-2
+    color: var(--sk-fg-2)
+    transition: all 0.2s ease
+
+    &:hover
+        text-decoration: none
+        color: var(--sk-fg-1)
+        text-shadow: 0 0 12px rgba(150, 150, 150, 0.5)
+
+    i
+        transition: all 0.2s ease
+
 .__hr
     width: $w-full
     max-width: 350px
